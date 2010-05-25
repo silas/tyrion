@@ -6,8 +6,6 @@
 *.test
 .*.dblite
 .*.swp
-.hg
-.hgignore
 _trial_temp
 test*.conf
 tyrion
