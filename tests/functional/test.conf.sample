@@ -1,0 +1,8 @@
+[general]
+namespace = http://tyrion.org/protocol/1.0/service
+destination = test.node@example.org/tyrion
+logging = false
+username = test@example.org/tyrion
+password = test.pass
+username_unknown_user = test.unknown@example.org/tyrion
+password_unknown_user = test.unknown.pass
