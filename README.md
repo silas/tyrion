@@ -1,16 +1,13 @@
 Tyrion
 ======
 
-Tyrion is a framework for infrastructure automation.
+[Tyrion](http://www.tyrion.org) is a framework for infrastructure automation.
 
 ### Requirements
 
 * [gloox](http://camaya.net/gloox/) >= 1.0
-
-### Build & Test Requirements
-
-* [SCons](http://www.scons.org/)
-* [Twisted](http://twistedmatrix.com/)
+* [SCons](http://www.scons.org/) (build)
+* [Twisted](http://twistedmatrix.com/) (test)
 
 ### License
 
