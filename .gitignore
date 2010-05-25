@@ -1,0 +1,11 @@
+*.dylib
+*.log
+*.o
+*.os
+*.test
+.*.dblite
+.*.swp
+.hg
+.hgignore
+tyrion
+tyrion-node

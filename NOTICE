@@ -1,0 +1,8 @@
+Tyrion
+Copyright 2010 Silas Sewell
+
+This software contains a modified version of INIReader.cpp and INIReader.h (Brush Technology).
+  http://code.google.com/p/inih/ -- BSD
+  * src/third_party/ini
+  * src/config.cc
+  * src/config.h
