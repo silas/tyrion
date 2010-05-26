@@ -19,6 +19,7 @@
 
 #include "client_service_queue.h"
 #include "client_xmpp.h"
+#include "logging.h"
 #include "setting.h"
 
 void *start_xmpp(void *arg)
@@ -30,10 +31,11 @@ void *start_xmpp(void *arg)
 
 int main(int argc, char* argv[])
 {
+  bool debug = false;
+  int timeout = 0;
   std::string config_file;
   std::string jid;
   std::string service_type;
-  int timeout = 0;
 
   for(int i = 1; i < argc; i++)
   {
@@ -87,6 +89,10 @@ int main(int argc, char* argv[])
       }
       i++;
     }
+    else if (strcmp(option, "--debug") == 0)
+    {
+      debug = true;
+    }
     else if (strcmp(option, "--help") == 0)
     {
       std::cout << "Usage: tyrion [OPTION]..." << std::endl;
@@ -97,6 +103,7 @@ int main(int argc, char* argv[])
       std::cout << "  -j, --jid                 service destination JID" << std::endl;
       std::cout << "  -s, --service-type        service type" << std::endl;
       std::cout << "  -t, --timeout             service timeout" << std::endl;
+      std::cout << "  --debug                   pipe debug info to stderr" << std::endl;
       return 0;
     }
     else
@@ -109,6 +116,11 @@ int main(int argc, char* argv[])
   if (jid.empty())
   {
     std::cerr << "A destination JID is required." << std::endl;
+    return 1;
+  }
+  else if (jid.find("/") == std::string::npos)
+  {
+    std::cerr << "JID requires a resource (ex: user@host/resource)." << std::endl;
     return 1;
   }
 
@@ -124,6 +136,14 @@ int main(int argc, char* argv[])
   {
     std::cerr << "Can't load configuration file '" << config_file << "'." << std::endl;
     return 1;
+  }
+
+  tyrion::Logging *logging = tyrion::Logging::Instance();
+
+  if (debug)
+  {
+    logging->Level(tyrion::DEBUG);
+    logging->Stderr(true);
   }
 
   tyrion::client::ServiceQueue *request = new tyrion::client::ServiceQueue();

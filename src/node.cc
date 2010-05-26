@@ -23,10 +23,10 @@
 
 int main(int argc, char* argv[])
 {
+  bool debug = false;
   std::string config_file = tyrion::CONFIG_PATH;
   std::string acl_file;
   std::string log_file;
-  bool debug = false;
 
   for(int i = 1; i < argc; i++)
   {
@@ -124,10 +124,18 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  if (tyrion::Setting::Instance()->Get("xmpp", "jid").empty())
   {
-    std::cerr << "The xmpp jid field is required." << std::endl;
-    return 1;
+    std::string jid = tyrion::Setting::Instance()->Get("xmpp", "jid");
+    if (jid.empty())
+    {
+      std::cerr << "The xmpp jid field is required." << std::endl;
+      return 1;
+    }
+    else if (jid.find("/") == std::string::npos)
+    {
+      std::cerr << "The xmpp jid field requires a resource (ex: user@host/resource)." << std::endl;
+      return 1;
+    }
   }
 
   tyrion::node::Xmpp *xmpp = new tyrion::node::Xmpp();
