@@ -10,6 +10,7 @@
   This software is distributed without any warranty.
 */
 
+#include <cstring>
 #include <pthread.h>
 
 #include <iostream>

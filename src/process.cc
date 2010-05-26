@@ -12,6 +12,9 @@
 
 #include "process.h"
 
+#include <cstdlib>
+#include <sys/wait.h>
+
 #include "error.h"
 #include "tyrion.h"
 

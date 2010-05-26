@@ -3,6 +3,7 @@
 *.o
 *.os
 *.pyc
+*.so
 *.test
 .*.dblite
 .*.swp

@@ -25,7 +25,7 @@ node_source = [
     'src/node_xmpp_service_manager.cc',
 ]
 
-library_list = ['gloox']
+library_list = ['gloox', 'pthread']
 
 env = Environment()
 

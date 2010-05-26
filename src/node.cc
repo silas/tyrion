@@ -10,6 +10,8 @@
   This software is distributed without any warranty.
 */
 
+#include <cstring>
+
 #include <iostream>
 #include <string>
 
