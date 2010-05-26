@@ -128,10 +128,10 @@ class BaseXMPP(Base):
         log.error('Client init failed: %s' % failure)
 
     def create_service(self, type, input='', handle_success=None, handle_error=None, destination=None, user=None, group=None, timeout=None):
-        def default_success(xml):
+        def default_success_func(xml):
             pass
         if handle_success is None:
-            handle_success = default_success
+            handle_success = default_success_func
         if destination is None:
             destination = self.config.get('general', 'destination')
         # create iq
