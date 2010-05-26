@@ -31,7 +31,7 @@ void *start_xmpp(void *arg)
 int main(int argc, char* argv[])
 {
   bool debug = false;
-  int timeout = 0;
+  int timeout = -1;
   std::string config_file;
   std::string jid;
   std::string service_type;

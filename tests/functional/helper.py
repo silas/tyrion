@@ -1,5 +1,6 @@
 import ConfigParser
 import logging
+import subprocess
 import sys
 import uuid
 from twisted.internet import defer
@@ -19,6 +20,20 @@ class Response(object):
         self.type = None
         self.output = None
         self.error = None
+
+class Execute(object):
+
+    def __init__(self, command, stdin=''):
+        reference = subprocess.Popen(
+            command,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=True,
+            close_fds=True
+        )
+        self.stdout, self.stderr = reference.communicate(input=stdin)
+        self.code = str(reference.returncode)
 
 class log(object):
 
@@ -44,6 +59,15 @@ class log(object):
 
 class Base(object):
 
+    def setup_basic(self):
+        self.timeout = 60
+        self.config = ConfigParser.RawConfigParser()
+        self.config.read('test.conf')
+        if self.config.getboolean('general', 'logging'):
+            txlog.startLogging(sys.stdout)
+
+class BaseXMPP(Base):
+
     def setUp(self):
         defer_connected = defer.Deferred()
         self.defer_disconnected = defer.Deferred()
@@ -61,13 +85,6 @@ class Base(object):
         return defer.gatherResults([
             self.defer_disconnected,
         ])
-
-    def setup_basic(self):
-        self.timeout = 60
-        self.config = ConfigParser.RawConfigParser()
-        self.config.read('test.conf')
-        if self.config.getboolean('general', 'logging'):
-            txlog.startLogging(sys.stdout)
 
     def setup_client(self, d1, d2):
         from twisted.internet import reactor
@@ -110,7 +127,7 @@ class Base(object):
     def client_init_failed(self, failure):
         log.error('Client init failed: %s' % failure)
 
-    def create_service(self, type_, text='', handle_success=None, handle_error=None, destination=None, user=None, group=None, timeout=None):
+    def create_service(self, type, input='', handle_success=None, handle_error=None, destination=None, user=None, group=None, timeout=None):
         def default_success(xml):
             pass
         if handle_success is None:
@@ -120,14 +137,16 @@ class Base(object):
         # create iq
         iq = xmlstream.IQ(self.xmlStream)
         service = iq.addElement((self.config.get('general', 'namespace'), 'service'))
-        service.attributes['type'] = type_
+        service.attributes['type'] = type
         if user is not None:
             service.attributes['user'] = user
         if group is not None:
             service.attributes['group'] = group
         if timeout is not None:
             service.attributes['timeout'] = unicode(timeout)
-        service.addElement('input', content=text)
+        if input and not input.endswith('\n'):
+            input = input + '\n'
+        service.addElement('input', content=input)
         # send iq
         d = iq.send(destination)
         d.addCallback(handle_success)

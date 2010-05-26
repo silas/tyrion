@@ -26,7 +26,7 @@ namespace tyrion
     user_ = "";
     group_ = "";
     code_ = -1;
-    timeout_ = 0;
+    timeout_ = -1;
     format_ = None;
   }
 
@@ -45,7 +45,7 @@ namespace tyrion
       code_stream >> code_;
     }
 
-    timeout_ = 0;
+    timeout_ = -1;
     if (tag->hasAttribute("timeout"))
     {
       std::string timeout_str = tag->findAttribute("timeout");
@@ -78,6 +78,9 @@ namespace tyrion
 
     if (format_ == Request)
     {
+      if (timeout_ >= 0)
+        t->addAttribute("timeout", timeout_);
+
       gloox::Tag* i = new gloox::Tag("input");
       i->setCData(input_);
       t->addChild(i);

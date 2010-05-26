@@ -1,6 +1,7 @@
 from helper import *
+import shared
 
-class TestBasic(Base, unittest.TestCase):
+class TestBasic(BaseXMPP, shared.ServiceTests, unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
         super(TestBasic, self).__init__(*args, **kwargs)
@@ -9,37 +10,20 @@ class TestBasic(Base, unittest.TestCase):
         self.password = self.config.get('general', 'password')
         self.jid = jid.JID(self.username)
 
-    def basic(self, text, type_):
+    def check(self, input, type, output=None, error=None, code=None, callback=None, timeout=30):
         def handle(xml):
             response = self.parse_service(xml)
-            self.assertEqual(response.type, type_)
-            self.assertEqual(response.code, '0')
-            self.assertEqual(response.output, '2')
-            self.assertEqual(response.error, '')
-
-        return self.create_service(type_, text, handle_success=handle)
-
-    def test_bash(self):
-        return self.basic('bc -q\n2\nquit()\n', 'org.tyrion.service.bash')
-
-    def test_python(self):
-        return self.basic('print 1+1\n', 'org.tyrion.service.python')
-
-    def test_ruby(self):
-        return self.basic('puts 1+1\n', 'org.tyrion.service.ruby')
-
-    def test_timeout_error(self):
-        text = 'sleep 10\n'
-        type_ = 'org.tyrion.service.bash'
-
-        def handle(xml):
-            response = self.parse_service(xml)
-            self.assertEqual(response.code, '15')
-            self.assertEqual(response.type, type_)
-            self.assertEqual(response.output, '')
-            self.assertEqual(response.error, '')
-
-        return self.create_service(type_, text, handle_success=handle, timeout=1)
+            if type is not None:
+                self.assertEqual(response.type, type)
+            if code is not None:
+                self.assertEqual(response.code, code)
+            if output is not None:
+                self.assertEqual(response.output, output)
+            if error is not None:
+                self.assertEqual(response.error, error)
+            if callable(callback):
+                callback(code=response.code, output=response.output, error=response.error)
+        return self.create_service(type, input, handle_success=handle, timeout=timeout)
 
     def test_service_unavailable_module_not_found(self):
         return self.create_service(
@@ -48,7 +32,7 @@ class TestBasic(Base, unittest.TestCase):
             handle_error=self.handle_service_unavailable_error,
         )
 
-class TestUnknownUser(Base, unittest.TestCase):
+class TestUnknownUser(BaseXMPP, unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
         super(TestUnknownUser, self).__init__(*args, **kwargs)
