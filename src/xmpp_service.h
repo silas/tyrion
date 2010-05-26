@@ -27,6 +27,7 @@ namespace tyrion
     public:
       enum Format
       {
+        None,
         Response,
         Request
       };
@@ -56,7 +57,6 @@ namespace tyrion
       std::string GetGroup() const { return group_; }
 
     private:
-      bool m_valid;
       std::string type_;
       std::string input_;
       std::string output_;

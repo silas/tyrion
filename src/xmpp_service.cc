@@ -17,51 +17,50 @@
 namespace tyrion
 {
 
-  XmppService::XmppService() : gloox::StanzaExtension(ExtXmppService) {}
+  XmppService::XmppService() : gloox::StanzaExtension(ExtXmppService)
+  {
+    type_ = "";
+    input_ = "";
+    output_ = "";
+    error_ = "";
+    user_ = "";
+    group_ = "";
+    code_ = -1;
+    timeout_ = 0;
+    format_ = None;
+  }
 
   XmppService::XmppService(const gloox::Tag* tag)
     : gloox::StanzaExtension(ExtXmppService)
   {
-    if (!tag || tag->name() != "service" || tag->xmlns() != XMLNS_IQ_SERVICE)
-      return;
+    type_ = tag->hasAttribute("type") ? tag->findAttribute("type") : "";
+    user_ = tag->hasAttribute("user") ? tag->findAttribute("user") : "";
+    group_ = tag->hasAttribute("group") ? tag->findAttribute("group") : "";
 
-    if (tag->hasAttribute("type"))
-      type_ = tag->findAttribute("type");
-    else
-      return;
+    code_ = -1;
+    if (tag->hasAttribute("code"))
+    {
+      std::string code_str = tag->findAttribute("code");
+      std::istringstream code_stream(code_str);
+      code_stream >> code_;
+    }
 
-    if (tag->hasAttribute("user"))
-      user_ = tag->findAttribute("user");
-
-    if (tag->hasAttribute("group"))
-      group_ = tag->findAttribute("group");
-
+    timeout_ = 0;
     if (tag->hasAttribute("timeout"))
     {
-      std::string str_timeout = tag->findAttribute("timeout");
-      std::istringstream timeout_stream(str_timeout);
+      std::string timeout_str = tag->findAttribute("timeout");
+      std::istringstream timeout_stream(timeout_str);
       timeout_stream >> timeout_;
     }
 
+    output_ = tag->hasChild("output") ? tag->findChild("output")->cdata() : "";
+    error_ = tag->hasChild("error") ? tag->findChild("error")->cdata() : "";
+    input_ = tag->hasChild("input") ? tag->findChild("input")->cdata() : "";
+
     if (tag->hasChild("output") || tag->hasChild("error"))
-    {
       SetFormat(Response);
-
-      if (tag->hasChild("output"))
-        output_ = tag->findChild("output")->cdata();
-
-      if (tag->hasChild("error"))
-        error_ = tag->findChild("error")->cdata();
-    }
     else
-    {
       SetFormat(Request);
-
-      if (tag->hasChild("input"))
-        input_ = tag->findChild("input")->cdata();
-    }
-
-    m_valid = true;
   }
 
   const std::string& XmppService::filterString() const
