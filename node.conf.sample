@@ -1,5 +1,5 @@
 [general]
-acl = acl.conf                                  ; ACL configuration file
+acl = /etc/tyrion/acl.conf                      ; ACL configuration file
 service = /var/lib/tyrion/service               ; Service directory
 log = /var/log/tyrion/node.log                  ; Log file
 
