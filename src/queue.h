@@ -24,49 +24,43 @@ namespace tyrion
     public:
       Queue()
       {
-        pthread_mutex_init(&mutex, NULL);
-        pthread_cond_init(&cond, NULL);
+        pthread_mutex_init(&mutex_, NULL);
       }
 
       ~Queue()
       {
-        pthread_mutex_destroy(&mutex);
-        pthread_cond_destroy(&cond);
+        pthread_mutex_destroy(&mutex_);
       }
 
       void Push(T value)
       {
-        pthread_mutex_lock(&mutex);
-        queue.push(value);
-        pthread_cond_broadcast(&cond);
-        pthread_mutex_unlock(&mutex);
+        pthread_mutex_lock(&mutex_);
+        queue_.push(value);
+        pthread_mutex_unlock(&mutex_);
       }
 
       T Pop()
       {
-        pthread_mutex_lock(&mutex);
-        if (queue.size() < 1)
-            pthread_cond_wait(&cond, &mutex);
-        T value = queue.front();
-        queue.pop();
-        pthread_mutex_unlock(&mutex);
+        pthread_mutex_lock(&mutex_);
+        T value = queue_.front();
+        queue_.pop();
+        pthread_mutex_unlock(&mutex_);
         return value;
       }
 
       bool Empty()
       {
-        return queue.empty();
+        return queue_.empty();
       }
 
       bool Size()
       {
-        return queue.size();
+        return queue_.size();
       }
 
     private:
-      pthread_mutex_t mutex;
-      pthread_cond_t cond;
-      std::queue<T> queue;
+      pthread_mutex_t mutex_;
+      std::queue<T> queue_;
   };
 
 }

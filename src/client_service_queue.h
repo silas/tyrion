@@ -26,20 +26,29 @@ namespace tyrion
       Disconnect
     };
 
+    enum ServiceQueueItemState
+    {
+      ServiceUnavailable
+    };
+
     class ServiceQueueItem
     {
       public:
         ServiceQueueItem(ServiceQueueItemNotification notification = None)
           : notification_(notification) {}
+        ServiceQueueItem(std::string jid, std::string id = "")
+          : jid_(jid), id_(id), notification_(None), state_(ServiceUnavailable) {}
         ServiceQueueItem(std::string jid, XmppService service, std::string id = "")
           : jid_(jid), service_(service), id_(id), notification_(None) {}
         std::string GetJid() { return jid_; }
         std::string GetId() { return id_; }
         XmppService GetService() { return service_; }
         ServiceQueueItemNotification GetNotification() { return notification_; }
+        ServiceQueueItemState GetState() { return state_; }
         void SetJid(std::string jid) { jid_ = jid; }
         void SetId(std::string id) { id_ = id; }
         void SetNotification(ServiceQueueItemNotification notification) { notification_ = notification; }
+        void SetState(ServiceQueueItemState state) { state_ = state; }
         void SetService(XmppService service) { service_ = service; }
 
       private:
@@ -47,6 +56,7 @@ namespace tyrion
         std::string id_;
         XmppService service_;
         ServiceQueueItemNotification notification_;
+        ServiceQueueItemState state_;
     };
 
     typedef tyrion::Queue<ServiceQueueItem> ServiceQueue;

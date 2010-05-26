@@ -17,6 +17,7 @@
 #include <string>
 #include "client_service_queue.h"
 #include "client_xmpp.h"
+#include "error.h"
 #include "logging.h"
 #include "setting.h"
 
@@ -169,10 +170,22 @@ int main(int argc, char* argv[])
     tyrion::client::ServiceQueueItem item(jid, service);
     item.SetNotification(tyrion::client::Disconnect);
     request->Push(item);
+
+    while (response->Empty())
+      usleep(100000);
     item = response->Pop();
 
-    std::cout << item.GetService().GetOutput();
-    std::cerr << item.GetService().GetError();
+    if (item.GetState() == tyrion::client::ServiceUnavailable)
+    {
+      std::cerr << tyrion::Error::Create("xmpp.service-unavailable", "The requested service isn't available.");
+      return 1;
+    }
+    else
+    {
+      std::cout << item.GetService().GetOutput();
+      std::cerr << item.GetService().GetError();
+      return item.GetService().GetCode();
+    }
   }
   else
   {

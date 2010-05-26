@@ -34,8 +34,8 @@ namespace tyrion
     {
       const tyrion::XmppService* service = iq.findExtension<tyrion::XmppService>(tyrion::ExtXmppService);
 
-      ServiceQueueItem item(iq.from().full(), *service, iq.id());
-      xmpp_->response->Push(item);
+      xmpp_->response->Push(service ? ServiceQueueItem(iq.from().full(), *service, iq.id())
+                                    : ServiceQueueItem(iq.from().full(), iq.id()));
 
       if (context == tyrion::client::Disconnect)
         xmpp_->Stop();
