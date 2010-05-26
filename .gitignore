@@ -1,3 +1,4 @@
+*.conf
 *.dylib
 *.log
 *.o
@@ -8,6 +9,5 @@
 .*.dblite
 .*.swp
 _trial_temp
-test*.conf
 tyrion
 tyrion-node
