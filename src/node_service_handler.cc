@@ -117,8 +117,8 @@ namespace tyrion
           p.Write(input_);
           p.Eof();
 
-          output += p.ReadAll(Stdout);
-          error += p.ReadAll(Stderr);
+          output += p.ReadAll(Process::Stdout);
+          error += p.ReadAll(Process::Stderr);
           code = p.Close();
         }
 

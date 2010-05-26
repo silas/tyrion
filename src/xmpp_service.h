@@ -22,15 +22,14 @@ namespace tyrion
 
   const int ExtXmppService = gloox::ExtUser+1;
 
-  enum XmppServiceFormat
-  {
-    Response,
-    Request
-  };
-
   class XmppService : public gloox::StanzaExtension
   {
     public:
+      enum Format
+      {
+        Response,
+        Request
+      };
       XmppService();
       XmppService(const gloox::Tag* tag);
       virtual ~XmppService() {}
@@ -46,7 +45,7 @@ namespace tyrion
       void SetType(std::string type) { type_ = type; }
       void SetUser(std::string user) { user_ = user; }
       void SetGroup(std::string group) { group_ = group; }
-      void SetFormat(XmppServiceFormat format) { format_ = format; }
+      void SetFormat(Format format) { format_ = format; }
       int GetCode() const { return code_; }
       int GetTimeout() const { return timeout_; }
       std::string GetError() const { return error_; }
@@ -66,7 +65,7 @@ namespace tyrion
       std::string group_;
       int code_;
       int timeout_;
-      XmppServiceFormat format_;
+      Format format_;
   };
 
 }

@@ -20,20 +20,19 @@ namespace tyrion
 {
   namespace client
   {
-    enum ServiceQueueItemNotification
-    {
-      None,
-      Disconnect
-    };
-
-    enum ServiceQueueItemState
-    {
-      ServiceUnavailable
-    };
 
     class ServiceQueueItem
     {
       public:
+        enum ServiceQueueItemNotification
+        {
+          None,
+          Disconnect
+        };
+        enum ServiceQueueItemState
+        {
+          ServiceUnavailable
+        };
         ServiceQueueItem(ServiceQueueItemNotification notification = None)
           : notification_(notification) {}
         ServiceQueueItem(std::string jid, std::string id = "")

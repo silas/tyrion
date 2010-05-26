@@ -162,20 +162,17 @@ int main(int argc, char* argv[])
     std::string data, x;
     while (!std::cin.eof())
     {
-      getline(std::cin, x);
+      std::getline(std::cin, x);
       data += x + '\n';
     }
     service.SetInput(data);
 
     tyrion::client::ServiceQueueItem item(jid, service);
-    item.SetNotification(tyrion::client::Disconnect);
+    item.SetNotification(tyrion::client::ServiceQueueItem::Disconnect);
     request->Push(item);
-
-    while (response->Empty())
-      usleep(100000);
     item = response->Pop();
 
-    if (item.GetState() == tyrion::client::ServiceUnavailable)
+    if (item.GetState() == tyrion::client::ServiceQueueItem::ServiceUnavailable)
     {
       std::cerr << tyrion::Error::Create("xmpp.service-unavailable", "The requested service isn't available.");
       return 1;

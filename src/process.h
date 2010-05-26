@@ -25,15 +25,14 @@
 namespace tyrion
 {
 
-  enum ProcessType
-  {
-    Stdout,
-    Stderr
-  };
-
   class Process
   {
     public:
+      enum ProcessType
+      {
+        Stdout,
+        Stderr
+      };
       Process(std::string command, bool system = false, int timeout = 30);
       ~Process();
       std::string Read(ProcessType type = Stdout);

@@ -67,11 +67,13 @@ namespace tyrion
 
   void Xmpp::onConnect()
   {
+    state_ = Xmpp::Connected;
     LOG(INFO) << "Connected to XMPP server";
   }
 
   void Xmpp::onDisconnect(gloox::ConnectionError e)
   {
+    state_ = Xmpp::Disconnected;
     LOG(ERROR) << "Disconnected: " << e;
     if(e == gloox::ConnAuthenticationFailed)
       LOG(ERROR) << "Authenitcation failed: " << client_->authError();

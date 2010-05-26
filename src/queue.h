@@ -13,8 +13,10 @@
 #ifndef TYRION_QUEUE_H_
 #define TYRION_QUEUE_H_
 
-#include <queue>
 #include <pthread.h>
+#include <queue>
+
+#include <iostream>
 
 namespace tyrion
 {
@@ -24,11 +26,13 @@ namespace tyrion
     public:
       Queue()
       {
+        pthread_cond_init(&cond_, NULL);
         pthread_mutex_init(&mutex_, NULL);
       }
 
       ~Queue()
       {
+        pthread_cond_destroy(&cond_);
         pthread_mutex_destroy(&mutex_);
       }
 
@@ -36,12 +40,15 @@ namespace tyrion
       {
         pthread_mutex_lock(&mutex_);
         queue_.push(value);
+        pthread_cond_broadcast(&cond_);
         pthread_mutex_unlock(&mutex_);
       }
 
       T Pop()
       {
         pthread_mutex_lock(&mutex_);
+        if (Empty())
+            pthread_cond_wait(&cond_, &mutex_);
         T value = queue_.front();
         queue_.pop();
         pthread_mutex_unlock(&mutex_);
@@ -59,6 +66,7 @@ namespace tyrion
       }
 
     private:
+      pthread_cond_t cond_;
       pthread_mutex_t mutex_;
       std::queue<T> queue_;
   };

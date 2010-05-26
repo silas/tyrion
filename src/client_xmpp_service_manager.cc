@@ -37,7 +37,7 @@ namespace tyrion
       xmpp_->response->Push(service ? ServiceQueueItem(iq.from().full(), *service, iq.id())
                                     : ServiceQueueItem(iq.from().full(), iq.id()));
 
-      if (context == tyrion::client::Disconnect)
+      if (context == tyrion::client::ServiceQueueItem::Disconnect)
         xmpp_->Stop();
     }
 

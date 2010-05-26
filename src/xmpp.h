@@ -30,7 +30,13 @@ namespace tyrion
   class Xmpp : public gloox::ConnectionListener, gloox::LogHandler
   {
     public:
-      Xmpp() {}
+      enum State
+      {
+        None,
+        Connected,
+        Disconnected
+      };
+      Xmpp() { state_ = Xmpp::None; }
       virtual ~Xmpp() {}
       void Start();
       void Stop();
@@ -41,9 +47,11 @@ namespace tyrion
       virtual bool onTLSConnect(const gloox::CertInfo& info);
       virtual void handleLog(gloox::LogLevel level, gloox::LogArea area, const std::string& message);
       gloox::Client* GetClient() { return client_; }
+      State GetState() { return state_; }
 
     protected:
       gloox::Client *client_;
+      State state_;
   };
 
 }
