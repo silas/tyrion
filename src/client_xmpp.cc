@@ -13,9 +13,7 @@
 #include "client_xmpp.h"
 
 #include <unistd.h>
-
 #include <string>
-
 #include "logging.h"
 #include "setting.h"
 #include "tyrion.h"

@@ -13,8 +13,8 @@
 #ifndef TYRION_NODE_XMPP_H_
 #define TYRION_NODE_XMPP_H_
 
-#include "xmpp.h"
 #include "node_xmpp_service_manager.h"
+#include "xmpp.h"
 
 namespace tyrion
 {

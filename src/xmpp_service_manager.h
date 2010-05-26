@@ -15,7 +15,6 @@
 
 #include <gloox/client.h>
 #include <gloox/disco.h>
-
 #include "xmpp_service.h"
 
 namespace tyrion

@@ -12,11 +12,9 @@
 
 #include <cstring>
 #include <pthread.h>
-
 #include <iostream>
 #include <sstream>
 #include <string>
-
 #include "client_service_queue.h"
 #include "client_xmpp.h"
 #include "logging.h"

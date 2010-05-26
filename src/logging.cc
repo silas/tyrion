@@ -13,7 +13,6 @@
 #include "logging.h"
 
 #include <cstdio>
-
 #include <algorithm>
 
 namespace tyrion

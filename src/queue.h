@@ -13,8 +13,8 @@
 #ifndef TYRION_QUEUE_H_
 #define TYRION_QUEUE_H_
 
-#include <pthread.h>
 #include <queue>
+#include <pthread.h>
 
 namespace tyrion
 {

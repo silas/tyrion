@@ -15,7 +15,6 @@
 
 #include <gloox/client.h>
 #include <gloox/stanzaextension.h>
-
 #include "tyrion.h"
 
 namespace tyrion

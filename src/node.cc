@@ -11,10 +11,8 @@
 */
 
 #include <cstring>
-
 #include <iostream>
 #include <string>
-
 #include "logging.h"
 #include "node_acl.h"
 #include "node_xmpp.h"

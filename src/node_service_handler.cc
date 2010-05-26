@@ -13,7 +13,6 @@
 #include "node_service_handler.h"
 
 #include <gloox/error.h>
-
 #include "error.h"
 #include "process.h"
 #include "node_acl.h"

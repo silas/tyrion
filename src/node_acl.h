@@ -14,7 +14,6 @@
 #define TYRION_NODE_ACL_H_
 
 #include <iostream>
-
 #include "setting.h"
 
 namespace tyrion

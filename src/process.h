@@ -15,12 +15,12 @@
 
 #include <fcntl.h>
 #include <grp.h>
-#include <iostream>
 #include <pwd.h>
 #include <signal.h>
 #include <stdio.h>
 #include <time.h>
 #include <unistd.h>
+#include <iostream>
 
 namespace tyrion
 {

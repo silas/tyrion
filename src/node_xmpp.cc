@@ -13,9 +13,7 @@
 #include "node_xmpp.h"
 
 #include <unistd.h>
-
 #include <string>
-
 #include "logging.h"
 #include "node_service_handler.h"
 #include "setting.h"

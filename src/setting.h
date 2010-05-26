@@ -14,7 +14,6 @@
 #define TYRION_SETTING_H_
 
 #include <iostream>
-
 #include "config.h"
 
 namespace tyrion

@@ -15,7 +15,6 @@
 
 #include <map>
 #include <string>
-
 #include "node_xmpp.h"
 
 namespace tyrion

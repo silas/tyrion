@@ -15,7 +15,6 @@
 
 #include <cctype>
 #include <cstdlib>
-
 #include "third_party/inih/ini.h"
 
 namespace tyrion

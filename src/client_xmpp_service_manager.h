@@ -13,10 +13,9 @@
 #ifndef TYRION_CLIENT_XMPP_SERVICE_MANAGER_H_
 #define TYRION_CLIENT_XMPP_SERVICE_MANAGER_H_
 
+#include <pthread.h>
 #include <gloox/client.h>
 #include <gloox/disco.h>
-#include <pthread.h>
-
 #include "client_xmpp.h"
 #include "xmpp_service_manager.h"
 
