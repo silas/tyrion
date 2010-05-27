@@ -17,24 +17,26 @@
 #include <map>
 #include <string>
 
-namespace tyrion
-{
+namespace tyrion {
 
-  class Config
-  {
-    public:
-      Config(std::string filename);
-      int ParseError();
-      std::string Get(std::string section, std::string name, std::string default_value);
-      long GetInt(std::string section, std::string name, long default_value);
+class Config {
+  public:
+    Config(std::string filename);
 
-    private:
-      int error_;
-      std::map<std::string, std::string> values_;
-      static std::string MakeKey(std::string section, std::string name);
-      static int ValueHandler(void* user, const char* section, const char* name, const char* value);
-  };
+    int ParseError();
 
-}
+    std::string Get(std::string section, std::string name,
+                    std::string default_value);
+    long GetInt(std::string section, std::string name, long default_value);
 
-#endif
+  private:
+    int error_;
+    std::map<std::string, std::string> values_;
+    static std::string MakeKey(std::string section, std::string name);
+    static int ValueHandler(void* user, const char* section,
+                            const char* name, const char* value);
+};
+
+}  // namespace tyrion
+
+#endif  // TYRION_CONFIG_H_

@@ -17,45 +17,40 @@
 #include "tyrion.h"
 #include "utils.h"
 
-namespace tyrion
-{
-  namespace node
-  {
+namespace tyrion {
+namespace node {
 
-    XmppServiceManager::XmppServiceManager(gloox::ClientBase* parent)
-      : tyrion::XmppServiceManager(parent)
-    {
-      service_path_ = utils::RealPath(
-        Setting::Instance()->Get("general", "service", SERVICE_PATH)
-      );
-    }
-
-    void *XmppServiceManager::handleIqInThread(void *arg)
-    {
-      ServiceHandler *handler=(ServiceHandler*)arg;
-      handler->Run();
-      delete(handler);
-      pthread_exit(NULL);
-    }
-
-    bool XmppServiceManager::handleIq(const gloox::IQ& iq)
-    {
-      const tyrion::XmppService* xs = iq.findExtension<tyrion::XmppService>(tyrion::ExtXmppService);
-
-      ServiceHandler *serviceHandler = new ServiceHandler(
-        (gloox::ClientBase *)m_parent,
-        iq.from(),
-        iq.id(),
-        xs->GetType(),
-        xs->GetInput(),
-        service_path_ + "/" + xs->GetType()
-      );
-      serviceHandler->SetTimeout(xs->GetTimeout());
-      serviceHandler->SetUser(xs->GetUser());
-      serviceHandler->SetGroup(xs->GetGroup());
-
-      return utils::CreateThread(XmppServiceManager::handleIqInThread, (void *)serviceHandler);
-    }
-
-  }
+XmppServiceManager::XmppServiceManager(gloox::ClientBase* parent) :
+    tyrion::XmppServiceManager(parent) {
+  service_path_ = utils::RealPath(
+    Setting::Instance()->Get("general", "service", SERVICE_PATH));
 }
+
+void *XmppServiceManager::handleIqInThread(void *arg) {
+  ServiceHandler *handler=(ServiceHandler*)arg;
+  handler->Run();
+  delete(handler);
+  pthread_exit(NULL);
+}
+
+bool XmppServiceManager::handleIq(const gloox::IQ& iq) {
+  const tyrion::XmppService* xs =
+      iq.findExtension<tyrion::XmppService>(tyrion::ExtXmppService);
+
+  ServiceHandler *serviceHandler = new ServiceHandler(
+    (gloox::ClientBase *)m_parent,
+    iq.from(),
+    iq.id(),
+    xs->type(),
+    xs->input(),
+    service_path_ + "/" + xs->type()
+  );
+  serviceHandler->set_timeout(xs->timeout());
+  serviceHandler->set_user(xs->user());
+  serviceHandler->set_group(xs->group());
+
+  return utils::CreateThread(XmppServiceManager::handleIqInThread,
+                             (void *)serviceHandler);
+}
+
+} } // namespace tyrion::node

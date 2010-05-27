@@ -16,22 +16,18 @@
 #include "node_xmpp_service_manager.h"
 #include "xmpp.h"
 
-namespace tyrion
-{
-  namespace node
-  {
+namespace tyrion {
+namespace node {
 
-    class Xmpp : public tyrion::Xmpp
-    {
-      public:
-        virtual void SetupHandlers();
-        virtual void DestroyHandlers();
+class Xmpp : public tyrion::Xmpp {
+  public:
+    virtual void SetupHandlers();
+    virtual void DestroyHandlers();
 
-      private:
-        node::XmppServiceManager *service_manager_;
-    };
+  private:
+    node::XmppServiceManager *service_manager_;
+};
 
-  }
-}
+} }  // namespace tyrion::node
 
-#endif
+#endif  // TYRION_NODE_XMPP_H_

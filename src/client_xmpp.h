@@ -19,27 +19,31 @@
 #include "xmpp.h"
 #include "xmpp_service.h"
 
-namespace tyrion
-{
-  namespace client
-  {
-    class XmppServiceManager;
+namespace tyrion {
+namespace client {
 
-    class Xmpp : public tyrion::Xmpp
-    {
-      public:
-        Xmpp(ServiceQueue *request_queue, ServiceQueue *response_queue);
-        virtual void SetupHandlers();
-        virtual void DestroyHandlers();
-        virtual void onConnect();
-        ServiceQueue *request;
-        ServiceQueue *response;
+class XmppServiceManager;
 
-      private:
-        XmppServiceManager *service_manager_;
-    };
+class Xmpp : public tyrion::Xmpp {
+  public:
+    // Setup XMPP client for CLI application with request and response
+    // queues.
+    Xmpp(ServiceQueue *request, ServiceQueue *response);
 
-  }
-}
+    virtual void SetupHandlers();
+    virtual void DestroyHandlers();
 
-#endif
+    virtual void onConnect();
+
+    ServiceQueue *request() { return request_; }
+    ServiceQueue *response() { return response_; }
+
+  private:
+    ServiceQueue *request_;
+    ServiceQueue *response_;
+    XmppServiceManager *service_manager_;
+};
+
+} }  // namespace tyrion::client
+
+#endif  // TYRION_CLIENT_XMPP_H_

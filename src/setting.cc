@@ -12,42 +12,37 @@
 
 #include "setting.h"
 
-namespace tyrion
-{
+namespace tyrion {
 
-  void BaseSetting::File(std::string path)
-  {
-    config_ = new Config(path);
-  }
-
-  std::string BaseSetting::Get(std::string section, std::string name, std::string default_)
-  {
-    return config_->Get(section, name, default_);
-  }
-
-  bool BaseSetting::GetBool(std::string section, std::string name, bool default_)
-  {
-    return config_->Get(section, name, default_ ? "true" : "false") == "true";
-  }
-
-  long BaseSetting::GetInt(std::string section, std::string name, long default_)
-  {
-    return config_->GetInt(section, name, default_);
-  }
-
-  bool BaseSetting::HasError()
-  {
-    return config_->ParseError() < 0;
-  }
-
-  Setting* Setting::instance_ = NULL;
-
-  Setting* Setting::Instance()
-  {
-    if (!instance_)
-      instance_ = new Setting;
-
-    return instance_;
-  }
-
+void BaseSetting::File(std::string path) {
+  config_ = new Config(path);
 }
+
+std::string BaseSetting::Get(std::string section, std::string name,
+                             std::string default_) {
+  return config_->Get(section, name, default_);
+}
+
+bool BaseSetting::GetBool(std::string section, std::string name,
+                          bool default_) {
+  return config_->Get(section, name, default_ ? "true" : "false") == "true";
+}
+
+long BaseSetting::GetInt(std::string section, std::string name,
+                         long default_) {
+  return config_->GetInt(section, name, default_);
+}
+
+bool BaseSetting::HasError() {
+  return config_->ParseError() < 0;
+}
+
+Setting* Setting::instance_ = NULL;
+
+Setting* Setting::Instance() {
+  if (!instance_)
+    instance_ = new Setting;
+  return instance_;
+}
+
+} // namespace tyrion

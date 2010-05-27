@@ -18,59 +18,52 @@
 
 #include <iostream>
 
-namespace tyrion
-{
-  template <class T>
-  class Queue
-  {
-    public:
-      Queue()
-      {
-        pthread_cond_init(&cond_, NULL);
-        pthread_mutex_init(&mutex_, NULL);
-      }
+namespace tyrion {
 
-      ~Queue()
-      {
-        pthread_cond_destroy(&cond_);
-        pthread_mutex_destroy(&mutex_);
-      }
+template <class T>
+class Queue {
+  public:
+    Queue() {
+      pthread_cond_init(&cond_, NULL);
+      pthread_mutex_init(&mutex_, NULL);
+    }
 
-      void Push(T value)
-      {
-        pthread_mutex_lock(&mutex_);
-        queue_.push(value);
-        pthread_cond_broadcast(&cond_);
-        pthread_mutex_unlock(&mutex_);
-      }
+    ~Queue() {
+      pthread_cond_destroy(&cond_);
+      pthread_mutex_destroy(&mutex_);
+    }
 
-      T Pop()
-      {
-        pthread_mutex_lock(&mutex_);
-        if (Empty())
-            pthread_cond_wait(&cond_, &mutex_);
-        T value = queue_.front();
-        queue_.pop();
-        pthread_mutex_unlock(&mutex_);
-        return value;
-      }
+    void Push(T value) {
+      pthread_mutex_lock(&mutex_);
+      queue_.push(value);
+      pthread_cond_broadcast(&cond_);
+      pthread_mutex_unlock(&mutex_);
+    }
 
-      bool Empty()
-      {
-        return queue_.empty();
-      }
+    T Pop() {
+      pthread_mutex_lock(&mutex_);
+      if (empty())
+          pthread_cond_wait(&cond_, &mutex_);
+      T value = queue_.front();
+      queue_.pop();
+      pthread_mutex_unlock(&mutex_);
+      return value;
+    }
 
-      bool Size()
-      {
-        return queue_.size();
-      }
+    bool empty() {
+      return queue_.empty();
+    }
 
-    private:
-      pthread_cond_t cond_;
-      pthread_mutex_t mutex_;
-      std::queue<T> queue_;
-  };
+    bool size() {
+      return queue_.size();
+    }
 
-}
+  private:
+    pthread_cond_t cond_;
+    pthread_mutex_t mutex_;
+    std::queue<T> queue_;
+};
 
-#endif
+}  // namespace tyrion
+
+#endif  // TYRION_QUEUE_H_

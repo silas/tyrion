@@ -19,20 +19,15 @@
 #include "setting.h"
 #include "tyrion.h"
 
-namespace tyrion
-{
-  namespace node
-  {
+namespace tyrion {
+namespace node {
 
-    void Xmpp::SetupHandlers()
-    {
-      service_manager_ = new XmppServiceManager(client_);
-    }
-
-    void Xmpp::DestroyHandlers()
-    {
-      delete(service_manager_);
-    }
-
-  }
+void Xmpp::SetupHandlers() {
+  service_manager_ = new XmppServiceManager(client_);
 }
+
+void Xmpp::DestroyHandlers() {
+  delete(service_manager_);
+}
+
+} } // namespace tyrion::node

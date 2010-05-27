@@ -22,48 +22,54 @@
 #include <unistd.h>
 #include <iostream>
 
-namespace tyrion
-{
+namespace tyrion {
 
-  class Process
-  {
-    public:
-      enum ProcessType
-      {
-        Stdout,
-        Stderr
-      };
-      Process(std::string command, bool system = false, int timeout = 30);
-      ~Process();
-      std::string Read(ProcessType type = Stdout);
-      std::string ReadAll(ProcessType type = Stdout);
-      void Run();
-      bool Empty(ProcessType type = Stdout);
-      void Write(std::string text);
-      bool TimedOut();
-      void Eof();
-      int Close();
-      bool SetUser(std::string user, bool set_group = true);
-      bool SetGroup(std::string group);
-      void SetTimeout(int timeout) { timeout_ = timeout; }
+class Process {
+  public:
+    enum ProcessType {
+      Stdout,
+      Stderr
+    };
 
-    private:
-      bool outfdeof[2];
-      bool stdouteof;
-      bool system_;
-      uid_t uid_;
-      gid_t gid_;
-      int timeout_;
-      bool timed_out;
-      int code_;
-      int statefd[2];
-      int infd[2];
-      int outfd[2][2];
-      pid_t pid_;
-      std::string command_;
-      time_t start_time;
-  };
+    Process(std::string command, bool system = false, int timeout = 30);
+    ~Process();
 
-}
+    void Run();
+    void Eof();
+    int Close();
 
-#endif
+    bool Empty(ProcessType type = Stdout);
+    bool TimedOut();
+
+    std::string Read(ProcessType type = Stdout);
+    std::string ReadAll(ProcessType type = Stdout);
+    void Write(std::string text);
+
+    bool set_user(std::string user, bool set_group = true);
+    bool set_group(std::string group);
+    void set_timeout(int timeout) { timeout_ = timeout; }
+
+  private:
+    // pipes
+    int infd[2];
+    int outfd[2][2];
+    bool outfdeof[2];
+    int statefd[2];
+    // pid
+    pid_t pid_;
+    // options
+    uid_t uid_;
+    gid_t gid_;
+    std::string command_;
+    bool system_;
+    // info
+    time_t start_time;
+    int code_;
+    bool stdouteof;
+    bool timed_out_;
+    int timeout_;
+};
+
+}  // namespace tyrion
+
+#endif  // TYRION_PROCESS_H_

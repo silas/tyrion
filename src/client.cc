@@ -17,83 +17,69 @@
 #include <string>
 #include "client_service_queue.h"
 #include "client_xmpp.h"
-#include "error.h"
 #include "logging.h"
 #include "setting.h"
+#include "utils.h"
 
-void *start_xmpp(void *arg)
-{
+void *start_xmpp(void *arg) {
   tyrion::client::Xmpp *xmpp=(tyrion::client::Xmpp*)arg;
   xmpp->Start();
   delete(xmpp);
 }
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
   bool debug = false;
   int timeout = -1;
   std::string config_file;
   std::string jid;
   std::string service_type;
 
-  for(int i = 1; i < argc; i++)
-  {
+  for(int i = 1; i < argc; i++) {
     const char *option = argv[i];
 
-    if (strcmp(option, "-c") == 0 || strcmp(option, "--config-file") == 0)
-    {
-      if (i + 1 < argc)
+    if (strcmp(option, "-c") == 0 || strcmp(option, "--config-file") == 0) {
+      if (i + 1 < argc) {
         config_file = std::string(argv[i+1]);
-      else
-      {
+      } else {
         std::cerr << "Configuration file not specified." << std::endl;
         return 1;
       }
       i++;
-    }
-    else if (strcmp(option, "-j") == 0 || strcmp(option, "--jid") == 0)
-    {
-      if (i + 1 < argc)
+    } else if (strcmp(option, "-j") == 0 || strcmp(option, "--jid") == 0) {
+      if (i + 1 < argc) {
         jid = std::string(argv[i+1]);
-      else
-      {
+      } else {
         std::cerr << "JID not specified." << std::endl;
         return 1;
       }
       i++;
     }
-    else if (strcmp(option, "-s") == 0 || strcmp(option, "--service-type") == 0)
-    {
-      if (i + 1 < argc)
+    else if (strcmp(option, "-s") == 0 ||
+             strcmp(option, "--service-type") == 0) {
+      if (i + 1 < argc) {
         service_type = std::string(argv[i+1]);
-      else
-      {
+      } else {
         std::cerr << "Service type not specified." << std::endl;
         return 1;
       }
       i++;
     }
-    else if (strcmp(option, "-t") == 0 || strcmp(option, "--timeout") == 0)
-    {
-      if (i + 1 < argc)
-      {
+    else if (strcmp(option, "-t") == 0 || strcmp(option, "--timeout") == 0) {
+      if (i + 1 < argc) {
         std::istringstream timeout_stream(argv[i+1]);
         if (!(timeout_stream >> timeout))
           std::cerr << "Timeout must be a number." << std::endl;
       }
-      else
-      {
+      else {
         std::cerr << "Service type not specified." << std::endl;
         return 1;
       }
       i++;
     }
-    else if (strcmp(option, "--debug") == 0)
-    {
+    else if (strcmp(option, "--debug") == 0) {
       debug = true;
     }
-    else if (strcmp(option, "--help") == 0)
-    {
+    else if (strcmp(option, "--help") == 0) {
       std::cout << "Usage: tyrion [OPTION]..." << std::endl;
       std::cout << "Example: tyrion -c client.conf" << std::endl;
       std::cout << std::endl;
@@ -105,42 +91,37 @@ int main(int argc, char* argv[])
       std::cout << "  --debug                   pipe debug info to stderr" << std::endl;
       return 0;
     }
-    else
-    {
+    else {
       std::cerr << "Unknown option '" << option << "'." << std::endl;
       return 1;
     }
   }
 
-  if (jid.empty())
-  {
+  if (jid.empty()) {
     std::cerr << "A destination JID is required." << std::endl;
     return 1;
   }
-  else if (jid.find("/") == std::string::npos)
-  {
+  else if (jid.find("/") == std::string::npos) {
     std::cerr << "JID requires a resource (ex: user@host/resource)." << std::endl;
     return 1;
   }
 
-  if (service_type.empty())
-  {
+  if (service_type.empty()) {
     std::cerr << "A service type is required." << std::endl;
     return 1;
   }
 
   tyrion::Setting::Instance()->File(config_file);
 
-  if (tyrion::Setting::Instance()->HasError())
-  {
-    std::cerr << "Can't load configuration file '" << config_file << "'." << std::endl;
+  if (tyrion::Setting::Instance()->HasError()) {
+    std::cerr << "Can't load configuration file '"
+              << config_file << "'." << std::endl;
     return 1;
   }
 
   tyrion::Logging *logging = tyrion::Logging::Instance();
 
-  if (debug)
-  {
+  if (debug) {
     logging->Level(tyrion::DEBUG);
     logging->Stderr(true);
   }
@@ -153,39 +134,35 @@ int main(int argc, char* argv[])
 
   int rc = pthread_create(&handler, NULL, start_xmpp, (void *)xmpp);
 
-  if (rc == 0)
-  {
+  if (rc == 0) {
     tyrion::XmppService service;
-    service.SetTimeout(timeout);
-    service.SetType(service_type);
+    service.set_timeout(timeout);
+    service.set_type(service_type);
 
     std::string data, x;
-    while (!std::cin.eof())
-    {
+    while (!std::cin.eof()) {
       std::getline(std::cin, x);
       data += x + '\n';
     }
-    service.SetInput(data);
+    service.set_input(data);
 
     tyrion::client::ServiceQueueItem item(jid, service);
-    item.SetNotification(tyrion::client::ServiceQueueItem::Disconnect);
+    item.set_notification(tyrion::client::ServiceQueueItem::Disconnect);
     request->Push(item);
     item = response->Pop();
 
-    if (item.GetState() == tyrion::client::ServiceQueueItem::ServiceUnavailable)
-    {
-      std::cerr << tyrion::Error::Create("xmpp.service-unavailable", "The requested service isn't available.");
+    if (item.state() == tyrion::client::ServiceQueueItem::ServiceUnavailable) {
+      std::cerr << tyrion::utils::Error("xmpp.service-unavailable",
+          "The requested service isn't available.");
       return 1;
     }
-    else
-    {
-      std::cout << item.GetService().GetOutput();
-      std::cerr << item.GetService().GetError();
-      return item.GetService().GetCode();
+    else {
+      std::cout << item.service().output();
+      std::cerr << item.service().error();
+      return item.service().code();
     }
   }
-  else
-  {
+  else {
     std::cerr << "Unable to create thread." << std::endl;
     return 1;
   }

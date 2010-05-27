@@ -15,15 +15,15 @@
 
 #include <string>
 
-namespace tyrion
-{
-  namespace utils
-  {
+namespace tyrion {
+namespace utils {
 
-    std::string RealPath(std::string path);
-    bool CreateThread(void *func(void*), void *arg);
+bool CreateThread(void *func(void*), void *arg);
 
-  }
-}
+std::string Error(std::string code, std::string message = "");
 
-#endif
+std::string RealPath(std::string path);
+
+} }  // namespace tyrion::utils
+
+#endif  // TYRION_UTILS_H_

@@ -16,34 +16,34 @@
 #include <iostream>
 #include "config.h"
 
-namespace tyrion
-{
+namespace tyrion {
 
-  class BaseSetting
-  {
-    public:
-      void File(std::string path);
-      bool HasError();
-      std::string Get(std::string section, std::string name, std::string default_ = "");
-      bool GetBool(std::string section, std::string name, bool default_ = false);
-      long GetInt(std::string section, std::string name, long default_ = 0);
+class BaseSetting {
+  public:
+    void File(std::string path);
 
-    protected:
-      BaseSetting() {};
-      BaseSetting(BaseSetting const&) {};
-      BaseSetting& operator=(BaseSetting const&) {};
-      Config *config_;
-  };
+    bool HasError();
 
-  class Setting : public BaseSetting
-  {
-    public:
-      static Setting* Instance();
+    std::string Get(std::string section, std::string name,
+                    std::string default_ = "");
+    bool GetBool(std::string section, std::string name, bool default_ = false);
+    long GetInt(std::string section, std::string name, long default_ = 0);
 
-    private:
-      static Setting* instance_;
-  };
+  protected:
+    BaseSetting() {};
+    BaseSetting(BaseSetting const&) {};
+    BaseSetting& operator=(BaseSetting const&) {};
+    Config *config_;
+};
 
-}
+class Setting : public BaseSetting {
+  public:
+    static Setting* Instance();
 
-#endif
+  private:
+    static Setting* instance_;
+};
+
+}  // namespace tyrion
+
+#endif  // TYRION_SETTING_H_

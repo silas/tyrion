@@ -16,50 +16,89 @@
 #include "queue.h"
 #include "xmpp_service.h"
 
-namespace tyrion
-{
-  namespace client
-  {
+namespace tyrion {
+namespace client {
 
-    class ServiceQueueItem
-    {
-      public:
-        enum ServiceQueueItemNotification
-        {
-          None,
-          Disconnect
-        };
-        enum ServiceQueueItemState
-        {
-          ServiceUnavailable
-        };
-        ServiceQueueItem(ServiceQueueItemNotification notification = None)
-          : notification_(notification) {}
-        ServiceQueueItem(std::string jid, std::string id = "")
-          : jid_(jid), id_(id), notification_(None), state_(ServiceUnavailable) {}
-        ServiceQueueItem(std::string jid, XmppService service, std::string id = "")
-          : jid_(jid), service_(service), id_(id), notification_(None) {}
-        std::string GetJid() { return jid_; }
-        std::string GetId() { return id_; }
-        XmppService GetService() { return service_; }
-        ServiceQueueItemNotification GetNotification() { return notification_; }
-        ServiceQueueItemState GetState() { return state_; }
-        void SetJid(std::string jid) { jid_ = jid; }
-        void SetId(std::string id) { id_ = id; }
-        void SetNotification(ServiceQueueItemNotification notification) { notification_ = notification; }
-        void SetState(ServiceQueueItemState state) { state_ = state; }
-        void SetService(XmppService service) { service_ = service; }
-
-      private:
-        std::string jid_;
-        std::string id_;
-        XmppService service_;
-        ServiceQueueItemNotification notification_;
-        ServiceQueueItemState state_;
+class ServiceQueueItem {
+  public:
+    enum ServiceQueueItemNotification {
+      None,
+      Disconnect
     };
 
-    typedef tyrion::Queue<ServiceQueueItem> ServiceQueue;
-  }
-}
+    enum ServiceQueueItemState {
+      ServiceUnavailable
+    };
 
-#endif
+    // Constructs an item which can be used to send notifications such as
+    // Disconnect.
+    ServiceQueueItem(ServiceQueueItemNotification notification = None) {
+      set_notification(notification);
+    }
+    // Constructs an item for a service response which didn't have service
+    // element.
+    ServiceQueueItem(std::string jid, std::string id = "") {
+      set_jid(jid);
+      set_id(id);
+      set_notification(None);
+      set_state(ServiceUnavailable);
+    }
+    // Constructs a valid service response item.
+    ServiceQueueItem(std::string jid, XmppService service,
+                     std::string id = "") {
+      set_jid(jid);
+      set_service(service);
+      set_id(id);
+      set_notification(None);
+    }
+
+    std::string id() {
+      return id_;
+    }
+    void set_id(std::string id) {
+      id_ = id;
+    }
+
+    std::string jid() {
+      return jid_;
+    }
+    void set_jid(std::string jid) {
+      jid_ = jid;
+    }
+
+    ServiceQueueItemNotification notification() {
+      return notification_;
+    }
+    void set_notification(ServiceQueueItemNotification notification) {
+      notification_ = notification;
+    }
+
+    XmppService service() {
+      return service_;
+    }
+    void set_service(XmppService service) {
+      service_ = service;
+    }
+
+    ServiceQueueItemState state() {
+      return state_;
+    }
+    void set_state(ServiceQueueItemState state) {
+      state_ = state;
+    }
+
+  private:
+    std::string id_;
+    std::string jid_;
+    ServiceQueueItemNotification notification_;
+    XmppService service_;
+    ServiceQueueItemState state_;
+};
+
+// Queue used to pass service requests and responses between the CLI
+// application and the XMPP client thread.
+typedef tyrion::Queue<ServiceQueueItem> ServiceQueue;
+
+} }  // namespace tyrion::client
+
+#endif  // TYRION_CLIENT_SERVICE_QUEUE_H_

@@ -19,24 +19,22 @@
 #include "client_xmpp.h"
 #include "xmpp_service_manager.h"
 
-namespace tyrion
-{
-  namespace client
-  {
+namespace tyrion {
+namespace client {
+
     class Xmpp;
 
-    class XmppServiceManager : public tyrion::XmppServiceManager
-    {
+    class XmppServiceManager : public tyrion::XmppServiceManager {
       public:
         XmppServiceManager(Xmpp *xmpp);
-        virtual bool handleIq(const gloox::IQ& iq);
+
+        virtual bool handleIq(const gloox::IQ& iq) { return true; }
         virtual void handleIqID(const gloox::IQ& iq, int context);
 
       private:
         Xmpp* xmpp_;
     };
 
-  }
-}
+} }  // namespace tyrion::client
 
-#endif
+#endif  // TYRION_CLIENT_XMPP_SERVICE_MANAGER_H_

@@ -24,36 +24,41 @@
 #include <gloox/connectionsocks5proxy.h>
 #include <gloox/connectionhttpproxy.h>
 
-namespace tyrion
-{
+namespace tyrion {
 
-  class Xmpp : public gloox::ConnectionListener, gloox::LogHandler
-  {
-    public:
-      enum State
-      {
-        None,
-        Connected,
-        Disconnected
-      };
-      Xmpp() { state_ = Xmpp::None; }
-      virtual ~Xmpp() {}
-      void Start();
-      void Stop();
-      virtual void SetupHandlers() {}
-      virtual void DestroyHandlers() {}
-      virtual void onConnect();
-      virtual void onDisconnect(gloox::ConnectionError e);
-      virtual bool onTLSConnect(const gloox::CertInfo& info);
-      virtual void handleLog(gloox::LogLevel level, gloox::LogArea area, const std::string& message);
-      gloox::Client* GetClient() { return client_; }
-      State GetState() { return state_; }
+class Xmpp : public gloox::ConnectionListener, gloox::LogHandler {
+  public:
+    enum State {
+      None,
+      Connected,
+      Disconnected
+    };
 
-    protected:
-      gloox::Client *client_;
-      State state_;
-  };
+    Xmpp() { state_ = Xmpp::None; }
+    virtual ~Xmpp() {}
 
-}
+    void Start();
+    void Stop();
 
-#endif
+    virtual void SetupHandlers() {}
+    virtual void DestroyHandlers() {}
+
+    virtual void onConnect();
+    virtual void onDisconnect(gloox::ConnectionError e);
+    virtual bool onTLSConnect(const gloox::CertInfo& info);
+
+    virtual void handleLog(gloox::LogLevel level,
+                           gloox::LogArea area, const std::string& message);
+
+    gloox::Client* client() { return client_; }
+
+    State state() { return state_; }
+
+  protected:
+    gloox::Client *client_;
+    State state_;
+};
+
+}  // namespace tyrion
+
+#endif  // TYRION_XMPP_H_

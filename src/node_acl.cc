@@ -12,20 +12,15 @@
 
 #include "node_acl.h"
 
-namespace tyrion
-{
-  namespace node
-  {
+namespace tyrion {
+namespace node {
 
-    Acl* Acl::instance_ = NULL;
+Acl* Acl::instance_ = NULL;
 
-    Acl* Acl::Instance()
-    {
-      if (!instance_)
-        instance_ = new Acl;
-
-      return instance_;
-    }
-
-  }
+Acl* Acl::Instance() {
+  if (!instance_)
+    instance_ = new Acl;
+  return instance_;
 }
+
+} } // namespace tyrion::node

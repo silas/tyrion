@@ -16,30 +16,22 @@
 #include "tyrion.h"
 #include "utils.h"
 
-namespace tyrion
-{
-  namespace client
-  {
+namespace tyrion {
+namespace client {
 
-    XmppServiceManager::XmppServiceManager(Xmpp *xmpp)
-      : tyrion::XmppServiceManager(xmpp->GetClient()), xmpp_(xmpp)
-    {}
+XmppServiceManager::XmppServiceManager(Xmpp *xmpp) :
+    tyrion::XmppServiceManager(xmpp->client()), xmpp_(xmpp) {}
 
-    bool XmppServiceManager::handleIq(const gloox::IQ& iq)
-    {
-      return true;
-    }
+void XmppServiceManager::handleIqID(const gloox::IQ& iq, int context) {
+  const tyrion::XmppService* service =
+    iq.findExtension<tyrion::XmppService>(tyrion::ExtXmppService);
 
-    void XmppServiceManager::handleIqID(const gloox::IQ& iq, int context)
-    {
-      const tyrion::XmppService* service = iq.findExtension<tyrion::XmppService>(tyrion::ExtXmppService);
+  xmpp_->response()->Push(service ?
+    ServiceQueueItem(iq.from().full(), *service, iq.id()) :
+    ServiceQueueItem(iq.from().full(), iq.id()));
 
-      xmpp_->response->Push(service ? ServiceQueueItem(iq.from().full(), *service, iq.id())
-                                    : ServiceQueueItem(iq.from().full(), iq.id()));
-
-      if (context == tyrion::client::ServiceQueueItem::Disconnect)
-        xmpp_->Stop();
-    }
-
-  }
+  if (context == tyrion::client::ServiceQueueItem::Disconnect)
+    xmpp_->Stop();
 }
+
+} } // namespace tyrion::client

@@ -18,24 +18,20 @@
 #include <gloox/disco.h>
 #include "xmpp_service_manager.h"
 
-namespace tyrion
-{
-  namespace node
-  {
+namespace tyrion {
+namespace node {
 
-    class XmppServiceManager : public tyrion::XmppServiceManager
-    {
-      public:
-        XmppServiceManager(gloox::ClientBase* parent);
-        virtual bool handleIq(const gloox::IQ& iq);
-        static void *handleIqInThread(void *arg);
-        virtual void handleIqID(const gloox::IQ& iq, int context) { (void)iq; }
+class XmppServiceManager : public tyrion::XmppServiceManager {
+  public:
+    XmppServiceManager(gloox::ClientBase* parent);
+    virtual bool handleIq(const gloox::IQ& iq);
+    static void *handleIqInThread(void *arg);
+    virtual void handleIqID(const gloox::IQ& iq, int context) { (void)iq; }
 
-      protected:
-        std::string service_path_;
-    };
+  protected:
+    std::string service_path_;
+};
 
-  }
-}
+} }  // namespace tyrion::node
 
-#endif
+#endif  // TYRION_NODE_XMPP_SERVICE_MANAGER_H_

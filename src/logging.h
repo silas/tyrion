@@ -21,60 +21,67 @@
 
 #define LOG(level) LogItem(level)
 
-namespace tyrion
-{
+namespace tyrion {
 
-  enum LogLevel
-  {
-    DEBUG,
-    INFO,
-    WARNING,
-    ERROR,
-    CRITICAL
-  };
+enum LogLevel {
+  DEBUG,
+  INFO,
+  WARNING,
+  ERROR,
+  CRITICAL
+};
 
-  class Logging
-  {
-    public:
-      ~Logging();
-      static Logging* Instance();
-      void Level(LogLevel level);
-      void Level(std::string level, LogLevel default_level = WARNING);
-      void Log(LogLevel level, std::string message);
-      bool File(std::string path);
-      std::string ToString(LogLevel level);
-      void Stderr(bool enable);
-      LogLevel ToLogLevel(std::string level, LogLevel default_level = WARNING);
+class Logging {
+  public:
+    ~Logging();
 
-    private:
-      Logging();
-      Logging(const Logging&) {}
-      Logging& operator= (const Logging&) {}
-      FILE* file_;
-      LogLevel level_;
-      static Logging* instance_;
-      std::string path_;
-      ino_t inode_;
-      bool stderr_;
-  };
+    // We use a singleton for the logging class, this returns a logging
+    // instance.
+    static Logging* Instance();
 
-  class LogItem
-  {
-    public:
-      LogItem(LogLevel level) { level_ = level; }
-      ~LogItem() { Logging::Instance()->Log(level_, buffer_.str()); }
-      template <typename T>
-      LogItem & operator<<(T const & value)
-      {   
-        buffer_ << value;
-        return *this;
-      }   
+    void Level(LogLevel level);
+    void Level(std::string level, LogLevel default_level = WARNING);
 
-    private:
-      std::ostringstream buffer_;
-      LogLevel level_;
-  };
+    void Log(LogLevel level, std::string message);
 
-}
+    bool File(std::string path);
+    void Stderr(bool enable);
 
-#endif
+    std::string ToString(LogLevel level);
+    LogLevel ToLogLevel(std::string level, LogLevel default_level = WARNING);
+
+  private:
+    Logging();
+    Logging(const Logging&) {}
+    Logging& operator= (const Logging&) {}
+    FILE* file_;
+    ino_t inode_;
+    static Logging* instance_;
+    LogLevel level_;
+    std::string path_;
+    bool stderr_;
+};
+
+class LogItem {
+  public:
+    LogItem(LogLevel level) {
+      level_ = level;
+    }
+    ~LogItem() {
+      Logging::Instance()->Log(level_, buffer_.str());
+    }
+
+    template <typename T>
+    LogItem & operator<<(T const & value) {
+      buffer_ << value;
+      return *this;
+    }   
+
+  private:
+    std::ostringstream buffer_;
+    LogLevel level_;
+};
+
+}  // namespace tyrion
+
+#endif  // TYRION_LOGGING_H_

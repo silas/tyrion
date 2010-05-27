@@ -16,21 +16,17 @@
 #include <iostream>
 #include "setting.h"
 
-namespace tyrion
-{
-  namespace node
-  {
+namespace tyrion {
+namespace node {
 
-    class Acl : public BaseSetting
-    {
-      public:
-        static Acl* Instance();
+class Acl : public BaseSetting {
+  public:
+    static Acl* Instance();
 
-      private:
-        static Acl* instance_;
-    };
+  private:
+    static Acl* instance_;
+};
 
-  }
-}
+} }  // namespace tyrion::node
 
-#endif
+#endif  // TYRION_NODE_ACL_H_

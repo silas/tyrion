@@ -17,19 +17,17 @@
 #include <gloox/disco.h>
 #include "xmpp_service.h"
 
-namespace tyrion
-{
+namespace tyrion {
 
-  class XmppServiceManager : public gloox::IqHandler
-  {
-    public:
-      XmppServiceManager(gloox::ClientBase* parent);
-      virtual ~XmppServiceManager();
+class XmppServiceManager : public gloox::IqHandler {
+  public:
+    XmppServiceManager(gloox::ClientBase* parent);
+    virtual ~XmppServiceManager();
 
-    protected:
-      gloox::ClientBase* m_parent;
-  };
+  protected:
+    gloox::ClientBase* m_parent;
+};
 
-}
+}  // namespace tyrion
 
-#endif
+#endif  // TYRION_XMPP_SERVICE_MANAGER_H_

@@ -16,28 +16,23 @@
 #include "tyrion.h"
 #include "utils.h"
 
-namespace tyrion
-{
+namespace tyrion {
 
-  XmppServiceManager::XmppServiceManager(gloox::ClientBase* parent)
-    : m_parent(parent)
-  {
-    if (m_parent)
-    {
-      m_parent->registerIqHandler(this, ExtXmppService);
-      m_parent->disco()->addFeature(XMLNS_IQ_SERVICE);
-      m_parent->registerStanzaExtension(new XmppService());
-    }
+XmppServiceManager::XmppServiceManager(gloox::ClientBase* parent) :
+    m_parent(parent) {
+  if (m_parent) {
+    m_parent->registerIqHandler(this, ExtXmppService);
+    m_parent->disco()->addFeature(XMLNS_IQ_SERVICE);
+    m_parent->registerStanzaExtension(new XmppService());
   }
-
-  XmppServiceManager::~XmppServiceManager()
-  {
-    if (m_parent)
-    {
-      m_parent->disco()->removeFeature(XMLNS_IQ_SERVICE);
-      m_parent->removeIqHandler(this, ExtXmppService);
-      m_parent->removeIDHandler(this);
-    }
-  }
-
 }
+
+XmppServiceManager::~XmppServiceManager() {
+  if (m_parent) {
+    m_parent->disco()->removeFeature(XMLNS_IQ_SERVICE);
+    m_parent->removeIqHandler(this, ExtXmppService);
+    m_parent->removeIDHandler(this);
+  }
+}
+
+} // namespace tyrion

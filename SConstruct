@@ -1,6 +1,5 @@
 library_source = [
     'src/config.cc',
-    'src/error.cc',
     'src/logging.cc',
     'src/process.cc',
     'src/setting.cc',
