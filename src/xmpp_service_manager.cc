@@ -19,19 +19,19 @@
 namespace tyrion {
 
 XmppServiceManager::XmppServiceManager(gloox::ClientBase* parent) :
-    m_parent(parent) {
-  if (m_parent) {
-    m_parent->registerIqHandler(this, ExtXmppService);
-    m_parent->disco()->addFeature(XMLNS_IQ_SERVICE);
-    m_parent->registerStanzaExtension(new XmppService());
+    parent_(parent) {
+  if (parent_) {
+    parent_->registerIqHandler(this, ExtXmppService);
+    parent_->disco()->addFeature(XMLNS_IQ_SERVICE);
+    parent_->registerStanzaExtension(new XmppService());
   }
 }
 
 XmppServiceManager::~XmppServiceManager() {
-  if (m_parent) {
-    m_parent->disco()->removeFeature(XMLNS_IQ_SERVICE);
-    m_parent->removeIqHandler(this, ExtXmppService);
-    m_parent->removeIDHandler(this);
+  if (parent_) {
+    parent_->disco()->removeFeature(XMLNS_IQ_SERVICE);
+    parent_->removeIqHandler(this, ExtXmppService);
+    parent_->removeIDHandler(this);
   }
 }
 

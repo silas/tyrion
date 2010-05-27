@@ -38,7 +38,7 @@ bool XmppServiceManager::handleIq(const gloox::IQ& iq) {
       iq.findExtension<tyrion::XmppService>(tyrion::ExtXmppService);
 
   ServiceHandler *serviceHandler = new ServiceHandler(
-    (gloox::ClientBase *)m_parent,
+    (gloox::ClientBase *)parent_,
     iq.from(),
     iq.id(),
     xs->type(),

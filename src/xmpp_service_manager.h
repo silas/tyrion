@@ -25,7 +25,7 @@ class XmppServiceManager : public gloox::IqHandler {
     virtual ~XmppServiceManager();
 
   protected:
-    gloox::ClientBase* m_parent;
+    gloox::ClientBase* parent_;
 };
 
 }  // namespace tyrion
