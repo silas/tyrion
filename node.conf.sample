@@ -9,18 +9,18 @@ password = test.node.pass                       ; Tyrion node password
 
 [service:org.tyrion.service.bash]
 timeout = 300                                   ; Default service timeout (seconds)
-enforce_timeout = false                         ; Enforce default timeout setting
+timeout_lock = false                            ; Lock default timeout setting
 user = root                                     ; Default user to run service as
-enforce_user = false                            ; Enforce default user setting
+user_lock = false                               ; Lock default user setting
 
 [service:org.tyrion.service.python]
 timeout = 300
-enforce_timeout = false
+timeout_lock = false
 user = root
-enforce_user = false
+user_lock = false
 
 [service:org.tyrion.service.ruby]
 timeout = 300
-enforce_timeout = false
+timeout_lock = false
 user = root
-enforce_user = false
+user_lock = false

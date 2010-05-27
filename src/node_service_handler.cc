@@ -42,37 +42,39 @@ void ServiceHandler::Run() {
     std::string error;
 
     std::string config = "service:" + type_;
-    std::string user = Setting::Instance()->Get(config, "user");
-    std::string group = Setting::Instance()->Get(config, "group");
-    int timeout = Setting::Instance()->GetInt(config, "timeout");
-    bool enforce_user = Setting::Instance()->GetBool(config, "enforce_user");
-    bool enforce_group = Setting::Instance()->GetBool(config, "enforce_group");
-    bool enforce_timeout = Setting::Instance()->GetBool(config,
-                                                        "enforce_timeout");
 
-    if (!issue && enforce_user) {
+    std::string user = Setting::Instance()->Get(config, "user");
+    bool user_lock = Setting::Instance()->GetBool(config, "user_lock");
+
+    std::string group = Setting::Instance()->Get(config, "group");
+    bool group_lock = Setting::Instance()->GetBool(config, "group_lock");
+
+    int timeout = Setting::Instance()->GetInt(config, "timeout");
+    bool timeout_lock = Setting::Instance()->GetBool(config, "timeout_lock");
+
+    if (!issue && user_lock) {
       if (user.empty()) {
-        error += utils::Error("user.enforce",
-                              "Unable to enforce user because none set.");
+        error += utils::Error("user.lock",
+                              "Unable to lock user because none set.");
         issue = true;
       }
     } else if (!issue && !user_.empty()) {
       user = user_;
     }
 
-    if (!issue && enforce_group) {
+    if (!issue && group_lock) {
       if (group.empty()) {
-        error += utils::Error("group.enforce",
-            "Unable to enforce group because none set.");
+        error += utils::Error("group.lock",
+            "Unable to lock group because none set.");
         issue = true;
       }
     } else if (!issue && !group_.empty())
       group = group_;
 
-    if (!issue && enforce_timeout) {
+    if (!issue && timeout_lock) {
       if (!timeout > 0) {
-        error += utils::Error("timeout.enforce",
-                              "Unable to enforce timeout because none set.");
+        error += utils::Error("timeout.lock",
+                              "Unable to lock timeout because none set.");
         issue = true;
       }
     } else if (!issue && timeout_ > 0) {
