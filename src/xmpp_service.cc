@@ -77,8 +77,7 @@ gloox::Tag* XmppService::tag() const {
     gloox::Tag* i = new gloox::Tag("input");
     i->setCData(input_);
     t->addChild(i);
-  }
-  else {
+  } else {
     gloox::Tag* o = new gloox::Tag("output");
     gloox::Tag* e = new gloox::Tag("error");
 

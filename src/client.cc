@@ -53,8 +53,7 @@ int main(int argc, char* argv[]) {
         return 1;
       }
       i++;
-    }
-    else if (strcmp(option, "-s") == 0 ||
+    } else if (strcmp(option, "-s") == 0 ||
              strcmp(option, "--service-type") == 0) {
       if (i + 1 < argc) {
         service_type = std::string(argv[i+1]);
@@ -63,23 +62,19 @@ int main(int argc, char* argv[]) {
         return 1;
       }
       i++;
-    }
-    else if (strcmp(option, "-t") == 0 || strcmp(option, "--timeout") == 0) {
+    } else if (strcmp(option, "-t") == 0 || strcmp(option, "--timeout") == 0) {
       if (i + 1 < argc) {
         std::istringstream timeout_stream(argv[i+1]);
         if (!(timeout_stream >> timeout))
           std::cerr << "Timeout must be a number." << std::endl;
-      }
-      else {
+      } else {
         std::cerr << "Service type not specified." << std::endl;
         return 1;
       }
       i++;
-    }
-    else if (strcmp(option, "--debug") == 0) {
+    } else if (strcmp(option, "--debug") == 0) {
       debug = true;
-    }
-    else if (strcmp(option, "--help") == 0) {
+    } else if (strcmp(option, "--help") == 0) {
       std::cout << "Usage: tyrion [OPTION]..." << std::endl;
       std::cout << "Example: tyrion -c client.conf" << std::endl;
       std::cout << std::endl;
@@ -90,8 +85,7 @@ int main(int argc, char* argv[]) {
       std::cout << "  -t, --timeout             service timeout" << std::endl;
       std::cout << "  --debug                   pipe debug info to stderr" << std::endl;
       return 0;
-    }
-    else {
+    } else {
       std::cerr << "Unknown option '" << option << "'." << std::endl;
       return 1;
     }
@@ -100,8 +94,7 @@ int main(int argc, char* argv[]) {
   if (jid.empty()) {
     std::cerr << "A destination JID is required." << std::endl;
     return 1;
-  }
-  else if (jid.find("/") == std::string::npos) {
+  } else if (jid.find("/") == std::string::npos) {
     std::cerr << "JID requires a resource (ex: user@host/resource)." << std::endl;
     return 1;
   }
@@ -155,14 +148,12 @@ int main(int argc, char* argv[]) {
       std::cerr << tyrion::utils::Error("xmpp.service-unavailable",
           "The requested service isn't available.");
       return 1;
-    }
-    else {
+    } else {
       std::cout << item.service().output();
       std::cerr << item.service().error();
       return item.service().code();
     }
-  }
-  else {
+  } else {
     std::cerr << "Unable to create thread." << std::endl;
     return 1;
   }

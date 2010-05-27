@@ -36,8 +36,7 @@ int main(int argc, char* argv[]) {
         return 1;
       }
       i++;
-    }
-    else if (strcmp(option, "-a") == 0 || strcmp(option, "--acl-file") == 0) {
+    } else if (strcmp(option, "-a") == 0 || strcmp(option, "--acl-file") == 0) {
       if (i + 1 < argc) {
         acl_file = std::string(argv[i+1]);
       } else {
@@ -45,8 +44,7 @@ int main(int argc, char* argv[]) {
         return 1;
       }
       i++;
-    }
-    else if (strcmp(option, "-l") == 0 || strcmp(option, "--log-file") == 0) {
+    } else if (strcmp(option, "-l") == 0 || strcmp(option, "--log-file") == 0) {
       if (i + 1 < argc) {
         log_file = std::string(argv[i+1]);
       } else {
@@ -54,11 +52,9 @@ int main(int argc, char* argv[]) {
         return 1;
       }
       i++;
-    }
-    else if (strcmp(option, "--debug") == 0) {
+    } else if (strcmp(option, "--debug") == 0) {
       debug = true;
-    }
-    else if (strcmp(option, "--help") == 0) {
+    } else if (strcmp(option, "--help") == 0) {
       std::cout << "Usage: tyrion-node [OPTION]..." << std::endl;
       std::cout << "Example: tyrion-node -c " << tyrion::CONFIG_PATH << std::endl;
       std::cout << std::endl;
@@ -68,8 +64,7 @@ int main(int argc, char* argv[]) {
       std::cout << "  -l, --log-file            the log file" << std::endl;
       std::cout << "  --debug                   pipe debug info to stderr" << std::endl;
       return 0;
-    }
-    else {
+    } else {
       std::cerr << "Unknown option '" << option << "'." << std::endl;
       return 1;
     }
@@ -92,8 +87,7 @@ int main(int argc, char* argv[]) {
   if (debug) {
     logging->Level(tyrion::DEBUG);
     logging->Stderr(true);
-  }
-  else if (!log_file.empty() && !logging->File(log_file)) {
+  } else if (!log_file.empty() && !logging->File(log_file)) {
     std::cerr << "Unable to open log file." << std::endl;
     return 0;
   }
@@ -115,8 +109,7 @@ int main(int argc, char* argv[]) {
     if (jid.empty()) {
       std::cerr << "The xmpp jid field is required." << std::endl;
       return 1;
-    }
-    else if (jid.find("/") == std::string::npos) {
+    } else if (jid.find("/") == std::string::npos) {
       std::cerr << "The xmpp jid field requires a resource (ex: user@host/resource)." << std::endl;
       return 1;
     }

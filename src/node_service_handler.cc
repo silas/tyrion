@@ -116,8 +116,7 @@ void ServiceHandler::Run() {
     gloox::IQ re(gloox::IQ::Result, jid_, id_);
     re.addExtension(service);
     client_->send(re);
-  }
-  else {
+  } else {
     gloox::IQ re(gloox::IQ::Error, jid_, id_);
     re.addExtension(
       new gloox::Error(

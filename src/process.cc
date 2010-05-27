@@ -100,8 +100,7 @@ void Process::Run() {
     }
 
     exit(EXIT_SUCCESS);
-  }
-  else if (pid_ > 0) {
+  } else if (pid_ > 0) {
     close(infd[0]);
     close(outfd[0][1]);
     close(outfd[1][1]);
