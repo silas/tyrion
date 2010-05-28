@@ -94,7 +94,8 @@ void Process::Run() {
     if (issue) {
       execlp(PROCESS_ISSUE_COMMAND, PROCESS_ISSUE_COMMAND, NULL);
     } else if (system_) {
-      system(command_.c_str());
+      int code = system(command_.c_str());
+      exit(WEXITSTATUS(code));
     } else {
       execl(command_.c_str(), command_.c_str(), NULL);
     }
@@ -169,28 +170,28 @@ int Process::Close() {
   int rc = 0;
 
   for (int i = 0; i < 10 && rc <= 0; i++) {
-    rc = waitpid(pid_, &state, WNOHANG);
     usleep(i * 100000);
+    rc = waitpid(pid_, &state, WNOHANG);
   }
 
   if (rc > 0) {
-    return state;
+    return WEXITSTATUS(state);
   } else {
     kill(pid_, SIGTERM);
   }
 
   for (int i = 0; i < 10 && rc <= 0; i++) {
-    rc = waitpid(pid_, &state, WNOHANG);
     usleep(i * 100000);
+    rc = waitpid(pid_, &state, WNOHANG);
   }
 
   if (rc > 0) {
-    return state;
+    return 15;
   } else {
     kill(pid_, SIGKILL);
   }
 
-  return -1;
+  return 137;
 }
 
 bool Process::set_user(std::string name, bool set_group) {
