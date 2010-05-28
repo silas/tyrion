@@ -12,6 +12,7 @@
 
 #include "node_xmpp_service_manager.h"
 
+#include "node_acl.h"
 #include "node_service_handler.h"
 #include "setting.h"
 #include "tyrion.h"
@@ -37,20 +38,29 @@ bool XmppServiceManager::handleIq(const gloox::IQ& iq) {
   const tyrion::XmppService* xs =
       iq.findExtension<tyrion::XmppService>(tyrion::ExtXmppService);
 
-  ServiceHandler *serviceHandler = new ServiceHandler(
-      (gloox::ClientBase *)parent_,
-      iq.from(),
-      iq.id(),
-      xs->type(),
-      xs->input(),
-      service_path_ + "/" + xs->type()
-  );
-  serviceHandler->set_timeout(xs->timeout());
-  serviceHandler->set_user(xs->user());
-  serviceHandler->set_group(xs->group());
+  if (xs) {
+    bool bare = Acl::Instance()->GetBool(xs->type(), iq.from().bare());
+    bool full = Acl::Instance()->GetBool(xs->type(), iq.from().full());
+    bool has_full = Acl::Instance()->Has(xs->type(), iq.from().full());
 
-  return utils::CreateThread(XmppServiceManager::handleIqInThread,
-                             (void *)serviceHandler);
+    if (full || (bare && !has_full)) {
+      ServiceHandler *serviceHandler = new ServiceHandler(
+          (gloox::ClientBase *)parent_,
+          iq.from(),
+          iq.id(),
+          xs->type(),
+          xs->input(),
+          service_path_ + "/" + xs->type()
+      );
+      serviceHandler->set_timeout(xs->timeout());
+      serviceHandler->set_user(xs->user());
+      serviceHandler->set_group(xs->group());
+
+      return utils::CreateThread(XmppServiceManager::handleIqInThread,
+                                 (void *)serviceHandler);
+    }
+  }
+  return false;
 }
 
 } } // namespace tyrion::node
