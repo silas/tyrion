@@ -38,7 +38,7 @@ Process::Process(std::string command, bool system, int timeout) {
   outfdeof[0] = false;
   outfdeof[1] = false;
 
-  timeout_ = timeout > 0 ? timeout + 1 : 2;
+  timeout_ = timeout > 0 ? timeout : 1;
 
   uid_ = getuid();
   gid_ = getgid();

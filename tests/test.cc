@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "test_process.h"
+#include "test_queue.h"
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
