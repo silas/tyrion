@@ -44,14 +44,14 @@ TEST(ProcessTest, System) {
 TEST(ProcessTest, Timeout) {
   Process p1 = Process("assets/test_process_timeout", false, 1);
   p1.Run();
-  EXPECT_EQ("", p1.ReadAll(Process::Stdout));
+  EXPECT_EQ("test\n", p1.ReadAll(Process::Stdout));
   EXPECT_EQ("", p1.ReadAll(Process::Stderr));
   EXPECT_EQ(15, p1.Close());
   EXPECT_TRUE(p1.TimedOut());
 
-  Process p2 = Process("sleep 20", true, 1);
+  Process p2 = Process("echo test; sleep 20", true, 1);
   p2.Run();
-  EXPECT_EQ("", p2.ReadAll(Process::Stdout));
+  EXPECT_EQ("test\n", p2.ReadAll(Process::Stdout));
   EXPECT_EQ("", p2.ReadAll(Process::Stderr));
   EXPECT_EQ(15, p2.Close());
   EXPECT_TRUE(p2.TimedOut());

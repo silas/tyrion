@@ -170,8 +170,10 @@ int Process::Close() {
   int rc = 0;
 
   for (int i = 0; i < 10 && rc <= 0; i++) {
-    usleep(i * 100000);
     rc = waitpid(pid_, &state, WNOHANG);
+    if (TimedOut())
+      break;
+    usleep(i * 100000);
   }
 
   if (rc > 0) {
@@ -181,8 +183,8 @@ int Process::Close() {
   }
 
   for (int i = 0; i < 10 && rc <= 0; i++) {
-    usleep(i * 100000);
     rc = waitpid(pid_, &state, WNOHANG);
+    usleep(i * 100000);
   }
 
   if (rc > 0) {
