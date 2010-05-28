@@ -18,6 +18,10 @@ void BaseSetting::File(std::string path) {
   config_ = new Config(path);
 }
 
+bool BaseSetting::Has(std::string section, std::string name) {
+  return config_->Has(section, name);
+}
+
 std::string BaseSetting::Get(std::string section, std::string name,
                              std::string default_) {
   return config_->Get(section, name, default_);

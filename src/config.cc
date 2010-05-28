@@ -27,6 +27,10 @@ int Config::ParseError() {
   return error_;
 }
 
+bool Config::Has(std::string section, std::string name) {
+  return values_.count(MakeKey(section, name));
+}
+
 std::string Config::Get(std::string section, std::string name,
                         std::string default_value) {
   std::string key = MakeKey(section, name);

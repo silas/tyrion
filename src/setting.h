@@ -24,6 +24,7 @@ class BaseSetting {
 
     bool HasError();
 
+    bool Has(std::string section, std::string name);
     std::string Get(std::string section, std::string name,
                     std::string default_ = "");
     bool GetBool(std::string section, std::string name, bool default_ = false);

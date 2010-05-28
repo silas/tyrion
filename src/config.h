@@ -25,6 +25,7 @@ class Config {
 
     int ParseError();
 
+    bool Has(std::string section, std::string name);
     std::string Get(std::string section, std::string name,
                     std::string default_value);
     long GetInt(std::string section, std::string name, long default_value);

@@ -18,7 +18,7 @@
 #include "utils.h"
 
 #define PROCESS_BUFFER 1024
-#define PROCESS_BUFFER_SLEEP 100000
+#define PROCESS_BUFFER_SLEEP 10000
 #define PROCESS_ISSUE_COMMAND "false"
 
 namespace tyrion {
