@@ -30,10 +30,10 @@ class ServiceTests(object):
 
     def test_timeout_error(self):
         return self.check(
-            input='sleep 10',
+            input='echo test\nsleep 10',
             type='org.tyrion.service.bash',
-            output='',
+            output='test',
             error=None,
             code='15',
-            timeout=2,
+            timeout=1,
         )
