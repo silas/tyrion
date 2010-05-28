@@ -49,7 +49,7 @@ TEST(ProcessTest, Timeout) {
   EXPECT_EQ(15, p1.Close());
   EXPECT_TRUE(p1.TimedOut());
 
-  Process p2 = Process("echo test; sleep 20", true, 1);
+  Process p2 = Process("echo test; sleep 2", true, 1);
   p2.Run();
   EXPECT_EQ("test\n", p2.ReadAll(Process::Stdout));
   EXPECT_EQ("", p2.ReadAll(Process::Stderr));
