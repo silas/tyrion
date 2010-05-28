@@ -9,5 +9,6 @@
 .*.dblite
 .*.swp
 _trial_temp
+test-*
 tyrion
 tyrion-node

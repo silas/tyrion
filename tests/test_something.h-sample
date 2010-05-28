@@ -1,0 +1,23 @@
+#include <gtest/gtest.h>
+#include <string>
+#include "../src/something.h"
+
+namespace {
+
+using namespace std;
+using namespace tyrion;
+
+class SomethingTest : public ::testing::Test {
+ protected:
+  SomethingTest() {}
+  virtual ~SomethingTest() {}
+  virtual void SetUp() {}
+  virtual void TearDown() {}
+};
+
+TEST_F(SomethingTest, Basic) {
+  string result = "something";
+  EXPECT_EQ("something", result);
+}
+
+}  // namespace

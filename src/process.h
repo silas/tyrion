@@ -45,9 +45,10 @@ class Process {
     std::string ReadAll(ProcessType type = Stdout);
     void Write(std::string text);
 
+    void set_timeout(int timeout) { timeout_ = timeout; }
+
     bool set_user(std::string user, bool set_group = true);
     bool set_group(std::string group);
-    void set_timeout(int timeout) { timeout_ = timeout; }
 
   private:
     // pipes

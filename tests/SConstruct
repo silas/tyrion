@@ -1,0 +1,10 @@
+source = [
+    '../src/process.cc',
+    '../src/utils.cc',
+    'test.cc',
+]
+
+library_list = ['gloox', 'gtest', 'pthread']
+
+env = Environment()
+env.Program(target='test-all', source=source, LIBS=library_list)
