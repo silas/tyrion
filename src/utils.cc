@@ -21,7 +21,7 @@ namespace utils {
 
 std::string Error(std::string code, std::string message) {
   return "Error: org.tyrion.error." + code + (!message.empty() ? ": " +
-    message : message) + "\n";
+      message : message) + "\n";
 }
 
 bool CreateThread(void *func(void*), void *arg) {

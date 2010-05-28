@@ -38,12 +38,12 @@ bool XmppServiceManager::handleIq(const gloox::IQ& iq) {
       iq.findExtension<tyrion::XmppService>(tyrion::ExtXmppService);
 
   ServiceHandler *serviceHandler = new ServiceHandler(
-    (gloox::ClientBase *)parent_,
-    iq.from(),
-    iq.id(),
-    xs->type(),
-    xs->input(),
-    service_path_ + "/" + xs->type()
+      (gloox::ClientBase *)parent_,
+      iq.from(),
+      iq.id(),
+      xs->type(),
+      xs->input(),
+      service_path_ + "/" + xs->type()
   );
   serviceHandler->set_timeout(xs->timeout());
   serviceHandler->set_user(xs->user());
