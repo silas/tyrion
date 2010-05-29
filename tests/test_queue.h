@@ -20,7 +20,6 @@ TEST(QueueTest, Basic) {
 
   EXPECT_TRUE(q.empty());
   EXPECT_EQ(0, q.size());
-
 }
 
 }  // namespace
