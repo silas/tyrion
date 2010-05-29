@@ -33,6 +33,9 @@ void Xmpp::Start() {
   client_->disco()->setVersion("Tyrion", VERSION);
   client_->disco()->setIdentity("client", "bot");
 
+  // Optionally disable SASL
+  client_->setForceNonSasl(Setting::Instance()->GetBool("xmpp", "force_non_sasl"));
+
   gloox::StringList ca;
   ca.push_back(Setting::Instance()->Get("xmpp", "cacert"));
   client_->setCACerts(ca);
