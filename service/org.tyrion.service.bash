@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
-while read execute; do 
-  $execute
-done
+/usr/bin/env bash
