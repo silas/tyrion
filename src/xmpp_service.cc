@@ -74,6 +74,12 @@ gloox::Tag* XmppService::tag() const {
     if (timeout_ >= 0)
       t->addAttribute("timeout", timeout_);
 
+    if (!user_.empty())
+      t->addAttribute("user", user_);
+
+    if (!group_.empty())
+      t->addAttribute("group", group_);
+
     gloox::Tag* i = new gloox::Tag("input");
     i->setCData(input_);
     t->addChild(i);

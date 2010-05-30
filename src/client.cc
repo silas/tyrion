@@ -33,6 +33,9 @@ int main(int argc, char* argv[]) {
   std::string config_file;
   std::string jid;
   std::string service_type;
+  std::string profile;
+  std::string user;
+  std::string group;
 
   for(int i = 1; i < argc; i++) {
     const char *option = argv[i];
@@ -53,8 +56,7 @@ int main(int argc, char* argv[]) {
         return 1;
       }
       i++;
-    } else if (strcmp(option, "-s") == 0 ||
-             strcmp(option, "--service-type") == 0) {
+    } else if (strcmp(option, "-s") == 0 || strcmp(option, "--service") == 0) {
       if (i + 1 < argc) {
         service_type = std::string(argv[i+1]);
       } else {
@@ -72,6 +74,30 @@ int main(int argc, char* argv[]) {
         return 1;
       }
       i++;
+    } else if (strcmp(option, "-u") == 0 || strcmp(option, "--user") == 0) {
+      if (i + 1 < argc) {
+        user = std::string(argv[i+1]);
+      } else {
+        std::cerr << "User not specified." << std::endl;
+        return 1;
+      }
+      i++;
+    } else if (strcmp(option, "-g") == 0 || strcmp(option, "--group") == 0) {
+      if (i + 1 < argc) {
+        group = std::string(argv[i+1]);
+      } else {
+        std::cerr << "Group not specified." << std::endl;
+        return 1;
+      }
+      i++;
+    } else if (strcmp(option, "-p") == 0 || strcmp(option, "--profile") == 0) {
+      if (i + 1 < argc) {
+        profile = std::string(argv[i+1]);
+      } else {
+        std::cerr << "Profile not specified." << std::endl;
+        return 1;
+      }
+      i++;
     } else if (strcmp(option, "--debug") == 0) {
       debug = true;
     } else if (strcmp(option, "--help") == 0) {
@@ -80,15 +106,63 @@ int main(int argc, char* argv[]) {
       std::cout << std::endl;
       std::cout << "Configuration options:" << std::endl;
       std::cout << "  -c, --config-file         the node configuration file" << std::endl;
-      std::cout << "  -j, --jid                 service destination JID" << std::endl;
-      std::cout << "  -s, --service-type        service type" << std::endl;
-      std::cout << "  -t, --timeout             service timeout" << std::endl;
-      std::cout << "  --debug                   pipe debug info to stderr" << std::endl;
+      std::cout << "  -p, --profile             default service options" << std::endl;
+      std::cout << std::endl;
+      std::cout << "Service options:" << std::endl;
+      std::cout << "  -j, --jid                 destination JID" << std::endl;
+      std::cout << "  -s, --service             service type" << std::endl;
+      std::cout << "  -t, --timeout             max service run time" << std::endl;
+      std::cout << "  -u, --user                run service as user" << std::endl;
+      std::cout << "  -g, --group               run service as group" << std::endl;
+      std::cout << std::endl;
+      std::cout << "Misc options:" << std::endl;
+      std::cout << "  --debug                   show debug information" << std::endl;
       return 0;
     } else {
       std::cerr << "Unknown option '" << option << "'." << std::endl;
       return 1;
     }
+  }
+
+  tyrion::Setting *setting = tyrion::Setting::Instance();
+
+  if (config_file.empty()) {
+    std::cerr << "Configuration file required." << std::endl;
+    return 1;
+  }
+
+  setting->File(config_file);
+
+  if (setting->HasError()) {
+    std::cerr << "Can't load configuration file '"
+              << config_file << "'." << std::endl;
+    return 1;
+  }
+
+  tyrion::Logging *logging = tyrion::Logging::Instance();
+
+  if (debug) {
+    logging->Level(tyrion::DEBUG);
+    logging->Stderr(true);
+  }
+
+  if (!profile.empty()) {
+    profile = "profile:" + profile;
+
+    if (jid.empty())
+      jid = setting->Get(profile, "jid");
+
+    if (service_type.empty())
+      service_type = setting->Get(profile, "service");
+
+    if (timeout < 0)
+      timeout = setting->GetInt(profile, "timeout", timeout);
+
+    if (user.empty())
+      user = setting->Get(profile, "user");
+
+    if (group.empty())
+      group = setting->Get(profile, "group");
   }
 
   if (jid.empty()) {
@@ -104,21 +178,6 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  tyrion::Setting::Instance()->File(config_file);
-
-  if (tyrion::Setting::Instance()->HasError()) {
-    std::cerr << "Can't load configuration file '"
-              << config_file << "'." << std::endl;
-    return 1;
-  }
-
-  tyrion::Logging *logging = tyrion::Logging::Instance();
-
-  if (debug) {
-    logging->Level(tyrion::DEBUG);
-    logging->Stderr(true);
-  }
-
   tyrion::client::ServiceQueue *request = new tyrion::client::ServiceQueue();
   tyrion::client::ServiceQueue *response = new tyrion::client::ServiceQueue();
   tyrion::client::Xmpp *xmpp = new tyrion::client::Xmpp(request, response);
@@ -131,6 +190,8 @@ int main(int argc, char* argv[]) {
     tyrion::XmppService service;
     service.set_timeout(timeout);
     service.set_type(service_type);
+    service.set_user(user);
+    service.set_group(group);
 
     std::string data, x;
     while (!std::cin.eof()) {
