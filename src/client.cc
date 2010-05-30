@@ -40,64 +40,57 @@ int main(int argc, char* argv[]) {
   for(int i = 1; i < argc; i++) {
     const char *option = argv[i];
 
-    if (strcmp(option, "-c") == 0 || strcmp(option, "--config-file") == 0) {
+    if OPTION("-c", "--config-file") {
       if (i + 1 < argc) {
-        config_file = std::string(argv[i+1]);
+        config_file = std::string(argv[++i]);
       } else {
         std::cerr << "Configuration file not specified." << std::endl;
         return 1;
       }
-      i++;
-    } else if (strcmp(option, "-j") == 0 || strcmp(option, "--jid") == 0) {
+    } else if OPTION("-j", "--jid") {
       if (i + 1 < argc) {
-        jid = std::string(argv[i+1]);
+        jid = std::string(argv[++i]);
       } else {
         std::cerr << "JID not specified." << std::endl;
         return 1;
       }
-      i++;
-    } else if (strcmp(option, "-s") == 0 || strcmp(option, "--service") == 0) {
+    } else if OPTION("-s", "--service") {
       if (i + 1 < argc) {
-        service_type = std::string(argv[i+1]);
+        service_type = std::string(argv[++i]);
       } else {
         std::cerr << "Service type not specified." << std::endl;
         return 1;
       }
-      i++;
-    } else if (strcmp(option, "-t") == 0 || strcmp(option, "--timeout") == 0) {
+    } else if OPTION("-t", "--timeout") {
       if (i + 1 < argc) {
-        std::istringstream timeout_stream(argv[i+1]);
+        std::istringstream timeout_stream(argv[++i]);
         if (!(timeout_stream >> timeout))
           std::cerr << "Timeout must be a number." << std::endl;
       } else {
         std::cerr << "Service type not specified." << std::endl;
         return 1;
       }
-      i++;
-    } else if (strcmp(option, "-u") == 0 || strcmp(option, "--user") == 0) {
+    } else if OPTION("-u", "--user") {
       if (i + 1 < argc) {
-        user = std::string(argv[i+1]);
+        user = std::string(argv[++i]);
       } else {
         std::cerr << "User not specified." << std::endl;
         return 1;
       }
-      i++;
-    } else if (strcmp(option, "-g") == 0 || strcmp(option, "--group") == 0) {
+    } else if OPTION("-g", "--group") {
       if (i + 1 < argc) {
-        group = std::string(argv[i+1]);
+        group = std::string(argv[++i]);
       } else {
         std::cerr << "Group not specified." << std::endl;
         return 1;
       }
-      i++;
-    } else if (strcmp(option, "-p") == 0 || strcmp(option, "--profile") == 0) {
+    } else if OPTION("-p", "--profile") {
       if (i + 1 < argc) {
-        profile = std::string(argv[i+1]);
+        profile = std::string(argv[++i]);
       } else {
         std::cerr << "Profile not specified." << std::endl;
         return 1;
       }
-      i++;
     } else if (strcmp(option, "--debug") == 0) {
       debug = true;
     } else if (strcmp(option, "--help") == 0) {

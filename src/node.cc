@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
   for(int i = 1; i < argc; i++) {
     const char* option = argv[i];
 
-    if (strcmp(option, "-c") == 0 || strcmp(option, "--config-file") == 0) {
+    if OPTION("-c", "--config-file") {
       if (i + 1 < argc) {
         config_file = std::string(argv[i+1]);
       } else {
@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
         return 1;
       }
       i++;
-    } else if (strcmp(option, "-a") == 0 || strcmp(option, "--acl-file") == 0) {
+    } else if OPTION("-a", "--acl-file") {
       if (i + 1 < argc) {
         acl_file = std::string(argv[i+1]);
       } else {
@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
         return 1;
       }
       i++;
-    } else if (strcmp(option, "-l") == 0 || strcmp(option, "--log-file") == 0) {
+    } else if OPTION("-l", "--log-file") {
       if (i + 1 < argc) {
         log_file = std::string(argv[i+1]);
       } else {
