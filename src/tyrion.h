@@ -22,6 +22,7 @@ namespace tyrion {
 const std::string ACL_PATH         = "/etc/tyrion/acl.conf";
 const std::string CONFIG_PATH      = "/etc/tyrion/node.conf";
 const std::string LOG_PATH         = "/var/log/tyrion.log";
+const int         NODE_RECONNECT   = 10;
 const std::string SERVICE_PATH     = "/var/lib/tyrion/service";
 const int         SERVICE_TIMEOUT  = 60;
 const std::string VERSION          = "0.0.1";

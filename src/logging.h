@@ -19,7 +19,7 @@
 #include <sstream>
 #include <string>
 
-#define LOG(level) LogItem(level)
+#define LOG(level) tyrion::LogItem(tyrion::level)
 
 namespace tyrion {
 

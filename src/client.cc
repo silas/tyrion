@@ -23,7 +23,7 @@
 
 void *start_xmpp(void *arg) {
   tyrion::client::Xmpp *xmpp=(tyrion::client::Xmpp*)arg;
-  xmpp->Start();
+  xmpp->Connect();
   delete(xmpp);
 }
 

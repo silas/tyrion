@@ -35,7 +35,7 @@ void Xmpp::DestroyHandlers() {
 }
 
 void Xmpp::onConnect() {
-  LOG(INFO) << "Connected to XMPP server";
+  tyrion::Xmpp::onConnect();
 
   ServiceQueueItem item = request()->Pop();
   XmppService *service = new XmppService(item.service());

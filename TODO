@@ -1,0 +1,4 @@
+TODO
+
+* Follow up on TLS memory leak (effects auto-reconnect)
+  http://bugs.camaya.net/horde/whups/ticket/?id=181

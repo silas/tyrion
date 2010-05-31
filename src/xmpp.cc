@@ -19,7 +19,9 @@
 
 namespace tyrion {
 
-void Xmpp::Start() {
+Xmpp::Xmpp() {
+  state_ = Xmpp::None;
+
   gloox::JID jid(Setting::Instance()->Get("xmpp", "jid"));
   client_ = new gloox::Client(jid, Setting::Instance()->Get("xmpp",
                                                             "password"));
@@ -40,12 +42,18 @@ void Xmpp::Start() {
   ca.push_back(Setting::Instance()->Get("xmpp", "cacert"));
   client_->setCACerts(ca);
 
-  // Setup custom XMPP handlers
-  SetupHandlers();
-
   // Enable raw XMPP logging
   client_->logInstance().registerLogHandler(gloox::LogLevelDebug,
                                             gloox::LogAreaAll, this);
+}
+
+Xmpp::~Xmpp() {
+  delete(client_);
+}
+
+void Xmpp::Connect() {
+  // Setup custom XMPP handlers
+  SetupHandlers();
 
   // XMPP event loop
   if(client_->connect(false)) {
@@ -59,13 +67,12 @@ void Xmpp::Start() {
 
   // Destroy custom managers
   DestroyHandlers();
-
-  delete(client_);
 }
 
 void Xmpp::Stop() {
-  if (client_)
-    client_->disconnect();
+  state_ = Xmpp::Shutdown;
+
+  client_->disconnect();
 }
 
 void Xmpp::onConnect() {
@@ -74,7 +81,8 @@ void Xmpp::onConnect() {
 }
 
 void Xmpp::onDisconnect(gloox::ConnectionError e) {
-  state_ = Xmpp::Disconnected;
+  if (state_ != Xmpp::Shutdown)
+    state_ = Xmpp::Disconnected;
   LOG(ERROR) << "Disconnected: " << e;
   if(e == gloox::ConnAuthenticationFailed)
     LOG(ERROR) << "Authenitcation failed: " << client_->authError();

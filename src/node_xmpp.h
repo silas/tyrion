@@ -21,8 +21,8 @@ namespace node {
 
 class Xmpp : public tyrion::Xmpp {
   public:
-    virtual void SetupHandlers();
-    virtual void DestroyHandlers();
+    void SetupHandlers();
+    void DestroyHandlers();
 
   private:
     node::XmppServiceManager *service_manager_;

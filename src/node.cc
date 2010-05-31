@@ -115,8 +115,16 @@ int main(int argc, char* argv[]) {
     }
   }
 
+  bool reconnect = true;
   tyrion::node::Xmpp *xmpp = new tyrion::node::Xmpp();
-  xmpp->Start();
+  while (reconnect) {
+    xmpp->Connect();
+    reconnect = xmpp->state() != tyrion::Xmpp::Shutdown;
+    if (reconnect) {
+      LOG(INFO) << "Reconnecting in " << tyrion::NODE_RECONNECT << " seconds...";
+      sleep(tyrion::NODE_RECONNECT);
+    }
+  }
   delete(xmpp);
 
   return 0;

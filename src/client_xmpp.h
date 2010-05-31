@@ -30,10 +30,10 @@ class Xmpp : public tyrion::Xmpp {
     // queues.
     Xmpp(ServiceQueue *request, ServiceQueue *response);
 
-    virtual void SetupHandlers();
-    virtual void DestroyHandlers();
+    void SetupHandlers();
+    void DestroyHandlers();
 
-    virtual void onConnect();
+    void onConnect();
 
     ServiceQueue *request() { return request_; }
     ServiceQueue *response() { return response_; }

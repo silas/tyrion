@@ -31,13 +31,14 @@ class Xmpp : public gloox::ConnectionListener, gloox::LogHandler {
     enum State {
       None,
       Connected,
-      Disconnected
+      Disconnected,
+      Shutdown
     };
 
-    Xmpp() { state_ = Xmpp::None; }
-    virtual ~Xmpp() {}
+    Xmpp();
+    virtual ~Xmpp();
 
-    void Start();
+    void Connect();
     void Stop();
 
     virtual void SetupHandlers() {}
