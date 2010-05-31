@@ -39,18 +39,18 @@ bool XmppServiceManager::handleIq(const gloox::IQ& iq) {
       iq.findExtension<tyrion::XmppService>(tyrion::ExtXmppService);
 
   if (xs) {
-    bool bare = Acl::Instance()->GetBool(xs->type(), iq.from().bare());
-    bool full = Acl::Instance()->GetBool(xs->type(), iq.from().full());
-    bool has_full = Acl::Instance()->Has(xs->type(), iq.from().full());
+    const std::string path = service_path_ + "/" + xs->type();
 
-    if (full || (bare && !has_full)) {
+    if (Acl::Instance()->GetBool(xs->type(), iq.from().bare()) &&
+        path == utils::RealPath(path)) {
+
       ServiceHandler *serviceHandler = new ServiceHandler(
           (gloox::ClientBase *)parent_,
           iq.from(),
           iq.id(),
           xs->type(),
           xs->input(),
-          service_path_ + "/" + xs->type()
+          path
       );
       serviceHandler->set_timeout(xs->timeout());
       serviceHandler->set_user(xs->user());
