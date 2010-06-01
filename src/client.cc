@@ -212,9 +212,10 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  pthread_join(handler, NULL);
   delete(request);
   delete(response);
+
+  pthread_join(handler, NULL);
 
   return 0;
 }

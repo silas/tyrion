@@ -12,10 +12,22 @@
 
 #include "setting.h"
 
+#include "logging.h"
+
 namespace tyrion {
 
+BaseSetting::~BaseSetting() {
+  if (config_)
+    delete(config_);
+}
+
 void BaseSetting::File(std::string path) {
-  config_ = new Config(path);
+  path_ = path;
+  config_ = new Config(path_);
+}
+
+bool BaseSetting::HasError() {
+  return config_->ParseError() < 0;
 }
 
 bool BaseSetting::Has(std::string section, std::string name) {
@@ -37,8 +49,12 @@ long BaseSetting::GetInt(std::string section, std::string name,
   return config_->GetInt(section, name, default_);
 }
 
-bool BaseSetting::HasError() {
-  return config_->ParseError() < 0;
+std::string BaseSetting::path() {
+  return path_;
+}
+
+void BaseSetting::set_path(std::string path) {
+  path_ = path;
 }
 
 Setting* Setting::instance_ = NULL;
@@ -47,6 +63,22 @@ Setting* Setting::Instance() {
   if (!instance_)
     instance_ = new Setting;
   return instance_;
+}
+
+void Setting::Reload() {
+  if (instance_) {
+    LOG(INFO) << "Reloading settings...";
+    Setting *old_instance = instance_;
+    Setting *new_instance = new Setting;
+    new_instance->File(old_instance->path());
+    if (new_instance->HasError()) {
+      LOG(WARNING) << "Unable to reload settings...";
+      delete(new_instance);
+    } else {
+      instance_ = new_instance;
+      delete(old_instance);
+    }
+  }
 }
 
 } // namespace tyrion

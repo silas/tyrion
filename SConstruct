@@ -19,6 +19,7 @@ client_source = [
 node_source = [
     'src/node.cc',
     'src/node_acl.cc',
+    'src/node_main.cc',
     'src/node_service_handler.cc',
     'src/node_xmpp.cc',
     'src/node_xmpp_service_manager.cc',

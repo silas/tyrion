@@ -20,7 +20,10 @@ namespace tyrion {
 
 class BaseSetting {
   public:
+    ~BaseSetting();
+
     void File(std::string path);
+    virtual void Reload() {}
 
     bool HasError();
 
@@ -30,16 +33,21 @@ class BaseSetting {
     bool GetBool(std::string section, std::string name, bool default_ = false);
     long GetInt(std::string section, std::string name, long default_ = 0);
 
+    std::string path();
+    void set_path(std::string path);
+
   protected:
-    BaseSetting() {};
+    BaseSetting() { path_ = ""; };
     BaseSetting(BaseSetting const&) {};
     BaseSetting& operator=(BaseSetting const&) {};
     Config *config_;
+    std::string path_;
 };
 
 class Setting : public BaseSetting {
   public:
     static Setting* Instance();
+    void Reload();
 
   private:
     static Setting* instance_;
