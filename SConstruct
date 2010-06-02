@@ -80,12 +80,6 @@ AddOption(
     action='store_true',
 )
 
-AddOption(
-    '--install',
-    dest='install',
-    action='store_true',
-)
-
 # Helper functions
 
 def Abort(message):
@@ -123,15 +117,18 @@ tyrion_node = env.Program(target='tyrion-node', source=node_source, LIBS=library
 
 # Install
 
-if GetOption('install'):
-    prefix = GetOption('prefix')
+prefix = GetOption('prefix')
 
+libdir = prefix + GetOption('libdir')
+bindir = prefix + GetOption('bindir')
+sbindir = prefix + GetOption('sbindir')
+
+if 'install' in COMMAND_LINE_TARGETS:
     if not GetOption('static'):
-        libdir = prefix + GetOption('libdir')
-        Default(env.Install(libdir, tyrion_library))
+        env.Install(libdir, tyrion_library)
+        env.Alias('install', libdir)
 
-    bindir = prefix + GetOption('bindir')
-    sbindir = prefix + GetOption('sbindir')
+    env.Install(bindir, tyrion)
+    env.Install(sbindir, tyrion_node)
 
-    Default(env.Install(bindir, tyrion))
-    Default(env.Install(sbindir, tyrion_node))
+    env.Alias('install', [bindir, sbindir])
