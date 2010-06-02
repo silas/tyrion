@@ -13,6 +13,7 @@
 #ifndef TYRION_LOGGING_H_
 #define TYRION_LOGGING_H_
 
+#include <cstdio>
 #include <sys/stat.h>
 #include <time.h>
 #include <iostream>

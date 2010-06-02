@@ -10,6 +10,7 @@
   This software is distributed without any warranty.
 */
 
+#include <algorithm>
 #include "level.h"
 
 namespace tyrion {
