@@ -1,13 +1,16 @@
+*.a
 *.conf
 *.dylib
 *.log
 *.o
+*.out
 *.os
 *.pyc
 *.so
 *.test
 .*.dblite
 .*.swp
+.sconf*
 _trial_temp
 test-*
 tyrion

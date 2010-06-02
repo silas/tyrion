@@ -30,9 +30,95 @@ node_source = [
 
 library_list = ['gloox', 'pthread']
 
+AddOption('--prefix',
+          dest='prefix',
+          type='string',
+          nargs=1,
+          action='store',
+          default='',
+          metavar='DIR',
+          help='installation prefix')
+
+AddOption('--libdir',
+          dest='libdir',
+          type='string',
+          nargs=1,
+          action='store',
+          default='/usr/local/lib',
+          metavar='DIR',
+          help='shared libraries path')
+
+AddOption('--bindir',
+          dest='bindir',
+          type='string',
+          nargs=1,
+          action='store',
+          default='/usr/local/bin',
+          metavar='DIR',
+          help='user binary path')
+
+AddOption('--sbindir',
+          dest='sbindir',
+          type='string',
+          nargs=1,
+          action='store',
+          default='/usr/local/bin',
+          metavar='DIR',
+          help='system binary path')
+
+AddOption('--static',
+          dest='static',
+          action='store_true')
+
+AddOption('--install',
+          dest='install',
+          action='store_true')
+
+# Helper functions
+
+def Abort(message):
+    print message
+    Exit(1)
+
+# Setup environment
+
 env = Environment()
 
-library_list += [env.SharedLibrary('tyrion', library_source, LIBS=library_list)]
+# Configure environment
 
-env.Program(target='tyrion-node', source=node_source, LIBS=library_list)
-env.Program(target='tyrion', source=client_source, LIBS=library_list)
+conf = Configure(env)
+
+if not conf.CheckCXXHeader('gloox/gloox.h'):
+    Abort('The gloox development library is required.')
+if not conf.CheckCXXHeader('pthread.h'):
+    Abort('pthread.h is required.')
+
+env = conf.Finish()
+
+# Built library
+
+if GetOption('static'):
+    tyrion_library = env.StaticLibrary('tyrion', library_source, LIBS=library_list)
+else:
+    tyrion_library = env.SharedLibrary('tyrion', library_source, LIBS=library_list)
+
+library_list += [tyrion_library]
+
+# Build applications
+
+tyrion = env.Program(target='tyrion', source=client_source, LIBS=library_list)
+tyrion_node = env.Program(target='tyrion-node', source=node_source, LIBS=library_list)
+
+# Install
+
+if GetOption('install'):
+    prefix = GetOption('prefix')
+    libdir = prefix + GetOption('libdir')
+    bindir = prefix + GetOption('bindir')
+    sbindir = prefix + GetOption('sbindir')
+
+    if not GetOption('static'):
+        Default(env.Install(libdir, tyrion_library))
+
+    Default(env.Install(bindir, tyrion))
+    Default(env.Install(sbindir, tyrion_node))
