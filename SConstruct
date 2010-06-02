@@ -30,49 +30,61 @@ node_source = [
 
 library_list = ['gloox', 'pthread']
 
-AddOption('--prefix',
-          dest='prefix',
-          type='string',
-          nargs=1,
-          action='store',
-          default='',
-          metavar='DIR',
-          help='installation prefix')
+AddOption(
+    '--prefix',
+    dest='prefix',
+    type='string',
+    nargs=1,
+    action='store',
+    default='',
+    metavar='DIR',
+    help='installation prefix',
+)
 
-AddOption('--libdir',
-          dest='libdir',
-          type='string',
-          nargs=1,
-          action='store',
-          default='/usr/local/lib',
-          metavar='DIR',
-          help='shared libraries path')
+AddOption(
+    '--libdir',
+    dest='libdir',
+    type='string',
+    nargs=1,
+    action='store',
+    default='/usr/local/lib',
+    metavar='DIR',
+    help='shared libraries path',
+)
 
-AddOption('--bindir',
-          dest='bindir',
-          type='string',
-          nargs=1,
-          action='store',
-          default='/usr/local/bin',
-          metavar='DIR',
-          help='user binary path')
+AddOption(
+    '--bindir',
+    dest='bindir',
+    type='string',
+    nargs=1,
+    action='store',
+    default='/usr/local/bin',
+    metavar='DIR',
+    help='user binary path',
+)
 
-AddOption('--sbindir',
-          dest='sbindir',
-          type='string',
-          nargs=1,
-          action='store',
-          default='/usr/local/bin',
-          metavar='DIR',
-          help='system binary path')
+AddOption(
+    '--sbindir',
+    dest='sbindir',
+    type='string',
+    nargs=1,
+    action='store',
+    default='/usr/local/bin',
+    metavar='DIR',
+    help='system binary path',
+)
 
-AddOption('--static',
-          dest='static',
-          action='store_true')
+AddOption(
+    '--static',
+    dest='static',
+    action='store_true',
+)
 
-AddOption('--install',
-          dest='install',
-          action='store_true')
+AddOption(
+    '--install',
+    dest='install',
+    action='store_true',
+)
 
 # Helper functions
 
@@ -113,12 +125,13 @@ tyrion_node = env.Program(target='tyrion-node', source=node_source, LIBS=library
 
 if GetOption('install'):
     prefix = GetOption('prefix')
-    libdir = prefix + GetOption('libdir')
-    bindir = prefix + GetOption('bindir')
-    sbindir = prefix + GetOption('sbindir')
 
     if not GetOption('static'):
+        libdir = prefix + GetOption('libdir')
         Default(env.Install(libdir, tyrion_library))
+
+    bindir = prefix + GetOption('bindir')
+    sbindir = prefix + GetOption('sbindir')
 
     Default(env.Install(bindir, tyrion))
     Default(env.Install(sbindir, tyrion_node))
