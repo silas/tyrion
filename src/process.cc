@@ -141,13 +141,13 @@ std::string Process::ReadAll(ProcessType type) {
   return data;
 }
 
-bool Process::Empty(ProcessType type) {
-  return outfdeof[type];
-}
-
 void Process::Write(std::string text) {
   if (!text.empty())
     write(infd[1], text.c_str(), text.length());
+}
+
+bool Process::Empty(ProcessType type) {
+  return outfdeof[type];
 }
 
 bool Process::TimedOut() {

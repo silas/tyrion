@@ -42,6 +42,7 @@ class Queue {
 
     T Pop() {
       pthread_mutex_lock(&mutex_);
+      // If the queue is empty wait until something is pushed
       if (empty())
           pthread_cond_wait(&cond_, &mutex_);
       T value = queue_.front();

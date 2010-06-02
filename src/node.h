@@ -24,17 +24,46 @@ namespace node {
 class Node {
   public:
     ~Node();
-    static Node *Instance();
+
+    inline static Node *Instance() {
+      if (!instance_)
+        instance_ = new Node;
+      return instance_;
+    }
+
+    /**
+     * Initial configuration setup.
+     */
     bool Setup();
+
+    /**
+     * Connect to XMPP server and handle events.
+     */
     void Run();
+
+    /**
+     * Try to reload settings in the safest way possible.
+     */
     void Reload();
+
+    /**
+     * Validate all settings, used before reloading.
+     */
     bool Valid();
 
+    /**
+     * Display debug information.
+     */
     inline bool debug() { return debug_; }
     inline void set_debug(bool debug) { debug_ = debug; }
 
+    /**
+     * Configuration file path.
+     */
     inline std::string config_path() { return config_path_; }
-    inline void set_config_path(std::string config_path) { config_path_ = config_path; }
+    inline void set_config_path(std::string config_path) {
+      config_path_ = config_path;
+    }
 
   protected:
     Node();
@@ -43,16 +72,19 @@ class Node {
 
   private:
     static Node* instance_;
-    pthread_t handler_;
     std::string config_path_;
     bool debug_;
+    Xmpp *xmpp_;
+    pthread_t handler_;
     pthread_mutex_t mutex_;
     sigset_t set_;
-    Xmpp *xmpp_;
 };
 
 namespace signal {
 
+/**
+ * Handle SIGHUP to reload settings.
+ */
 void *SignalHandler(void *arg);
 
 }  // namespace tyrion::node::signal

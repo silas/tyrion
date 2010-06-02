@@ -31,23 +31,66 @@ class Process {
       Stderr
     };
 
+    /**
+     * Construct a new process.
+     */
     Process(std::string command, bool system = false, int timeout = 30);
     ~Process();
 
+    /**
+     * Fork and run process.
+     */
     void Run();
-    void Eof();
-    int Close();
 
-    bool Empty(ProcessType type = Stdout);
-    bool TimedOut();
-
+    /**
+     * Read a buffered text from process stdout/stderr.
+     */
     std::string Read(ProcessType type = Stdout);
+
+    /**
+     * Read all output from process until EOF or process times out.
+     */
     std::string ReadAll(ProcessType type = Stdout);
+
+    /**
+     * Write data to process stdin.
+     */
     void Write(std::string text);
 
+    /**
+     * Check if pipe received EOF.
+     */
+    bool Empty(ProcessType type = Stdout);
+
+    /**
+     * Return true if process was timeout setting was reached.
+     */
+    bool TimedOut();
+
+    /**
+     * Send EOF to process (close pipe).
+     */
+    void Eof();
+
+    /**
+     * Ensure process has close (kill if necessary) and collect information
+     * about how the process ended.
+     */
+    int Close();
+
+    /**
+     * Maximum time the process is allowed to run.
+     */
     void set_timeout(int timeout) { timeout_ = timeout; }
 
+    /**
+     * Lookup UID and set process to use it.
+     */
     bool set_user(std::string user, bool set_group = true);
+
+    /**
+     * Lookup GID and set process to use it.
+     */
     bool set_group(std::string group);
 
   private:

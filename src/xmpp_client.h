@@ -17,6 +17,10 @@
 
 namespace tyrion {
 
+/**
+ * Light wrapper around gloox::Client so we can disconnect in a way that
+ * allows use to reconnect (needed access to protected methods).
+ */
 class XmppClient : public gloox::Client {
   public:
     XmppClient(const gloox::JID &jid, const std::string &password) :

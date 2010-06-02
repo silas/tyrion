@@ -21,6 +21,9 @@ namespace tyrion {
 
 const int ExtXmppService = gloox::ExtUser+1;
 
+/**
+ * Implementation of a gloox IQ handler for the Tyrion service IQ stanza.
+ */
 class XmppService : public gloox::StanzaExtension {
   public:
     enum Format {
@@ -34,51 +37,92 @@ class XmppService : public gloox::StanzaExtension {
     virtual ~XmppService() {}
 
     virtual gloox::StanzaExtension* newInstance(const gloox::Tag* tag)
-      const {
+        const {
       return new XmppService(tag);
     }
 
     gloox::Tag* tag() const;
     virtual const std::string& filterString() const;
-    virtual gloox::StanzaExtension* clone() const { return new XmppService(*this); }
+    virtual gloox::StanzaExtension* clone() const {
+      return new XmppService(*this);
+    }
 
-    int code() const { return code_; }
-    void set_code(int code) { code_ = code; set_format(Response); }
+    /**
+     * Is this a Request or response element?
+     */
+    inline Format format() { return format_; }
+    inline void set_format(Format format) { format_ = format; }
 
-    std::string error() const { return error_; }
-    void set_error(std::string error) { error_ = error; set_format(Response); }
+    /**
+     * Service type element.
+     */
+    inline std::string type() const { return type_; }
+    inline void set_type(std::string type) { type_ = type; }
 
-    Format format() { return format_; }
-    void set_format(Format format) { format_ = format; }
+    /**
+     * Service input element.
+     */
+    inline std::string input() const { return input_; }
+    inline void set_input(std::string input) {
+      input_ = input;
+      set_format(Request);
+    }
 
-    std::string group() const { return group_; }
-    void set_group(std::string group) { group_ = group; }
+    /**
+     * Service timeout attribute.
+     */
+    inline int timeout() const { return timeout_; }
+    inline void set_timeout(int timeout) {
+      timeout_ = timeout;
+      set_format(Request);
+    }
 
-    std::string input() const { return input_; }
-    void set_input(std::string input) { input_ = input; set_format(Request); }
+    inline std::string user() const { return user_; }
+    inline void set_user(std::string user) { user_ = user; }
 
-    std::string output() const { return output_; }
-    void set_output(std::string output) { output_ = output; set_format(Response); }
+    /**
+     * Service group attribute.
+     */
+    inline std::string group() const { return group_; }
+    inline void set_group(std::string group) { group_ = group; }
 
-    int timeout() const { return timeout_; }
-    void set_timeout(int timeout) { timeout_ = timeout; set_format(Request); }
+    /**
+     * Service code attribute.
+     */
+    inline int code() const { return code_; }
+    inline void set_code(int code) {
+      code_ = code;
+      set_format(Response);
+    }
 
-    std::string type() const { return type_; }
-    void set_type(std::string type) { type_ = type; }
+    /**
+     * Service output element.
+     */
+    inline std::string output() const { return output_; }
+    inline void set_output(std::string output) {
+      output_ = output;
+      set_format(Response);
+    }
 
-    std::string user() const { return user_; }
-    void set_user(std::string user) { user_ = user; }
+    /**
+     * Service error element.
+     */
+    inline std::string error() const { return error_; }
+    inline void set_error(std::string error) {
+      error_ = error;
+      set_format(Response);
+    }
 
   private:
-    int code_;
-    std::string error_;
     Format format_;
-    std::string group_;
     std::string input_;
-    std::string output_;
-    int timeout_;
-    std::string type_;
     std::string user_;
+    std::string group_;
+    int timeout_;
+    int code_;
+    std::string output_;
+    std::string error_;
+    std::string type_;
 };
 
 }  // namespace tyrion

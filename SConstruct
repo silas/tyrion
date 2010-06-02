@@ -6,6 +6,7 @@ library_source = [
     'src/setting.cc',
     'src/third_party/inih/ini.c',
     'src/utils.cc',
+    'src/setting_validator.cc',
     'src/xmpp.cc',
     'src/xmpp_service.cc',
     'src/xmpp_service_manager.cc',
@@ -22,7 +23,7 @@ node_source = [
     'src/node_acl.cc',
     'src/node_main.cc',
     'src/node_service_handler.cc',
-    'src/node_validators.cc',
+    'src/node_setting_validator.cc',
     'src/node_xmpp.cc',
     'src/node_xmpp_service_manager.cc',
 ]

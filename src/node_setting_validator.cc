@@ -10,7 +10,7 @@
   This software is distributed without any warranty.
 */
 
-#include "node_validators.h"
+#include "node_setting_validator.h"
 
 namespace tyrion {
 namespace node {

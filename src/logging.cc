@@ -19,13 +19,6 @@ namespace tyrion {
 
 Logging* Logging::instance_ = NULL;
 
-Logging* Logging::Instance() {
-  if (instance_ == 0)
-    instance_ = new Logging;
-
-  return instance_;
-}
-
 Logging::Logging() {
   file_ = NULL;
   inode_ = NULL;
@@ -34,19 +27,7 @@ Logging::Logging() {
 }
 
 Logging::~Logging() {
-  if (file_) fclose(file_);
-}
-
-void Logging::SetLevel(Level level) {
-  if ((level >= DEBUG) && (level <= CRITICAL)) {
-    level_ = level;
-  } else {
-    level_ = WARNING;
-  }
-}
-
-void Logging::SetLevel(std::string level, Level default_level) {
-  SetLevel(StringToLevel(level, default_level));
+  CloseFile();
 }
 
 void Logging::Log(Level level, std::string text) {
@@ -78,14 +59,10 @@ void Logging::Log(Level level, std::string text) {
   }
 }
 
-bool Logging::SetFile(std::string path) {
+bool Logging::OpenFile(std::string path) {
   path_ = path;
   file_ = fopen(path_.c_str(), "a+");
   return file_ != NULL;
-}
-
-void Logging::SetStderr(bool enable) {
-  stderr_ = enable;
 }
 
 } // namespace tyrion

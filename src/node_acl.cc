@@ -20,23 +20,24 @@ namespace node {
 
 Acl* Acl::instance_ = NULL;
 
-Acl* Acl::Instance() {
-  if (!instance_)
-    instance_ = new Acl;
-  return instance_;
-}
-
 void Acl::Reload() {
   if (instance_) {
     LOG(INFO) << "Reloading ACLs...";
+
+    // Setup instances for switch
     Acl *old_instance = instance_;
     Acl *new_instance = new Acl;
+
+    // Try to open new ACL configuration file
     std::string path = Setting::Instance()->Get("general", "acl");
-    new_instance->File(path);
+    new_instance->OpenFile(path);
+
     if (new_instance->HasError()) {
+      // Warning and fail if we were unable to load
       LOG(WARNING) << "Unable to reload ACLs...";
       delete(new_instance);
     } else {
+      // Cleanup if reload worked
       instance_ = new_instance;
       delete(old_instance);
     }

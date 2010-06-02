@@ -21,6 +21,9 @@
 namespace tyrion {
 namespace node {
 
+/**
+ * Handle Tyrion service IQ.
+ */
 class XmppServiceManager : public tyrion::XmppServiceManager {
   public:
     XmppServiceManager(gloox::ClientBase* parent);

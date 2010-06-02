@@ -30,20 +30,28 @@ class ServiceQueueItem {
       ServiceUnavailable
     };
 
-    // Constructs an item which can be used to send notifications such as
-    // Disconnect.
+    /**
+     * Constructs an item which can be used to send notifications such as
+     * Disconnect.
+     */
     ServiceQueueItem(ServiceQueueItemNotification notification = None) {
       set_notification(notification);
     }
-    // Constructs an item for a service response which didn't have service
-    // element.
+
+    /**
+     * Constructs an item for a service response which didn't have service
+     * element.
+     */
     ServiceQueueItem(std::string jid, std::string id = "") {
       set_jid(jid);
       set_id(id);
       set_notification(None);
       set_state(ServiceUnavailable);
     }
-    // Constructs a valid service response item.
+
+    /**
+     * Constructs a valid service response item.
+     */
     ServiceQueueItem(std::string jid, XmppService service,
                      std::string id = "") {
       set_jid(jid);
@@ -95,8 +103,10 @@ class ServiceQueueItem {
     ServiceQueueItemState state_;
 };
 
-// Queue used to pass service requests and responses between the CLI
-// application and the XMPP client thread.
+/**
+ * Queue used to pass service requests and responses between the CLI
+ * application and the XMPP client thread.
+ */
 typedef tyrion::Queue<ServiceQueueItem> ServiceQueue;
 
 } }  // namespace tyrion::client

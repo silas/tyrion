@@ -124,7 +124,7 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  setting->File(config_file);
+  setting->OpenFile(config_file);
 
   if (setting->HasError()) {
     std::cerr << "Can't load configuration file '"
@@ -135,8 +135,8 @@ int main(int argc, char* argv[]) {
   tyrion::Logging *logging = tyrion::Logging::Instance();
 
   if (debug) {
-    logging->SetLevel(tyrion::DEBUG);
-    logging->SetStderr(true);
+    logging->set_level(tyrion::DEBUG);
+    logging->set_stderr(true);
   }
 
   if (!profile.empty()) {

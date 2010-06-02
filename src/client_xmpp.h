@@ -26,8 +26,10 @@ class XmppServiceManager;
 
 class Xmpp : public tyrion::Xmpp {
   public:
-    // Setup XMPP client for CLI application with request and response
-    // queues.
+    /**
+     * Setup XMPP client for CLI application with request and response
+     * queues.
+     */
     Xmpp(ServiceQueue *request, ServiceQueue *response);
 
     void SetupHandlers();

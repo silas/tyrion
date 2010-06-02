@@ -25,9 +25,18 @@ enum Level {
   CRITICAL
 };
 
+/**
+ * Accept a Level and return a string representation.
+ */
 std::string LevelToString(Level level);
+
+
+/**
+ * Return Level from a string (not case sensitive) or use default if no map
+ * exists.
+ */
 Level StringToLevel(std::string level, Level default_level=WARNING);
 
-}
+}  // namespace tyrion
 
 #endif  // TYRION_LEVEL_H_

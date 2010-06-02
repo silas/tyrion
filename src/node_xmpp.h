@@ -19,6 +19,9 @@
 namespace tyrion {
 namespace node {
 
+/**
+ * Setup the custom IQ handlers for a Tyrion node.
+ */
 class Xmpp : public tyrion::Xmpp {
   public:
     void SetupHandlers();

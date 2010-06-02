@@ -21,7 +21,15 @@ namespace node {
 
 class Acl : public BaseSetting {
   public:
-    static Acl* Instance();
+    inline static Acl* Instance() {
+      if (!instance_)
+        instance_ = new Acl;
+      return instance_;
+    }
+
+    /**
+     * Reload ACLs.
+     */
     void Reload();
 
   private:

@@ -15,7 +15,6 @@
 
 #include <iostream>
 #include <string>
-#include <vector>
 #include "config.h"
 #include "level.h"
 
@@ -25,17 +24,45 @@ class BaseSetting {
   public:
     ~BaseSetting();
 
-    void File(std::string path);
-    virtual void Reload() {}
+    /**
+     * Open configuration file and parse settings.
+     */
+    void OpenFile(std::string path);
 
+    /**
+     * Check if there were errors parsing settings file.
+     */
     bool HasError();
 
+    /**
+     * Reload configuration settings.
+     */
+    virtual void Reload() {}
+
+    /**
+     * Check if option exists in configuration file.
+     */
     bool Has(std::string section, std::string name);
+
+    /**
+     * Return string representation of option.
+     */
     std::string Get(std::string section, std::string name,
                     std::string default_ = "");
+
+    /**
+     * Return boolean representation of option.
+     */
     bool GetBool(std::string section, std::string name, bool default_ = false);
+
+    /**
+     * Return int representation of option.
+     */
     long GetInt(std::string section, std::string name, long default_ = 0);
 
+    /**
+     * Configuration file path.
+     */
     std::string path();
     void set_path(std::string path);
 
@@ -47,6 +74,9 @@ class BaseSetting {
     std::string path_;
 };
 
+/**
+ * General settings for application.
+ */
 class Setting : public BaseSetting {
   public:
     static Setting* Instance();
@@ -54,37 +84,6 @@ class Setting : public BaseSetting {
 
   private:
     static Setting* instance_;
-};
-
-class SettingValidatorIssue {
-  public:
-    SettingValidatorIssue(std::string text, Level level);
-    std::string text() { return text_; }
-    Level level() { return level_; }
-
-  private:
-    std::string text_;
-    Level level_;
-};
-
-typedef std::vector<SettingValidatorIssue> SettingValidatorIssueList;
-
-class SettingValidator : public BaseSetting {
-  public:
-    SettingValidator(std::string path);
-    virtual void Validate() {}
-
-    bool IsFatal(Level level = ERROR) { return highest_level_ >= level; }
-    void ReportIssues();
-
-    void NewIssue(std::string text, Level level);
-    void Issue(std::string section, std::string option, std::string text,
-               Level level = ERROR);
-    bool Require(std::string section, std::string option);
-
-  protected:
-    SettingValidatorIssueList issues_;
-    Level highest_level_;
 };
 
 }  // namespace tyrion

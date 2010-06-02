@@ -7,7 +7,7 @@
 
 int main(int argc, char* argv[]) {
 
-  tyrion::Logging::Instance()->SetStderr(true);
+  tyrion::Logging::Instance()->set_stderr(true);
 
   for(int i = 1; i < argc; i++) {
     const char* option = argv[i];

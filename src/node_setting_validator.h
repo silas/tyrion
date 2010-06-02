@@ -10,23 +10,31 @@
   This software is distributed without any warranty.
 */
 
-#ifndef TYRION_NODE_VALIDATORS_H_
-#define TYRION_NODE_VALIDATORS_H_
+#ifndef TYRION_NODE_SETTING_VALIDATOR_H_
+#define TYRION_NODE_SETTING_VALIDATOR_H_
 
-#include "setting.h"
+#include "setting_validator.h"
 
 namespace tyrion {
 namespace node {
 
+/**
+ * Validate the settings file.
+ */
 class NodeSettingValidator : public SettingValidator {
   public:
     NodeSettingValidator(std::string path);
+
     void Validate();
 };
 
+/**
+ * Validate the ACL file.
+ */
 class NodeAclValidator : public SettingValidator {
   public:
     NodeAclValidator(std::string path);
+
     void Validate() {}
 };
 

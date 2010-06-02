@@ -28,17 +28,47 @@ class Logging {
   public:
     ~Logging();
 
-    // We use a singleton for the logging class, this returns a logging
-    // instance.
-    static Logging* Instance();
+    /**
+     * We use a singleton for the logging class, this returns a logging
+     * instance.
+     */
+    inline static Logging* Instance() {
+      if (instance_ == 0)
+        instance_ = new Logging;
+      return instance_;
+    }
 
-    void SetLevel(Level level);
-    void SetLevel(std::string level, Level default_level = WARNING);
-
+    /**
+     * Log an error message.
+     */
     void Log(Level level, std::string message);
 
-    bool SetFile(std::string path);
-    void SetStderr(bool enable);
+    /**
+     * Open file for logging output.
+     */
+    bool OpenFile(std::string path);
+    inline void CloseFile() { if (file_) fclose(file_); }
+
+    /**
+     * Minimum log level to record.
+     */
+    inline Level level() { return level_; }
+    inline void set_level(Level level) {
+      if ((level >= DEBUG) && (level <= CRITICAL)) {
+        level_ = level;
+      } else {
+        level_ = WARNING;
+      }
+    }
+    inline void set_level(std::string level, Level default_level = WARNING) {
+      set_level(StringToLevel(level, default_level));
+    }
+
+    /**
+     * Send logs to stderr.
+     */
+    inline bool stderr() { return stderr_; }
+    inline void set_stderr(bool stderr) { stderr_ = stderr; }
 
   private:
     Logging();

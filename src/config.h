@@ -21,13 +21,30 @@ namespace tyrion {
 
 class Config {
   public:
+    /**
+     * Construct a Config class from an INI file.
+     */
     Config(std::string filename);
 
+    /**
+     * Returns a negative number if there were parse errors.
+     */
     int ParseError();
 
+    /**
+     * Check if value exists in configuration file.
+     */
     bool Has(std::string section, std::string name);
+
+    /**
+     * Return string representation of option.
+     */
     std::string Get(std::string section, std::string name,
                     std::string default_value);
+
+    /**
+     * Return int representation of option.
+     */
     long GetInt(std::string section, std::string name, long default_value);
 
   private:

@@ -27,6 +27,9 @@
 
 namespace tyrion {
 
+/**
+ * A wrapper class around the XMPP client the handle various issues and state.
+ */
 class Xmpp : public gloox::ConnectionListener, gloox::LogHandler {
   public:
     enum State {
@@ -40,9 +43,24 @@ class Xmpp : public gloox::ConnectionListener, gloox::LogHandler {
     Xmpp();
     virtual ~Xmpp();
 
+    /**
+     * Set base XMPP client settings.
+     */
     void Init();
+
+    /**
+     * Connect to XMPP server and handle events.
+     */
     void Connect();
+
+    /**
+     * Disconnect XMPP client in such as way that we can reconnect.
+     */
     void Restart();
+
+    /**
+     * Disconnect from XMPP client in a permanent way.
+     */
     void Stop();
 
     virtual void SetupHandlers() {}
@@ -55,8 +73,14 @@ class Xmpp : public gloox::ConnectionListener, gloox::LogHandler {
     virtual void handleLog(gloox::LogLevel level,
                            gloox::LogArea area, const std::string& message);
 
-    gloox::Client* client() { return client_; }
+    /**
+     * Return XMPP client.
+     */
+    XmppClient *client() { return client_; }
 
+    /**
+     * Return current XMPP state.
+     */
     State state() { return state_; }
 
   protected:

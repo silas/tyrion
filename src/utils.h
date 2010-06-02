@@ -18,10 +18,20 @@
 namespace tyrion {
 namespace utils {
 
+/**
+ * Create a detached thread and return true if it was successfully created.
+ */
 bool CreateThread(void *func(void*), void *arg);
 
+/**
+ * Create a standardized error message which can be return in a service
+ * response in stderr.
+ */
 std::string Error(std::string code, std::string message = "");
 
+/**
+ * Return the real path of the specified file.
+ */
 std::string RealPath(std::string path);
 
 } }  // namespace tyrion::utils

@@ -27,39 +27,64 @@ class ServiceHandler {
                    std::string path);
     ~ServiceHandler() {}
 
+    /**
+     * Create and run the service process.
+     */
     void Run();
 
-    std::string id() { return id_; }
-    void set_id(std::string id) { id_ = id; }
-
-    std::string group() { return group_; }
-    void set_group(std::string group) { group_ = group; }
-
-    std::string input() { return input_; }
-    void set_input(std::string input) { input_ = input; }
-
-    std::string path() { return path_; }
-    void set_path(std::string path) { path_ = path; }
-
-    int timeout() { return timeout_; }
-    void set_timeout(int timeout) { timeout_ = timeout; }
-
+    /**
+     * The service type or name (ex: org.tyrion.service.bash).
+     */
     std::string type() { return type_; }
     void set_type(std::string type) { type_ = type; }
 
-    std::string user() { return user_; }
-    void set_user(std::string user) { user_ = user; }
+    /**
+     * IQ id for service message (we need to include it in the response).
+     */
+    std::string id() { return id_; }
+    void set_id(std::string id) { id_ = id; }
+
+    /**
+     * Absolute path to service executable.
+     */
+    std::string path() { return path_; }
+    void set_path(std::string path) { path_ = path; }
+
+    /**
+     * Input text which will be sent to stdin after creating the service
+     * process.
+     */
+    std::string input() { return input_; }
+    void set_input(std::string input) { input_ = input; }
+
+    /**
+     * Maximum time (in seconds) the service is allowed to run.
+     */
+    int timeout() { return timeout_; }
+    void set_timeout(int timeout) { timeout_ = timeout; }
+
+    /**
+     * Group name to run the service as.
+     */
+    std::string group() { return group_; }
+    void set_group(std::string group) { group_ = group; }
+
+    /**
+     * User name to run the service as.
+     */
+    inline std::string user() { return user_; }
+    inline void set_user(std::string user) { user_ = user; }
 
   private:
     gloox::ClientBase* client_;
-    std::string group_;
-    std::string id_;
-    std::string input_;
     gloox::JID jid_;
-    std::string path_;
-    int timeout_;
+    std::string id_;
     std::string type_;
+    std::string input_;
+    int timeout_;
+    std::string path_;
     std::string user_;
+    std::string group_;
 };
 
 } }  // namespace tyrion::node
