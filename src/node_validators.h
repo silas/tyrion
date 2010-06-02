@@ -10,20 +10,26 @@
   This software is distributed without any warranty.
 */
 
-#ifndef TYRION_TYRION_H_
-#define TYRION_TYRION_H_
+#ifndef TYRION_NODE_VALIDATORS_H_
+#define TYRION_NODE_VALIDATORS_H_
 
-#define OPTION(s, l) (strcmp(option, s) == 0 || strcmp(option, l) == 0)
-
-#include <string>
+#include "setting.h"
 
 namespace tyrion {
+namespace node {
 
-const int         NODE_RECONNECT   = 10;
-const int         SERVICE_TIMEOUT  = 60;
-const std::string VERSION          = "0.0.1";
-const std::string XMLNS_IQ_SERVICE = "http://tyrion.org/protocol/1.0/service";
+class NodeSettingValidator : public SettingValidator {
+  public:
+    NodeSettingValidator(std::string path);
+    void Validate();
+};
 
-}  // namespace tyrion
+class NodeAclValidator : public SettingValidator {
+  public:
+    NodeAclValidator(std::string path);
+    void Validate() {}
+};
 
-#endif  // TYRION_TYRION_H_
+} }  // namespace tyrion::node
+
+#endif  // TYRION_NODE_VALIDATORS_H_

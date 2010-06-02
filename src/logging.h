@@ -18,18 +18,11 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include "level.h"
 
 #define LOG(level) tyrion::LogItem(tyrion::level)
 
 namespace tyrion {
-
-enum LogLevel {
-  DEBUG,
-  INFO,
-  WARNING,
-  ERROR,
-  CRITICAL
-};
 
 class Logging {
   public:
@@ -39,32 +32,29 @@ class Logging {
     // instance.
     static Logging* Instance();
 
-    void Level(LogLevel level);
-    void Level(std::string level, LogLevel default_level = WARNING);
+    void SetLevel(Level level);
+    void SetLevel(std::string level, Level default_level = WARNING);
 
-    void Log(LogLevel level, std::string message);
+    void Log(Level level, std::string message);
 
-    bool File(std::string path);
-    void Stderr(bool enable);
-
-    std::string ToString(LogLevel level);
-    LogLevel ToLogLevel(std::string level, LogLevel default_level = WARNING);
+    bool SetFile(std::string path);
+    void SetStderr(bool enable);
 
   private:
     Logging();
     Logging(const Logging&) {}
     Logging& operator= (const Logging&) {}
-    FILE* file_;
+    FILE *file_;
     ino_t inode_;
     static Logging* instance_;
-    LogLevel level_;
+    Level level_;
     std::string path_;
     bool stderr_;
 };
 
 class LogItem {
   public:
-    LogItem(LogLevel level) {
+    LogItem(Level level) {
       level_ = level;
     }
     ~LogItem() {
@@ -79,7 +69,7 @@ class LogItem {
 
   private:
     std::ostringstream buffer_;
-    LogLevel level_;
+    Level level_;
 };
 
 }  // namespace tyrion

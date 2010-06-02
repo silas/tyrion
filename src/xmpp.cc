@@ -20,35 +20,46 @@
 namespace tyrion {
 
 Xmpp::Xmpp() {
-  state_ = Xmpp::None;
-
+  // Create XMPP client
   gloox::JID jid(Setting::Instance()->Get("xmpp", "jid"));
-  client_ = new gloox::Client(jid, Setting::Instance()->Get("xmpp",
-                                                            "password"));
-
-  // Use specified server (otherwise we do a name lookup)
-  if (!Setting::Instance()->Get("xmpp", "server").empty())
-    client_->setServer(Setting::Instance()->Get("xmpp", "server"));
+  client_ = new XmppClient(jid, Setting::Instance()->Get("xmpp", "password"));
 
   // Announce we're a Tyrion client
   client_->registerConnectionListener(this);
   client_->disco()->setVersion("Tyrion", VERSION);
   client_->disco()->setIdentity("client", "bot");
 
-  // Optionally disable SASL
-  client_->setSasl(Setting::Instance()->GetBool("xmpp", "sasl", true));
-
-  gloox::StringList ca;
-  ca.push_back(Setting::Instance()->Get("xmpp", "cacert"));
-  client_->setCACerts(ca);
-
   // Enable raw XMPP logging
   client_->logInstance().registerLogHandler(gloox::LogLevelDebug,
                                             gloox::LogAreaAll, this);
+
+  Init();
 }
 
 Xmpp::~Xmpp() {
   delete(client_);
+}
+
+void Xmpp::Init() {
+  // Setup username and password (reloads)
+  gloox::JID jid(Setting::Instance()->Get("xmpp", "jid"));
+  client_->setUsername(jid.username());
+  client_->setResource(jid.resource());
+  client_->setPassword(Setting::Instance()->Get("xmpp", "password"));
+
+  // Use specified server (otherwise we do a name lookup)
+  if (!Setting::Instance()->Get("xmpp", "server").empty())
+    client_->setServer(Setting::Instance()->Get("xmpp", "server"));
+
+  // Optionally disable SASL
+  client_->setSasl(Setting::Instance()->GetBool("xmpp", "sasl", true));
+
+  // Setup CA certificate
+  gloox::StringList ca;
+  ca.push_back(Setting::Instance()->Get("xmpp", "cacert"));
+  client_->setCACerts(ca);
+
+  state_ = Xmpp::None;
 }
 
 void Xmpp::Connect() {
@@ -71,8 +82,12 @@ void Xmpp::Connect() {
 
 void Xmpp::Stop() {
   state_ = Xmpp::Shutdown;
-
   client_->disconnect();
+}
+
+void Xmpp::Restart() {
+  state_ = Xmpp::Reload;
+  client_->restart();
 }
 
 void Xmpp::onConnect() {
@@ -81,7 +96,7 @@ void Xmpp::onConnect() {
 }
 
 void Xmpp::onDisconnect(gloox::ConnectionError e) {
-  if (state_ != Xmpp::Shutdown)
+  if (state_ != Xmpp::Shutdown && state_ != Xmpp::Reload)
     state_ = Xmpp::Disconnected;
   LOG(ERROR) << "Disconnected: " << e;
   if(e == gloox::ConnAuthenticationFailed)

@@ -135,8 +135,8 @@ int main(int argc, char* argv[]) {
   tyrion::Logging *logging = tyrion::Logging::Instance();
 
   if (debug) {
-    logging->Level(tyrion::DEBUG);
-    logging->Stderr(true);
+    logging->SetLevel(tyrion::DEBUG);
+    logging->SetStderr(true);
   }
 
   if (!profile.empty()) {

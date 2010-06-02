@@ -25,10 +25,10 @@ class Node {
   public:
     ~Node();
     static Node *Instance();
-    bool SetupLogging();
-    bool SetupSetting();
-    bool SetupAcl();
+    bool Setup();
     void Run();
+    void Reload();
+    bool Valid();
 
     inline bool debug() { return debug_; }
     inline void set_debug(bool debug) { debug_ = debug; }
@@ -46,9 +46,16 @@ class Node {
     pthread_t handler_;
     std::string config_path_;
     bool debug_;
+    pthread_mutex_t mutex_;
     sigset_t set_;
     Xmpp *xmpp_;
 };
+
+namespace signal {
+
+void *SignalHandler(void *arg);
+
+}  // namespace tyrion::node::signal
 
 } }  // namespace tyrion::node
 

@@ -10,20 +10,24 @@
   This software is distributed without any warranty.
 */
 
-#ifndef TYRION_TYRION_H_
-#define TYRION_TYRION_H_
+#ifndef TYRION_XMPP_CLIENT_H_
+#define TYRION_XMPP_CLIENT_H_
 
-#define OPTION(s, l) (strcmp(option, s) == 0 || strcmp(option, l) == 0)
-
-#include <string>
+#include <gloox/client.h>
 
 namespace tyrion {
 
-const int         NODE_RECONNECT   = 10;
-const int         SERVICE_TIMEOUT  = 60;
-const std::string VERSION          = "0.0.1";
-const std::string XMLNS_IQ_SERVICE = "http://tyrion.org/protocol/1.0/service";
+class XmppClient : public gloox::Client {
+  public:
+    XmppClient(const gloox::JID &jid, const std::string &password) :
+        gloox::Client(jid, password) {}
+
+    void restart() {
+      disconnect();
+      gloox::ClientBase::disconnect(gloox::ConnNoError);
+    }
+};
 
 }  // namespace tyrion
 
-#endif  // TYRION_TYRION_H_
+#endif  // TYRION_XMPP_CLIENT_H_

@@ -23,6 +23,7 @@
 #include <gloox/connectiontcpclient.h>
 #include <gloox/connectionsocks5proxy.h>
 #include <gloox/connectionhttpproxy.h>
+#include "xmpp_client.h"
 
 namespace tyrion {
 
@@ -32,13 +33,16 @@ class Xmpp : public gloox::ConnectionListener, gloox::LogHandler {
       None,
       Connected,
       Disconnected,
-      Shutdown
+      Shutdown,
+      Reload
     };
 
     Xmpp();
     virtual ~Xmpp();
 
+    void Init();
     void Connect();
+    void Restart();
     void Stop();
 
     virtual void SetupHandlers() {}
@@ -56,7 +60,7 @@ class Xmpp : public gloox::ConnectionListener, gloox::LogHandler {
     State state() { return state_; }
 
   protected:
-    gloox::Client *client_;
+    XmppClient *client_;
     State state_;
 };
 

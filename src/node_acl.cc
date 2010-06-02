@@ -31,7 +31,7 @@ void Acl::Reload() {
     LOG(INFO) << "Reloading ACLs...";
     Acl *old_instance = instance_;
     Acl *new_instance = new Acl;
-    std::string path = Setting::Instance()->Get("general", "acl", ACL_PATH);
+    std::string path = Setting::Instance()->Get("general", "acl");
     new_instance->File(path);
     if (new_instance->HasError()) {
       LOG(WARNING) << "Unable to reload ACLs...";

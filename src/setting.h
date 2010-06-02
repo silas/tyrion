@@ -14,7 +14,10 @@
 #define TYRION_SETTING_H_
 
 #include <iostream>
+#include <string>
+#include <vector>
 #include "config.h"
+#include "level.h"
 
 namespace tyrion {
 
@@ -51,6 +54,37 @@ class Setting : public BaseSetting {
 
   private:
     static Setting* instance_;
+};
+
+class SettingValidatorIssue {
+  public:
+    SettingValidatorIssue(std::string text, Level level);
+    std::string text() { return text_; }
+    Level level() { return level_; }
+
+  private:
+    std::string text_;
+    Level level_;
+};
+
+typedef std::vector<SettingValidatorIssue> SettingValidatorIssueList;
+
+class SettingValidator : public BaseSetting {
+  public:
+    SettingValidator(std::string path);
+    virtual void Validate() {}
+
+    bool IsFatal(Level level = ERROR) { return highest_level_ >= level; }
+    void ReportIssues();
+
+    void NewIssue(std::string text, Level level);
+    void Issue(std::string section, std::string option, std::string text,
+               Level level = ERROR);
+    bool Require(std::string section, std::string option);
+
+  protected:
+    SettingValidatorIssueList issues_;
+    Level highest_level_;
 };
 
 }  // namespace tyrion

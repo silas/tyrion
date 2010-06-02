@@ -24,7 +24,7 @@ namespace node {
 XmppServiceManager::XmppServiceManager(gloox::ClientBase* parent) :
     tyrion::XmppServiceManager(parent) {
   service_path_ = utils::RealPath(
-    Setting::Instance()->Get("general", "service", SERVICE_PATH));
+    Setting::Instance()->Get("general", "service"));
 }
 
 void *XmppServiceManager::handleIqInThread(void *arg) {

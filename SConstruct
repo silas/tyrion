@@ -1,5 +1,6 @@
 library_source = [
     'src/config.cc',
+    'src/level.cc',
     'src/logging.cc',
     'src/process.cc',
     'src/setting.cc',
@@ -21,6 +22,7 @@ node_source = [
     'src/node_acl.cc',
     'src/node_main.cc',
     'src/node_service_handler.cc',
+    'src/node_validators.cc',
     'src/node_xmpp.cc',
     'src/node_xmpp_service_manager.cc',
 ]

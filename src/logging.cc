@@ -34,11 +34,10 @@ Logging::Logging() {
 }
 
 Logging::~Logging() {
-  if (file_ != NULL)
-    fclose(file_);
+  if (file_) fclose(file_);
 }
 
-void Logging::Level(LogLevel level) {
+void Logging::SetLevel(Level level) {
   if ((level >= DEBUG) && (level <= CRITICAL)) {
     level_ = level;
   } else {
@@ -46,11 +45,11 @@ void Logging::Level(LogLevel level) {
   }
 }
 
-void Logging::Level(std::string level, LogLevel default_level) {
-  Level(ToLogLevel(level, default_level));
+void Logging::SetLevel(std::string level, Level default_level) {
+  SetLevel(StringToLevel(level, default_level));
 }
 
-void Logging::Log(LogLevel level, std::string text) {
+void Logging::Log(Level level, std::string text) {
   if (level >= level_) {
     struct stat file_stat;
 
@@ -61,7 +60,7 @@ void Logging::Log(LogLevel level, std::string text) {
 
     std::string message = asctime(timeinfo);
     message.erase(message.end()-1, message.end());
-    message += ": " + ToString(level);
+    message += ": " + LevelToString(level);
     message += ": " + text + "\n";
 
     if (file_) {
@@ -79,37 +78,13 @@ void Logging::Log(LogLevel level, std::string text) {
   }
 }
 
-std::string Logging::ToString(LogLevel level) {
-  static const char* const buffer[] = {"DEBUG", "INFO", "WARNING", "ERROR",
-                                       "CRITICAL"};
-  return buffer[level];
-}
-
-LogLevel Logging::ToLogLevel(std::string level, LogLevel default_level) {
-  std::transform(level.begin(), level.end(), level.begin(), ::tolower);
-
-  if (level == "critical") {
-    return CRITICAL;
-  } else if (level == "error") {
-    return ERROR;
-  } else if (level == "warning") {
-    return WARNING;
-  } else if (level == "info") {
-    return INFO;
-  } else if (level == "debug") {
-    return DEBUG;
-  } else {
-    return default_level;
-  }
-}
-
-bool Logging::File(std::string path) {
+bool Logging::SetFile(std::string path) {
   path_ = path;
   file_ = fopen(path_.c_str(), "a+");
   return file_ != NULL;
 }
 
-void Logging::Stderr(bool enable) {
+void Logging::SetStderr(bool enable) {
   stderr_ = enable;
 }
 

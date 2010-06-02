@@ -10,20 +10,24 @@
   This software is distributed without any warranty.
 */
 
-#ifndef TYRION_TYRION_H_
-#define TYRION_TYRION_H_
-
-#define OPTION(s, l) (strcmp(option, s) == 0 || strcmp(option, l) == 0)
+#ifndef TYRION_LEVEL_H_
+#define TYRION_LEVEL_H_
 
 #include <string>
 
 namespace tyrion {
 
-const int         NODE_RECONNECT   = 10;
-const int         SERVICE_TIMEOUT  = 60;
-const std::string VERSION          = "0.0.1";
-const std::string XMLNS_IQ_SERVICE = "http://tyrion.org/protocol/1.0/service";
+enum Level {
+  DEBUG,
+  INFO,
+  WARNING,
+  ERROR,
+  CRITICAL
+};
 
-}  // namespace tyrion
+std::string LevelToString(Level level);
+Level StringToLevel(std::string level, Level default_level=WARNING);
 
-#endif  // TYRION_TYRION_H_
+}
+
+#endif  // TYRION_LEVEL_H_

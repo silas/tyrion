@@ -81,4 +81,40 @@ void Setting::Reload() {
   }
 }
 
+SettingValidatorIssue::SettingValidatorIssue(std::string text, Level level) {
+  text_ = text;
+  level_ = level;
+}
+
+SettingValidator::SettingValidator(std::string path) {
+  highest_level_ = DEBUG;
+  File(path);
+  Validate();
+}
+
+void SettingValidator::NewIssue(std::string text, Level level) {
+  if (level > highest_level_) highest_level_ = level;
+  issues_.push_back(SettingValidatorIssue(text, level));
+}
+
+void SettingValidator::ReportIssues() {
+  for (int i = 0; i < issues_.size(); i++) {
+    LogItem(issues_[i].level()) << issues_[i].text();
+  }
+}
+
+void SettingValidator::Issue(std::string section, std::string option, std::string text,
+                           Level level) {
+  NewIssue("The " + option + " option in the " + section + " section " + text +
+           ".", level);
+}
+
+bool SettingValidator::Require(std::string section, std::string option) {
+  if (Get(section, option).empty()) {
+    Issue(section, option, "is required");
+    return false;
+  }
+  return true;
+}
+
 } // namespace tyrion

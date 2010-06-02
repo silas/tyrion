@@ -1,10 +1,13 @@
 #include <cstring>
 #include <iostream>
 #include <string>
+#include "logging.h"
 #include "node.h"
 #include "setting.h"
 
 int main(int argc, char* argv[]) {
+
+  tyrion::Logging::Instance()->SetStderr(true);
 
   for(int i = 1; i < argc; i++) {
     const char* option = argv[i];
@@ -20,7 +23,7 @@ int main(int argc, char* argv[]) {
       tyrion::node::Node::Instance()->set_debug(true);
     } else if (strcmp(option, "--help") == 0) {
       std::cout << "Usage: tyrion-node [OPTION]..." << std::endl;
-      std::cout << "Example: tyrion-node -c " << tyrion::CONFIG_PATH << std::endl;
+      std::cout << "Example: tyrion-node -c node.conf" << std::endl;
       std::cout << std::endl;
       std::cout << "Configuration options:" << std::endl;
       std::cout << "  -c, --config-file         the node configuration file" << std::endl;
@@ -34,30 +37,8 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  if (!tyrion::node::Node::Instance()->SetupSetting()) {
-    std::cerr << "Unable to load configuration file." << std::endl;
+  if (!tyrion::node::Node::Instance()->Setup())
     return 1;
-  }
-
-  if (!tyrion::node::Node::Instance()->SetupAcl()) {
-    std::cerr << "Unable to load ACL file." << std::endl;
-    return 1;
-  }
-
-  if (!tyrion::node::Node::Instance()->SetupLogging()) {
-    std::cerr << "Unable to open log file." << std::endl;
-    return 1;
-  }
-
-  std::string jid = tyrion::Setting::Instance()->Get("xmpp", "jid");
-  if (jid.empty()) {
-    std::cerr << "The xmpp jid field is required." << std::endl;
-    return 1;
-  } else if (jid.find("/") == std::string::npos) {
-    std::cerr << "The xmpp jid field requires a resource (ex: "
-              << "user@host/resource)." << std::endl;
-    return 1;
-  }
 
   tyrion::node::Node::Instance()->Run();
 
