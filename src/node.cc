@@ -18,6 +18,7 @@
 #include "node_acl.h"
 #include "node_setting_validator.h"
 #include "setting.h"
+#include "utils.h"
 #include "tyrion.h"
 
 namespace tyrion {
@@ -29,20 +30,21 @@ Node::Node() {
   debug_ = false;
 
   // Create a thread to handle signals
+  utils::CreateThread(signal::SignalHandler, NULL);
+
+  // Reload mutex
   pthread_mutex_init(&mutex_, NULL);
-  pthread_create(&handler_, NULL, tyrion::node::signal::SignalHandler, NULL);
 
   // Ignore SIGHUP here and for all children
-  sigemptyset(&set_);
+  sigfillset(&set_);
   sigaddset(&set_, SIGHUP);
-  sigprocmask(SIG_BLOCK, &set_, NULL);
+  pthread_sigmask(SIG_BLOCK, &set_, NULL);
 }
 
 Node::~Node() {
   delete(xmpp_);
 
   pthread_mutex_destroy(&mutex_);
-  pthread_join(handler_, NULL);
 
   delete(instance_);
 }
@@ -164,6 +166,7 @@ void *SignalHandler(void *arg) {
   // We want to watch for SIGHUP
   sigemptyset(&set);
   sigaddset(&set, SIGHUP);
+  pthread_sigmask(SIG_BLOCK, &set, NULL);
 
   while (true) {
     // Block until we get a SIGHUP
