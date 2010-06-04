@@ -22,7 +22,7 @@ namespace tyrion {
 Xmpp::Xmpp() {
   // Create XMPP client
   gloox::JID jid(Setting::Instance()->Get("xmpp", "jid"));
-  client_ = new XmppClient(jid, Setting::Instance()->Get("xmpp", "password"));
+  client_ = new gloox::Client(jid, Setting::Instance()->Get("xmpp", "password"));
 
   // Announce we're a Tyrion client
   client_->registerConnectionListener(this);
@@ -85,18 +85,13 @@ void Xmpp::Stop() {
   client_->disconnect();
 }
 
-void Xmpp::Restart() {
-  state_ = Xmpp::Reload;
-  client_->restart();
-}
-
 void Xmpp::onConnect() {
   state_ = Xmpp::Connected;
   LOG(INFO) << "Connected to XMPP server";
 }
 
 void Xmpp::onDisconnect(gloox::ConnectionError e) {
-  if (state_ != Xmpp::Shutdown && state_ != Xmpp::Reload)
+  if (state_ != Xmpp::Shutdown)
     state_ = Xmpp::Disconnected;
   LOG(ERROR) << "Disconnected: " << e;
   if(e == gloox::ConnAuthenticationFailed)

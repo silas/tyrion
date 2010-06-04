@@ -32,9 +32,6 @@ Node::Node() {
   // Create a thread to handle signals
   utils::CreateThread(signal::SignalHandler, NULL);
 
-  // Reload mutex
-  pthread_mutex_init(&mutex_, NULL);
-
   // Ignore SIGHUP here and for all children
   sigfillset(&set_);
   sigaddset(&set_, SIGHUP);
@@ -43,9 +40,6 @@ Node::Node() {
 
 Node::~Node() {
   delete(xmpp_);
-
-  pthread_mutex_destroy(&mutex_);
-
   delete(instance_);
 }
 
@@ -55,20 +49,9 @@ void Node::Reload() {
     return;
   }
 
-  // Stop XMPP client in a way that we can connect again
-  xmpp_->Restart();
-
-  // Lock mutex so we're not trying to connect and restart at the same time
-  pthread_mutex_lock(&mutex_);
-
   // Reload configuration files
   Setting::Instance()->Reload();
   Acl::Instance()->Reload();
-
-  // Reload settings from configuration files
-  xmpp_->Init();
-
-  pthread_mutex_unlock(&mutex_);
 }
 
 bool Node::Valid() {
@@ -134,27 +117,8 @@ bool Node::Setup() {
 void Node::Run() {
   if (!xmpp_) xmpp_ = new Xmpp();
 
-  bool reconnect = true;
-
-  while (reconnect) {
-    // We need to wait here if we're reloading
-    while (xmpp_->state() == Xmpp::Reload) usleep(100000);
-
-    pthread_mutex_lock(&mutex_);
-
-    // Sleep for a while before we try to reconnect if we didn't explicitly
-    // disconnect.
-    reconnect = xmpp_->state() != Xmpp::Shutdown;
-    if (reconnect && xmpp_->state() != Xmpp::None) {
-      LOG(INFO) << "Reconnecting in " << NODE_RECONNECT << " seconds...";
-      sleep(NODE_RECONNECT);
-    }
-
-    // Try to connect to XMPP server and handle events
-    xmpp_->Connect();
-
-    pthread_mutex_unlock(&mutex_);
-  }
+  // Try to connect to XMPP server and handle events
+  xmpp_->Connect();
 }
 
 namespace signal {
