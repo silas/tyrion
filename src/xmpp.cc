@@ -37,7 +37,10 @@ Xmpp::Xmpp() {
 }
 
 Xmpp::~Xmpp() {
-  delete(client_);
+  if (client_) {
+    delete(client_);
+    client_ = NULL;
+  }
 }
 
 void Xmpp::Init() {
@@ -93,9 +96,11 @@ void Xmpp::onConnect() {
 void Xmpp::onDisconnect(gloox::ConnectionError e) {
   if (state_ != Xmpp::Shutdown)
     state_ = Xmpp::Disconnected;
-  LOG(ERROR) << "Disconnected: " << e;
-  if(e == gloox::ConnAuthenticationFailed)
+  LOG(INFO) << "Disconnected: " << e;
+  if(e == gloox::ConnAuthenticationFailed) {
+    state_ = Xmpp::Error;
     LOG(ERROR) << "Authenitcation failed: " << client_->authError();
+  }
 }
 
 bool Xmpp::onTLSConnect(const gloox::CertInfo& info) {

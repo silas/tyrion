@@ -39,12 +39,17 @@ class Node {
     /**
      * Connect to XMPP server and handle events.
      */
-    void Run();
+    int Run();
 
     /**
      * Try to reload settings in the safest way possible.
      */
     void Reload();
+
+    /**
+     * Shutdown and cleanup service.
+     */
+    void Stop();
 
     /**
      * Validate all settings, used before reloading.
@@ -68,7 +73,6 @@ class Node {
   protected:
     Node();
     Node(Node const&) {};
-    Node& operator=(Node const&) {};
 
   private:
     static Node* instance_;

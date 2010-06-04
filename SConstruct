@@ -75,6 +75,17 @@ AddOption(
 )
 
 AddOption(
+    '--flags',
+    dest='flags',
+    type='string',
+    nargs=1,
+    action='store',
+    default='-c -ansi -pipe -Wall -fno-exceptions -fno-rtti -fstack-protector -mtune=generic',
+    metavar='DIR',
+    help='compiler flags',
+)
+
+AddOption(
     '--static',
     dest='static',
     action='store_true',
@@ -88,7 +99,7 @@ def Abort(message):
 
 # Setup environment
 
-env = Environment()
+env = Environment(CXXFLAGS=GetOption('flags'))
 
 # Configure environment
 

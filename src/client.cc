@@ -25,6 +25,7 @@ void *start_xmpp(void *arg) {
   tyrion::client::Xmpp *xmpp=(tyrion::client::Xmpp*)arg;
   xmpp->Connect();
   delete(xmpp);
+  pthread_exit(NULL);
 }
 
 int main(int argc, char* argv[]) {
@@ -175,7 +176,6 @@ int main(int argc, char* argv[]) {
   tyrion::client::ServiceQueue *response = new tyrion::client::ServiceQueue();
   tyrion::client::Xmpp *xmpp = new tyrion::client::Xmpp(request, response);
   pthread_t handler;
-  void *status;
 
   int rc = pthread_create(&handler, NULL, start_xmpp, (void *)xmpp);
 

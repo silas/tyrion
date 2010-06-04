@@ -35,12 +35,16 @@ Node::Node() {
   // Ignore SIGHUP here and for all children
   sigfillset(&set_);
   sigaddset(&set_, SIGHUP);
+  sigaddset(&set_, SIGINT);
+  sigaddset(&set_, SIGTERM);
   pthread_sigmask(SIG_BLOCK, &set_, NULL);
 }
 
 Node::~Node() {
-  delete(xmpp_);
-  delete(instance_);
+  if (xmpp_) {
+    delete(xmpp_);
+    xmpp_ = NULL;
+  }
 }
 
 void Node::Reload() {
@@ -52,6 +56,10 @@ void Node::Reload() {
   // Reload configuration files
   Setting::Instance()->Reload();
   Acl::Instance()->Reload();
+}
+
+void Node::Stop() {
+  if (xmpp_) xmpp_->Stop();
 }
 
 bool Node::Valid() {
@@ -114,11 +122,19 @@ bool Node::Setup() {
   return true;
 }
 
-void Node::Run() {
+int Node::Run() {
   if (!xmpp_) xmpp_ = new Xmpp();
 
   // Try to connect to XMPP server and handle events
   xmpp_->Connect();
+
+  if (xmpp_->state() == Xmpp::Shutdown) {
+    return 0;
+  } else if (xmpp_->state() == Xmpp::Disconnected) {
+    return 76;
+  }
+
+  return 1;
 }
 
 namespace signal {
@@ -130,6 +146,8 @@ void *SignalHandler(void *arg) {
   // We want to watch for SIGHUP
   sigemptyset(&set);
   sigaddset(&set, SIGHUP);
+  sigaddset(&set, SIGINT);
+  sigaddset(&set, SIGTERM);
   pthread_sigmask(SIG_BLOCK, &set, NULL);
 
   while (true) {
@@ -139,6 +157,11 @@ void *SignalHandler(void *arg) {
     switch (sig) {
       case SIGHUP:
         Node::Instance()->Reload();
+        break;
+      case SIGINT:
+      case SIGTERM:
+        Node::Instance()->Stop();
+        pthread_exit(NULL);
         break;
     }
   }

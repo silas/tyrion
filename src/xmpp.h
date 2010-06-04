@@ -35,6 +35,7 @@ class Xmpp : public gloox::ConnectionListener, gloox::LogHandler {
       None,
       Connected,
       Disconnected,
+      Error,
       Shutdown
     };
 

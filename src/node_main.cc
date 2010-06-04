@@ -40,7 +40,5 @@ int main(int argc, char* argv[]) {
   if (!tyrion::node::Node::Instance()->Setup())
     return 1;
 
-  tyrion::node::Node::Instance()->Run();
-
-  return 0;
+  return tyrion::node::Node::Instance()->Run();
 }

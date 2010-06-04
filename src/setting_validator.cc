@@ -33,7 +33,7 @@ void SettingValidator::NewIssue(std::string text, Level level) {
 }
 
 void SettingValidator::ReportIssues() {
-  for (int i = 0; i < issues_.size(); i++) {
+  for (size_t i = 0; i < issues_.size(); i++) {
     LogItem(issues_[i].level()) << issues_[i].text();
   }
 }

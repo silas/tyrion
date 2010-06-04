@@ -69,7 +69,6 @@ class BaseSetting {
   protected:
     BaseSetting() { path_ = ""; };
     BaseSetting(BaseSetting const&) {};
-    BaseSetting& operator=(BaseSetting const&) {};
     Config *config_;
     std::string path_;
 };

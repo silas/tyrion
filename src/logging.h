@@ -74,7 +74,6 @@ class Logging {
   private:
     Logging();
     Logging(const Logging&) {}
-    Logging& operator= (const Logging&) {}
     FILE *file_;
     ino_t inode_;
     static Logging* instance_;

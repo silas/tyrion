@@ -17,8 +17,10 @@
 namespace tyrion {
 
 BaseSetting::~BaseSetting() {
-  if (config_)
+  if (config_) {
     delete(config_);
+    config_ = NULL;
+  }
 }
 
 void BaseSetting::OpenFile(std::string path) {

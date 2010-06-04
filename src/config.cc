@@ -47,7 +47,7 @@ long Config::GetInt(std::string section, std::string name, long default_value) {
 
 std::string Config::MakeKey(std::string section, std::string name) {
   std::string key = section + "." + name;
-  for (int i = 0; i < key.length(); i++) {
+  for (size_t i = 0; i < key.length(); i++) {
     key[i] = tolower(key[i]);
   }
   return key;
