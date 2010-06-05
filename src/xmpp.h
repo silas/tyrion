@@ -23,6 +23,7 @@
 #include <gloox/connectiontcpclient.h>
 #include <gloox/connectionsocks5proxy.h>
 #include <gloox/connectionhttpproxy.h>
+#include "xmpp_client.h"
 
 namespace tyrion {
 
@@ -35,6 +36,7 @@ class Xmpp : public gloox::ConnectionListener, gloox::LogHandler {
       None,
       Connected,
       Disconnected,
+      Reload,
       Error,
       Shutdown
     };
@@ -53,14 +55,9 @@ class Xmpp : public gloox::ConnectionListener, gloox::LogHandler {
     void Connect();
 
     /**
-     * Disconnect XMPP client in such as way that we can reconnect.
-     */
-    void Restart();
-
-    /**
      * Disconnect from XMPP client in a permanent way.
      */
-    void Stop();
+    void Stop(bool reload = false);
 
     virtual void SetupHandlers() {}
     virtual void DestroyHandlers() {}
@@ -75,7 +72,7 @@ class Xmpp : public gloox::ConnectionListener, gloox::LogHandler {
     /**
      * Return XMPP client.
      */
-    gloox::Client *client() { return client_; }
+    XmppClient *client() { return client_; }
 
     /**
      * Return current XMPP state.
@@ -83,7 +80,7 @@ class Xmpp : public gloox::ConnectionListener, gloox::LogHandler {
     State state() { return state_; }
 
   protected:
-    gloox::Client *client_;
+    XmppClient *client_;
     State state_;
 };
 

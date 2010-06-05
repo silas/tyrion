@@ -79,6 +79,7 @@ class Node {
     std::string config_path_;
     bool debug_;
     Xmpp *xmpp_;
+    pthread_mutex_t mutex_;
     sigset_t set_;
 };
 
