@@ -86,8 +86,14 @@ AddOption(
 )
 
 AddOption(
-    '--static',
+    '--with-static',
     dest='static',
+    action='store_true',
+)
+
+AddOption(
+    '--with-debug',
+    dest='debug',
     action='store_true',
 )
 
@@ -99,7 +105,12 @@ def Abort(message):
 
 # Setup environment
 
-env = Environment(CXXFLAGS=GetOption('flags'))
+flags = GetOption('flags')
+
+if GetOption('debug'):
+  flags += ' -g'
+
+env = Environment(CXXFLAGS=flags)
 
 # Configure environment
 
