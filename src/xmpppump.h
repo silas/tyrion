@@ -25,53 +25,48 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <iostream>
-#include <txmpp/cryptstring.h>
-#include <txmpp/logging.h>
-#include <txmpp/xmppclientsettings.h>
-#include "xmppthread.h"
+#ifndef _TYRION_XMPPPUMP_H_
+#define _TYRION_XMPPPUMP_H_
 
-int main(int argc, char* argv[]) {
+#include <txmpp/messagequeue.h>
+#include <txmpp/taskrunner.h>
+#include <txmpp/thread.h>
+#include <txmpp/time.h>
+#include <txmpp/xmppclient.h>
+#include <txmpp/xmppengine.h>
+#include <txmpp/xmpptask.h>
 
-  bool reconnect = true;
+namespace tyrion {
 
-  txmpp::LogMessage::LogToDebug(txmpp::LS_SENSITIVE);
+class XmppPumpNotify {
+  public:
+    virtual ~XmppPumpNotify() {}
+    virtual void OnStateChange(txmpp::XmppEngine::State state) = 0;
+};
 
-  txmpp::InsecureCryptStringImpl password;
-  password.password() = "test";
+class XmppPump : public txmpp::MessageHandler, public txmpp::TaskRunner {
+  public:
+    XmppPump(XmppPumpNotify * notify = NULL);
 
-  while (reconnect) {
+    txmpp::XmppClient *client() { return client_; }
+    txmpp::XmppReturnStatus SendStanza(const txmpp::XmlElement *stanza);
+    int64 CurrentTime();
 
-    // Start xmpp on a different thread
-    tyrion::XmppThread thread;
-    if (thread.IsOwned()) {
-      std::cout << "GOT HERE" << std::endl;
-    }
-    thread.Start();
+    void DoLogin(const txmpp::XmppClientSettings & xcs,
+                 txmpp::XmppAsyncSocket* socket,
+                 txmpp::PreXmppAuth* auth);
+    void DoDisconnect();
+    void WakeTasks();
 
-    // Create client settings
-    txmpp::XmppClientSettings xcs;
-    xcs.set_user("test");
-    xcs.set_pass(txmpp::CryptString(password));
-    xcs.set_host("example.org");
-    xcs.set_resource("resource");
-    xcs.set_use_tls(true);
-    xcs.set_server(txmpp::SocketAddress("example.org", 5222));
+    void OnStateChange(txmpp::XmppEngine::State state);
+    void OnMessage(txmpp::Message *pmsg);
 
-    thread.Login(xcs);
+  private:
+    txmpp::XmppClient *client_;
+    txmpp::XmppEngine::State state_;
+    XmppPumpNotify *notify_;
+};
 
-    // Use main thread for console input
-    std::string line;
-    while (std::getline(std::cin, line)) {
-      if (line == "quit")
-        reconnect = false;
-      if (line == "continue" || line == "quit")
-        break;
-    }
+}  // namespace tyrion
 
-    thread.Disconnect();
-    thread.Stop();
-  }
-
-  return 0;
-}
+#endif  // _TYRION_XMPPPUMP_H_

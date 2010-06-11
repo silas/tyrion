@@ -1,78 +1,20 @@
-library_source = [
-    'src/config.cc',
-    'src/level.cc',
-    'src/logging.cc',
-    'src/process.cc',
-    'src/setting.cc',
-    'src/third_party/inih/ini.c',
-    'src/utils.cc',
-    'src/setting_validator.cc',
-    'src/xmpp.cc',
-    'src/xmpp_service.cc',
-    'src/xmpp_service_manager.cc',
-]
+import os
+import platform
 
-client_source = [
-    'src/client.cc',
-    'src/client_xmpp.cc',
-    'src/client_xmpp_service_manager.cc',
-]
+#
+# Base settings
+#
 
-node_source = [
-    'src/node.cc',
-    'src/node_acl.cc',
-    'src/node_main.cc',
-    'src/node_service_handler.cc',
-    'src/node_setting_validator.cc',
-    'src/node_xmpp.cc',
-    'src/node_xmpp_service_manager.cc',
-]
+defines = []
+flags = ''
+frameworks = []
+libraries = ['txmpp']
+name = 'tyrion'
+system = platform.system().lower()
 
-library_list = ['gloox', 'pthread']
-
-AddOption(
-    '--prefix',
-    dest='prefix',
-    type='string',
-    nargs=1,
-    action='store',
-    default='',
-    metavar='DIR',
-    help='installation prefix',
-)
-
-AddOption(
-    '--libdir',
-    dest='libdir',
-    type='string',
-    nargs=1,
-    action='store',
-    default='/usr/local/lib',
-    metavar='DIR',
-    help='shared libraries path',
-)
-
-AddOption(
-    '--bindir',
-    dest='bindir',
-    type='string',
-    nargs=1,
-    action='store',
-    default='/usr/local/bin',
-    metavar='DIR',
-    help='user binary path',
-)
-
-AddOption(
-    '--sbindir',
-    dest='sbindir',
-    type='string',
-    nargs=1,
-    action='store',
-    default='/usr/local/bin',
-    metavar='DIR',
-    help='system binary path',
-)
+#
+# Build options
+#
 
 AddOption(
     '--flags',
@@ -80,7 +22,7 @@ AddOption(
     type='string',
     nargs=1,
     action='store',
-    default='-c -ansi -pipe -Wall -fno-exceptions -fno-rtti -fstack-protector -mtune=generic',
+    default='',
     metavar='DIR',
     help='compiler flags',
 )
@@ -97,60 +39,89 @@ AddOption(
     action='store_true',
 )
 
+#
 # Helper functions
+#
 
 def Abort(message):
     print message
     Exit(1)
 
-# Setup environment
+def SetupEnvironment(env):
+    # Include paths
+    path_list = []
+    if 'C_INCLUDE_PATH' in os.environ:
+        path_list.extend(os.environ['C_INCLUDE_PATH'].split(':'))
+    if 'CPLUS_INCLUDE_PATH' in os.environ:
+        path_list.extend(os.environ['CPLUS_INCLUDE_PATH'].split(':'))
+    env.Append(CPPPATH=path_list)
+    # Library paths
+    path_list = []
+    if 'LIBRARY_PATH' in os.environ:
+        path_list.extend(os.environ['LIBRARY_PATH'].split(':'))
+    env.Append(LIBPATH=path_list)
 
-flags = GetOption('flags')
+#
+# Setup environment
+#
+
+if GetOption('flags'):
+    flags += GetOption('flags')
 
 if GetOption('debug'):
-  flags += ' -g'
+    flags += ' -g'
 
-env = Environment(CXXFLAGS=flags)
+if system == 'linux':
+    defines += ['LINUX']
+elif system == 'darwin':
+    defines += ['OSX']
 
+if 'POSIX' in defines:
+    flags += ' -pthread'
+
+env = Environment(
+    CXXFLAGS=flags,
+    FRAMEWORKS=frameworks,
+)
+
+SetupEnvironment(env)
+
+#
 # Configure environment
+#
 
 conf = Configure(env)
 
-if not conf.CheckCXXHeader('gloox/gloox.h'):
-    Abort('The gloox development library is required.')
 if not conf.CheckCXXHeader('pthread.h'):
     Abort('pthread.h is required.')
+if not conf.CheckCXXHeader('txmpp/config.h'):
+    Abort('The txmpp development library is required.')
 
 env = conf.Finish()
 
+#
 # Built library
+#
+
+library_src = [
+    'src/xmpppump.cc',
+    'src/xmpptasks.cc',
+    'src/xmppthread.cc',
+]
 
 if GetOption('static'):
-    tyrion_library = env.StaticLibrary('tyrion', library_source, LIBS=library_list)
+    tyrion_library = env.StaticLibrary('tyrion', library_src, CPPDEFINES=defines, LIBS=libraries)
 else:
-    tyrion_library = env.SharedLibrary('tyrion', library_source, LIBS=library_list)
+    tyrion_library = env.SharedLibrary('tyrion', library_src, CPPDEFINES=defines, LIBS=libraries)
 
-library_list += [tyrion_library]
+libraries += [tyrion_library]
 
-# Build applications
+#
+# Build application
+#
 
-tyrion = env.Program(target='tyrion', source=client_source, LIBS=library_list)
-tyrion_node = env.Program(target='tyrion-node', source=node_source, LIBS=library_list)
+node_src = [
+    'src/node.cc',
+]
 
-# Install
-
-prefix = GetOption('prefix')
-
-libdir = prefix + GetOption('libdir')
-bindir = prefix + GetOption('bindir')
-sbindir = prefix + GetOption('sbindir')
-
-if 'install' in COMMAND_LINE_TARGETS:
-    if not GetOption('static'):
-        env.Install(libdir, tyrion_library)
-        env.Alias('install', libdir)
-
-    env.Install(bindir, tyrion)
-    env.Install(sbindir, tyrion_node)
-
-    env.Alias('install', [bindir, sbindir])
+tyrion_node = env.Program(target='tyrion-node', source=node_src, CPPDEFINES=defines, LIBS=libraries)

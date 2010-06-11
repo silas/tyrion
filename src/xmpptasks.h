@@ -25,53 +25,41 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <iostream>
-#include <txmpp/cryptstring.h>
-#include <txmpp/logging.h>
-#include <txmpp/xmppclientsettings.h>
-#include "xmppthread.h"
+#ifndef _TYRION_XMPPTASKS_H_
+#define _TYRION_XMPPTASKS_H_
 
-int main(int argc, char* argv[]) {
+#include <txmpp/taskparent.h>
+#include <txmpp/xmpptask.h>
 
-  bool reconnect = true;
+namespace tyrion {
 
-  txmpp::LogMessage::LogToDebug(txmpp::LS_SENSITIVE);
+class XmppTaskMessage : public txmpp::XmppTask {
+  public:
+    explicit XmppTaskMessage(txmpp::TaskParent *parent);
+    virtual ~XmppTaskMessage();
+    virtual int ProcessStart();
+    virtual int ProcessResponse();
+    bool HandleStanza(const txmpp::XmlElement *stanza);
+};
 
-  txmpp::InsecureCryptStringImpl password;
-  password.password() = "test";
+class XmppTaskPresence : public txmpp::XmppTask {
+  public:
+    explicit XmppTaskPresence(txmpp::TaskParent *parent);
+    virtual ~XmppTaskPresence();
+    virtual int ProcessStart();
+    virtual int ProcessResponse();
+    bool HandleStanza(const txmpp::XmlElement *stanza);
+};
 
-  while (reconnect) {
+class XmppTaskIq : public txmpp::XmppTask {
+  public:
+    explicit XmppTaskIq(txmpp::TaskParent *parent);
+    virtual ~XmppTaskIq();
+    virtual int ProcessStart();
+    virtual int ProcessResponse();
+    bool HandleStanza(const txmpp::XmlElement *stanza);
+};
 
-    // Start xmpp on a different thread
-    tyrion::XmppThread thread;
-    if (thread.IsOwned()) {
-      std::cout << "GOT HERE" << std::endl;
-    }
-    thread.Start();
+}  // namespace tyrion
 
-    // Create client settings
-    txmpp::XmppClientSettings xcs;
-    xcs.set_user("test");
-    xcs.set_pass(txmpp::CryptString(password));
-    xcs.set_host("example.org");
-    xcs.set_resource("resource");
-    xcs.set_use_tls(true);
-    xcs.set_server(txmpp::SocketAddress("example.org", 5222));
-
-    thread.Login(xcs);
-
-    // Use main thread for console input
-    std::string line;
-    while (std::getline(std::cin, line)) {
-      if (line == "quit")
-        reconnect = false;
-      if (line == "continue" || line == "quit")
-        break;
-    }
-
-    thread.Disconnect();
-    thread.Stop();
-  }
-
-  return 0;
-}
+#endif  // _TYRION_XMPPTASK_H_

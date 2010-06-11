@@ -25,53 +25,33 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <iostream>
-#include <txmpp/cryptstring.h>
-#include <txmpp/logging.h>
+#ifndef _TYRION_XMPPTHREAD_H_
+#define _TYRION_XMPPTHREAD_H_
+
+#include <txmpp/thread.h>
 #include <txmpp/xmppclientsettings.h>
-#include "xmppthread.h"
+#include "xmpppump.h"
 
-int main(int argc, char* argv[]) {
+namespace tyrion {
 
-  bool reconnect = true;
+class XmppThread: public txmpp::Thread, XmppPumpNotify, txmpp::MessageHandler {
+  public:
+    XmppThread();
+    ~XmppThread();
 
-  txmpp::LogMessage::LogToDebug(txmpp::LS_SENSITIVE);
+    txmpp::XmppClient* client() { return pump_->client(); }
 
-  txmpp::InsecureCryptStringImpl password;
-  password.password() = "test";
+    void ProcessMessages(int cms);
+    void Login(const txmpp::XmppClientSettings & xcs);
+    void Disconnect();
 
-  while (reconnect) {
+  private:
+    XmppPump* pump_;
 
-    // Start xmpp on a different thread
-    tyrion::XmppThread thread;
-    if (thread.IsOwned()) {
-      std::cout << "GOT HERE" << std::endl;
-    }
-    thread.Start();
+    void OnStateChange(txmpp::XmppEngine::State state);
+    void OnMessage(txmpp::Message* pmsg);
+};
 
-    // Create client settings
-    txmpp::XmppClientSettings xcs;
-    xcs.set_user("test");
-    xcs.set_pass(txmpp::CryptString(password));
-    xcs.set_host("example.org");
-    xcs.set_resource("resource");
-    xcs.set_use_tls(true);
-    xcs.set_server(txmpp::SocketAddress("example.org", 5222));
+}  // namespace tyrion
 
-    thread.Login(xcs);
-
-    // Use main thread for console input
-    std::string line;
-    while (std::getline(std::cin, line)) {
-      if (line == "quit")
-        reconnect = false;
-      if (line == "continue" || line == "quit")
-        break;
-    }
-
-    thread.Disconnect();
-    thread.Stop();
-  }
-
-  return 0;
-}
+#endif  // _TYRION_XMPPTHREAD_H_

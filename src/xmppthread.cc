@@ -25,53 +25,65 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <iostream>
-#include <txmpp/cryptstring.h>
-#include <txmpp/logging.h>
-#include <txmpp/xmppclientsettings.h>
 #include "xmppthread.h"
 
-int main(int argc, char* argv[]) {
+#include <txmpp/prexmppauthimpl.h>
+#include <txmpp/xmppasyncsocketimpl.h>
+#include <txmpp/xmppclientsettings.h>
 
-  bool reconnect = true;
+namespace tyrion {
+namespace {
 
-  txmpp::LogMessage::LogToDebug(txmpp::LS_SENSITIVE);
+const uint32 MSG_LOGIN = 1;
+const uint32 MSG_DISCONNECT = 2;
 
-  txmpp::InsecureCryptStringImpl password;
-  password.password() = "test";
+struct LoginData : public txmpp::MessageData {
+  LoginData(const txmpp::XmppClientSettings& s) : xcs(s) {}
+  virtual ~LoginData() {}
+  txmpp::XmppClientSettings xcs;
+};
 
-  while (reconnect) {
+} // namespace
 
-    // Start xmpp on a different thread
-    tyrion::XmppThread thread;
-    if (thread.IsOwned()) {
-      std::cout << "GOT HERE" << std::endl;
-    }
-    thread.Start();
-
-    // Create client settings
-    txmpp::XmppClientSettings xcs;
-    xcs.set_user("test");
-    xcs.set_pass(txmpp::CryptString(password));
-    xcs.set_host("example.org");
-    xcs.set_resource("resource");
-    xcs.set_use_tls(true);
-    xcs.set_server(txmpp::SocketAddress("example.org", 5222));
-
-    thread.Login(xcs);
-
-    // Use main thread for console input
-    std::string line;
-    while (std::getline(std::cin, line)) {
-      if (line == "quit")
-        reconnect = false;
-      if (line == "continue" || line == "quit")
-        break;
-    }
-
-    thread.Disconnect();
-    thread.Stop();
-  }
-
-  return 0;
+XmppThread::XmppThread() {
+  pump_ = new XmppPump(this);
 }
+
+XmppThread::~XmppThread() {
+  delete pump_;
+}
+
+void XmppThread::ProcessMessages(int cms) {
+  txmpp::Thread::ProcessMessages(cms);
+}
+
+void XmppThread::Login(const txmpp::XmppClientSettings& xcs) {
+  Post(this, MSG_LOGIN, new LoginData(xcs));
+}
+
+void XmppThread::Disconnect() {
+  Post(this, MSG_DISCONNECT);
+}
+
+void XmppThread::OnStateChange(txmpp::XmppEngine::State state) {
+}
+
+void XmppThread::OnMessage(txmpp::Message* pmsg) {
+  switch (pmsg->message_id) {
+    case MSG_LOGIN: {
+      assert(pmsg->pdata);
+      LoginData* data = reinterpret_cast<LoginData*>(pmsg->pdata);
+      pump_->DoLogin(data->xcs, new txmpp::XmppAsyncSocketImpl(true),
+                     new txmpp::PreXmppAuthImpl());
+      delete data;
+      }
+      break;
+    case MSG_DISCONNECT:
+      pump_->DoDisconnect();
+      break;
+    default:
+      assert(false);
+  }
+}
+
+}  // namespace tyrion

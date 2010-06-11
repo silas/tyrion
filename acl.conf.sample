@@ -1,8 +1,0 @@
-[org.tyrion.service.bash]
-test.client@example.org = true
-
-[org.tyrion.service.python]
-test.client@example.org = true
-
-[org.tyrion.service.ruby]
-test.client@example.org = true
