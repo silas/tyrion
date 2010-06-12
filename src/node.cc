@@ -25,6 +25,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <csignal>
+#include <pthread.h>
 #include <iostream>
 #include <txmpp/cryptstring.h>
 #include <txmpp/logging.h>
@@ -32,6 +34,17 @@
 #include "xmppthread.h"
 
 int main(int argc, char* argv[]) {
+
+  int exit_code = 0;
+  int sig;
+  sigset_t set;
+
+  sigemptyset(&set);
+  sigaddset(&set, SIGHUP);
+  sigaddset(&set, SIGINT);
+  sigaddset(&set, SIGTERM);
+  sigaddset(&set, SIGUSR2);
+  pthread_sigmask(SIG_BLOCK, &set, NULL);
 
   bool reconnect = true;
 
@@ -41,12 +54,10 @@ int main(int argc, char* argv[]) {
   password.password() = "test";
 
   while (reconnect) {
+    exit_code = 0;
 
     // Start xmpp on a different thread
     tyrion::XmppThread thread;
-    if (thread.IsOwned()) {
-      std::cout << "GOT HERE" << std::endl;
-    }
     thread.Start();
 
     // Create client settings
@@ -60,18 +71,28 @@ int main(int argc, char* argv[]) {
 
     thread.Login(xcs);
 
-    // Use main thread for console input
-    std::string line;
-    while (std::getline(std::cin, line)) {
-      if (line == "quit")
-        reconnect = false;
-      if (line == "continue" || line == "quit")
+    while (true) {
+      sigwait(&set, &sig);
+
+      if (sig == SIGUSR2) {
+        if (thread.shutdown()) reconnect = false;
+        exit_code = thread.exit_code();
         break;
+      } else if (sig == SIGHUP) {
+        thread.Disconnect();
+        break;
+      } else if (sig == SIGINT || sig == SIGTERM) {
+        reconnect = false;
+        thread.Disconnect();
+        break;
+      }
     }
 
-    thread.Disconnect();
+    thread.Quit();
     thread.Stop();
   }
 
-  return 0;
+  std::cout << "Exiting..." << std::endl;
+
+  return exit_code;
 }

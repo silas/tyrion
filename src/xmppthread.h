@@ -28,6 +28,7 @@
 #ifndef _TYRION_XMPPTHREAD_H_
 #define _TYRION_XMPPTHREAD_H_
 
+#include <iostream>
 #include <txmpp/thread.h>
 #include <txmpp/xmppclientsettings.h>
 #include "xmpppump.h"
@@ -45,10 +46,19 @@ class XmppThread: public txmpp::Thread, XmppPumpNotify, txmpp::MessageHandler {
     void Login(const txmpp::XmppClientSettings & xcs);
     void Disconnect();
 
+    bool shutdown() { return shutdown_; }
+    bool set_shutdown(bool shutdown) { shutdown_ = shutdown; }
+
+    int exit_code() { return exit_code_; }
+    int set_exit_code(int exit_code) { exit_code_ = exit_code; }
+
+
   private:
     XmppPump* pump_;
+    bool shutdown_;
+    int exit_code_;
 
-    void OnStateChange(txmpp::XmppEngine::State state);
+    void OnStateChange(txmpp::XmppEngine::State state, int code = 0);
     void OnMessage(txmpp::Message* pmsg);
 };
 

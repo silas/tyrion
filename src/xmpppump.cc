@@ -61,17 +61,27 @@ void XmppPump::DoDisconnect() {
 void XmppPump::OnStateChange(txmpp::XmppEngine::State state) {
   if (state_ == state)
     return;
-  if (state == txmpp::XmppEngine::STATE_OPEN) {
-    // Example presence handler
-    XmppTaskPresence *task_presence = new XmppTaskPresence(client_);  // owned by XmppClient
-    task_presence->Start();
-    // Example IQ handler
-    XmppTaskIq *task_iq = new XmppTaskIq(client_);  // owned by XmppClient
-    task_iq->Start();
+  int code = 0;
+  switch(state) {
+    case txmpp::XmppEngine::STATE_OPEN: {
+      // Example presence handler
+      XmppTaskPresence *task_presence = new XmppTaskPresence(client_);  // owned by XmppClient
+      task_presence->Start();
+      // Example IQ handler
+      XmppTaskIq *task_iq = new XmppTaskIq(client_);  // owned by XmppClient
+      task_iq->Start();
+      }
+      break;
+    case txmpp::XmppEngine::STATE_START:
+    case txmpp::XmppEngine::STATE_OPENING:
+      break;
+    case txmpp::XmppEngine::STATE_CLOSED:
+      code = client_->GetError(NULL);
+      break;
   }
   state_ = state;
   if (notify_ != NULL)
-    notify_->OnStateChange(state);
+    notify_->OnStateChange(state, code);
 }
 
 void XmppPump::WakeTasks() {

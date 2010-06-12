@@ -41,7 +41,7 @@ namespace tyrion {
 class XmppPumpNotify {
   public:
     virtual ~XmppPumpNotify() {}
-    virtual void OnStateChange(txmpp::XmppEngine::State state) = 0;
+    virtual void OnStateChange(txmpp::XmppEngine::State state, int code = 0) = 0;
 };
 
 class XmppPump : public txmpp::MessageHandler, public txmpp::TaskRunner {
