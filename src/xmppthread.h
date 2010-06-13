@@ -35,8 +35,17 @@
 
 namespace tyrion {
 
-class XmppThread: public txmpp::Thread, XmppPumpNotify, txmpp::MessageHandler {
+class XmppThread: public txmpp::Thread, XmppPumpNotify, txmpp::MessageHandler, public txmpp::has_slots<> {
   public:
+    enum State {
+      NONE,
+      STARTED,
+      STOPPED,
+      STOPPED_ERROR,
+      SHUTDOWN,
+      SHUTDOWN_ERROR
+    };
+
     XmppThread();
     ~XmppThread();
 
@@ -46,17 +55,14 @@ class XmppThread: public txmpp::Thread, XmppPumpNotify, txmpp::MessageHandler {
     void Login(const txmpp::XmppClientSettings & xcs);
     void Disconnect();
 
-    bool shutdown() { return shutdown_; }
-    bool set_shutdown(bool shutdown) { shutdown_ = shutdown; }
+    void SocketClose(int code);
+    void Raise(State state);
 
-    int exit_code() { return exit_code_; }
-    int set_exit_code(int exit_code) { exit_code_ = exit_code; }
-
+    State state() { return state_; }
 
   private:
     XmppPump* pump_;
-    bool shutdown_;
-    int exit_code_;
+    State state_;
 
     void OnStateChange(txmpp::XmppEngine::State state, int code = 0);
     void OnMessage(txmpp::Message* pmsg);

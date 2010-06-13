@@ -28,6 +28,8 @@
 #include "xmppthread.h"
 
 #include <csignal>
+#include <errno.h>
+#include <sstream>
 #include <txmpp/prexmppauthimpl.h>
 #include <txmpp/xmppasyncsocketimpl.h>
 #include <txmpp/xmppclientsettings.h>
@@ -49,8 +51,7 @@ struct LoginData : public txmpp::MessageData {
 
 XmppThread::XmppThread() {
   pump_ = new XmppPump(this);
-  shutdown_ = false;
-  exit_code_ = 0;
+  state_ = NONE;
 }
 
 XmppThread::~XmppThread() {
@@ -69,48 +70,70 @@ void XmppThread::Disconnect() {
   Post(this, MSG_DISCONNECT);
 }
 
+void XmppThread::Raise(State state) {
+  state_ = state;
+  raise(SIGUSR2);
+}
+
 void XmppThread::OnStateChange(txmpp::XmppEngine::State state, int code) {
   if (state == txmpp::XmppEngine::STATE_CLOSED) {
     switch(code) {
       case txmpp::XmppEngine::ERROR_XML:
-        TLOG(WARNING) << "Malformed XML or encoding error.";
+        TLOG(ERROR) << "Malformed XML or encoding error.";
         break;
       case txmpp::XmppEngine::ERROR_STREAM:
-        TLOG(WARNING) << "XMPP stream error.";
+        TLOG(ERROR) << "XMPP stream error.";
         break;
       case txmpp::XmppEngine::ERROR_VERSION:
-        TLOG(WARNING) << "XMPP version error.";
-        shutdown_ = true;
+        TLOG(ERROR) << "XMPP version error.";
+        Raise(SHUTDOWN_ERROR);
         break;
       case txmpp::XmppEngine::ERROR_UNAUTHORIZED:
-        TLOG(WARNING) << "Authorization failed.";
-        shutdown_ = true;
+        TLOG(ERROR) << "Authorization failed.";
+        Raise(SHUTDOWN_ERROR);
         break;
       case txmpp::XmppEngine::ERROR_TLS:
-        TLOG(WARNING) << "TLS could not be negotiated.";
+        TLOG(ERROR) << "TLS could not be negotiated.";
         break;
       case txmpp::XmppEngine::ERROR_AUTH:
-        TLOG(WARNING) << "Authentication could not be negotiated.";
+        TLOG(ERROR) << "Authentication could not be negotiated.";
         break;
       case txmpp::XmppEngine::ERROR_BIND:
-        TLOG(WARNING) << "Resource or session binding could not be negotiated.";
+        TLOG(ERROR) << "Resource or session binding could not be negotiated.";
         break;
       case txmpp::XmppEngine::ERROR_CONNECTION_CLOSED:
-        TLOG(WARNING) << "Connection closed by output handler.";
+        TLOG(ERROR) << "Connection closed by output handler.";
         break;
       case txmpp::XmppEngine::ERROR_DOCUMENT_CLOSED:
-        TLOG(WARNING) << "Closed by </stream:stream>.";
+        TLOG(ERROR) << "Closed by </stream:stream>.";
         break;
       case txmpp::XmppEngine::ERROR_SOCKET:
-        TLOG(WARNING) << "Socket error.";
+        TLOG(ERROR) << "Socket error.";
         break;
       case txmpp::XmppEngine::ERROR_NETWORK_TIMEOUT:
-        TLOG(WARNING) << "Network timed out.";
+        TLOG(ERROR) << "Network timed out.";
         break;
     }
-    if (code > 0) exit_code_ = 1;
-    raise(SIGUSR2);
+    Raise(STOPPED_ERROR);
   }
+}
+
+void XmppThread::SocketClose(int code) {
+  std::stringstream message;
+
+  switch(code) {
+    case ECONNREFUSED:
+      message << "Connection refused";
+      break;
+    default:
+      message << "Unhandled socket error";
+      break;
+  }
+
+  message << " (" << code << ").";
+  TLOG(ERROR) << message.str();
+
+  Raise(STOPPED_ERROR);
 }
 
 void XmppThread::OnMessage(txmpp::Message* pmsg) {
@@ -118,14 +141,17 @@ void XmppThread::OnMessage(txmpp::Message* pmsg) {
     case MSG_LOGIN: {
       assert(pmsg->pdata);
       LoginData* data = reinterpret_cast<LoginData*>(pmsg->pdata);
-      pump_->DoLogin(data->xcs, new txmpp::XmppAsyncSocketImpl(true),
+      state_ = STARTED;
+      txmpp::XmppAsyncSocketImpl* socket = new txmpp::XmppAsyncSocketImpl(true);
+      socket->SignalCloseEvent.connect(this, &XmppThread::SocketClose);
+      pump_->DoLogin(data->xcs, socket,
                      new txmpp::PreXmppAuthImpl());
       delete data;
       }
       break;
     case MSG_DISCONNECT:
       pump_->DoDisconnect();
-      shutdown_ = true;
+      Raise(SHUTDOWN);
       break;
     default:
       assert(false);

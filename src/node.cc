@@ -28,17 +28,18 @@
 #include <pthread.h>
 #include <iostream>
 #include <txmpp/cryptstring.h>
+#include <txmpp/thread.h>
 #include <txmpp/xmppclientsettings.h>
 #include "logging.h"
 #include "xmppthread.h"
 
 int main(int argc, char* argv[]) {
 
-  tyrion::Logging::Instance()->Debug(tyrion::Logging::INFO);
+  tyrion::Logging::Instance()->Debug(tyrion::Logging::DEBUG);
 
   int exit_code = 0;
   int sig;
-  sigset_t set;
+  sigset_t set, set_waiting;
 
   sigemptyset(&set);
   sigaddset(&set, SIGHUP);
@@ -51,6 +52,7 @@ int main(int argc, char* argv[]) {
   password.password() = "test";
 
   bool reconnect = true;
+  int reconnect_timeout = 0;
 
   while (reconnect) {
     exit_code = 0;
@@ -68,27 +70,47 @@ int main(int argc, char* argv[]) {
     xcs.set_use_tls(true);
     xcs.set_server(txmpp::SocketAddress("example.org", 5222));
 
-    thread.Login(xcs);
+    if (reconnect_timeout > 0) {
+      TLOG(INFO) << "Reconnecting in " << reconnect_timeout / 1000 << " seconds...";
+      for(int i = 0; i < reconnect_timeout; i += 500) {
+        txmpp::Thread::SleepMs(500);
+        // we're doing this because OSX doesn't support sigtimedwait
+        sigpending(&set_waiting);
+        if (sigismember(&set_waiting, SIGINT) || sigismember(&set_waiting, SIGTERM)) {
+          reconnect = false;
+          break;
+        }
+      }
+    }
 
-    while (true) {
-      sigwait(&set, &sig);
+    if (reconnect) {
+      thread.Login(xcs);
 
-      if (sig == SIGUSR2) {
-        if (thread.shutdown()) reconnect = false;
-        exit_code = thread.exit_code();
-        break;
-      } else if (sig == SIGHUP) {
-        thread.Disconnect();
-        break;
-      } else if (sig == SIGINT || sig == SIGTERM) {
-        reconnect = false;
-        thread.Disconnect();
-        break;
+      while (true) {
+        txmpp::Thread::SleepMs(1000);
+        sigwait(&set, &sig);
+
+        if (sig == SIGUSR2) {
+          if (thread.state() >= tyrion::XmppThread::SHUTDOWN)
+            reconnect = false;
+          if (thread.state() >= tyrion::XmppThread::SHUTDOWN_ERROR)
+            exit_code = 1;
+          break;
+        } else if (sig == SIGHUP) {
+          thread.Disconnect();
+          break;
+        } else if (sig == SIGINT || sig == SIGTERM) {
+          reconnect = false;
+          thread.Disconnect();
+          break;
+        }
       }
     }
 
     thread.Quit();
     thread.Stop();
+
+    if (reconnect) reconnect_timeout = 10000;
   }
 
   TLOG(INFO) << "Exiting...";

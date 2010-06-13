@@ -29,6 +29,7 @@
 
 #include <txmpp/logging.h>
 #include <txmpp/prexmppauthimpl.h>
+#include "logging.h"
 #include "xmpptasks.h"
 
 namespace tyrion {
@@ -46,7 +47,7 @@ void XmppPump::DoLogin(const txmpp::XmppClientSettings & xcs,
   if (!AllChildrenDone()) {
     client_->SignalStateChange.connect(this, &XmppPump::OnStateChange);
     if (client_->Connect(xcs, "", socket, auth) != txmpp::XMPP_RETURN_OK) {
-      LOG(LS_ERROR) << "Failed to connect.";
+      TLOG(ERROR) << "Failed to connect.";
     }
     client_->Start();
   }
