@@ -104,6 +104,7 @@ env = conf.Finish()
 #
 
 library_src = [
+    'src/logging.cc',
     'src/xmpppump.cc',
     'src/xmpptasks.cc',
     'src/xmppthread.cc',

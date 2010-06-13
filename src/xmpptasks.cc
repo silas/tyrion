@@ -25,11 +25,10 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <iostream>
-#include <sstream>
 #include <txmpp/constants.h>
 #include <txmpp/logging.h>
 #include <txmpp/xmppclient.h>
+#include "logging.h"
 #include "xmpptasks.h"
 
 namespace tyrion {
@@ -62,7 +61,7 @@ int XmppTaskPresence::ProcessResponse() {
   if (stanza->HasAttr(txmpp::QN_FROM))
     from = stanza->Attr(txmpp::QN_FROM);
 
-  std::cout << "Presence: " << from << std::endl;
+  TLOG(DEBUG) << "Presence: " << from;
 
   return STATE_RESPONSE;
 }
@@ -110,7 +109,7 @@ int XmppTaskIq::ProcessResponse() {
   if (stanza->HasAttr(txmpp::QN_FROM))
     from = stanza->Attr(txmpp::QN_FROM);
 
-  std::cout << "Iq: " << from << std::endl;
+  TLOG(DEBUG) << "Iq: " << from;
 
   return STATE_RESPONSE;
 }

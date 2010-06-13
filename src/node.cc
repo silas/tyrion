@@ -24,16 +24,17 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 #include <csignal>
 #include <pthread.h>
 #include <iostream>
 #include <txmpp/cryptstring.h>
-#include <txmpp/logging.h>
 #include <txmpp/xmppclientsettings.h>
+#include "logging.h"
 #include "xmppthread.h"
 
 int main(int argc, char* argv[]) {
+
+  tyrion::Logging::Instance()->Debug(tyrion::Logging::INFO);
 
   int exit_code = 0;
   int sig;
@@ -46,12 +47,10 @@ int main(int argc, char* argv[]) {
   sigaddset(&set, SIGUSR2);
   pthread_sigmask(SIG_BLOCK, &set, NULL);
 
-  bool reconnect = true;
-
-  txmpp::LogMessage::LogToDebug(txmpp::LS_SENSITIVE);
-
   txmpp::InsecureCryptStringImpl password;
   password.password() = "test";
+
+  bool reconnect = true;
 
   while (reconnect) {
     exit_code = 0;
@@ -92,7 +91,7 @@ int main(int argc, char* argv[]) {
     thread.Stop();
   }
 
-  std::cout << "Exiting..." << std::endl;
+  TLOG(INFO) << "Exiting...";
 
   return exit_code;
 }

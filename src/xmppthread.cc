@@ -31,6 +31,7 @@
 #include <txmpp/prexmppauthimpl.h>
 #include <txmpp/xmppasyncsocketimpl.h>
 #include <txmpp/xmppclientsettings.h>
+#include "logging.h"
 
 namespace tyrion {
 namespace {
@@ -72,39 +73,39 @@ void XmppThread::OnStateChange(txmpp::XmppEngine::State state, int code) {
   if (state == txmpp::XmppEngine::STATE_CLOSED) {
     switch(code) {
       case txmpp::XmppEngine::ERROR_XML:
-        std::cerr << "Malformed XML or encoding error." << std::endl;
+        TLOG(WARNING) << "Malformed XML or encoding error.";
         break;
       case txmpp::XmppEngine::ERROR_STREAM:
-        std::cerr << "XMPP stream error." << std::endl;
+        TLOG(WARNING) << "XMPP stream error.";
         break;
       case txmpp::XmppEngine::ERROR_VERSION:
-        std::cerr << "XMPP version error." << std::endl;
+        TLOG(WARNING) << "XMPP version error.";
         shutdown_ = true;
         break;
       case txmpp::XmppEngine::ERROR_UNAUTHORIZED:
-        std::cerr << "Authorization failed." << std::endl;
+        TLOG(WARNING) << "Authorization failed.";
         shutdown_ = true;
         break;
       case txmpp::XmppEngine::ERROR_TLS:
-        std::cerr << "TLS could not be negotiated." << std::endl;
+        TLOG(WARNING) << "TLS could not be negotiated.";
         break;
       case txmpp::XmppEngine::ERROR_AUTH:
-        std::cerr << "Authentication could not be negotiated." << std::endl;
+        TLOG(WARNING) << "Authentication could not be negotiated.";
         break;
       case txmpp::XmppEngine::ERROR_BIND:
-        std::cerr << "Resource or session binding could not be negotiated." << std::endl;
+        TLOG(WARNING) << "Resource or session binding could not be negotiated.";
         break;
       case txmpp::XmppEngine::ERROR_CONNECTION_CLOSED:
-        std::cerr << "Connection closed by output handler." << std::endl;
+        TLOG(WARNING) << "Connection closed by output handler.";
         break;
       case txmpp::XmppEngine::ERROR_DOCUMENT_CLOSED:
-        std::cerr << "Closed by </stream:stream>." << std::endl;
+        TLOG(WARNING) << "Closed by </stream:stream>.";
         break;
       case txmpp::XmppEngine::ERROR_SOCKET:
-        std::cerr << "Socket error." << std::endl;
+        TLOG(WARNING) << "Socket error.";
         break;
       case txmpp::XmppEngine::ERROR_NETWORK_TIMEOUT:
-        std::cerr << "Network timed out." << std::endl;
+        TLOG(WARNING) << "Network timed out.";
         break;
     }
     if (code > 0) exit_code_ = 1;
