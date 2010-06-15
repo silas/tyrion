@@ -24,6 +24,7 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 #include <csignal>
 #include <pthread.h>
 #include <iostream>
@@ -31,11 +32,49 @@
 #include <txmpp/thread.h>
 #include <txmpp/xmppclientsettings.h>
 #include "logging.h"
+#include "node_setting.h"
 #include "xmppthread.h"
+
+#define OPTION(str) strcmp(option, str) == 0
 
 int main(int argc, char* argv[]) {
 
   tyrion::Logging::Instance()->Debug(tyrion::Logging::DEBUG);
+
+  std::string config;
+
+  for(int i = 1; i < argc; i++) {
+    const char* option = argv[i];
+
+    if (OPTION("-c") || OPTION("--config-file")) {
+      if (i + 1 < argc) {
+        config = argv[++i];
+      } else {
+        std::cerr << "Configuration file not specified." << std::endl;
+        return 1;
+      }
+    } else if (OPTION("--help")) {
+      std::cout << "Usage: tyrion-node [OPTION]..." << std::endl;
+      std::cout << "Example: tyrion-node -c node.conf" << std::endl;
+      std::cout << std::endl;
+      std::cout << "Configuration options:" << std::endl;
+      std::cout << "  -c, --config-file         the node configuration file" << std::endl;
+      return 0;
+    } else {
+      std::cerr << "Unknown option '" << option << "'." << std::endl;
+      return 1;
+    }
+  }
+
+  if (config.empty()) {
+    std::cerr << "Configuration file required." << std::endl;
+    return 1;
+  }
+
+  if (!tyrion::NodeSetting::Instance()->Setup(config)) {
+    std::cerr << "Unable to open settings file." << std::endl;
+    return 1;
+  }
 
   int exit_code = 0;
   int sig;
@@ -112,8 +151,6 @@ int main(int argc, char* argv[]) {
 
     if (reconnect) reconnect_timeout = 10000;
   }
-
-  TLOG(INFO) << "Exiting...";
 
   return exit_code;
 }
