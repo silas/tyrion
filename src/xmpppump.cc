@@ -65,12 +65,12 @@ void XmppPump::OnStateChange(txmpp::XmppEngine::State state) {
   int code = 0;
   switch(state) {
     case txmpp::XmppEngine::STATE_OPEN: {
-      // Example presence handler
+      // Presence handler
       XmppTaskPresence *task_presence = new XmppTaskPresence(client_);  // owned by XmppClient
       task_presence->Start();
-      // Example IQ handler
-      XmppTaskIq *task_iq = new XmppTaskIq(client_);  // owned by XmppClient
-      task_iq->Start();
+      // Service iq handler
+      XmppTaskService *task_service = new XmppTaskService(client_);  // owned by XmppClient
+      task_service->Start();
       }
       break;
     case txmpp::XmppEngine::STATE_START:

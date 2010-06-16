@@ -76,14 +76,14 @@ bool XmppTaskPresence::HandleStanza(const txmpp::XmlElement *stanza) {
   return false;
 }
 
-XmppTaskIq::XmppTaskIq(txmpp::TaskParent *parent)
+XmppTaskService::XmppTaskService(txmpp::TaskParent *parent)
     : txmpp::XmppTask(parent, txmpp::XmppEngine::HL_SINGLE) {
 }
 
-XmppTaskIq::~XmppTaskIq() {
+XmppTaskService::~XmppTaskService() {
 }
 
-int XmppTaskIq::ProcessStart() {
+int XmppTaskService::ProcessStart() {
 
   set_task_id(GetClient()->NextId());
 
@@ -97,7 +97,7 @@ int XmppTaskIq::ProcessStart() {
   return STATE_RESPONSE;
 }
 
-int XmppTaskIq::ProcessResponse() {
+int XmppTaskService::ProcessResponse() {
 
   const txmpp::XmlElement* stanza = NextStanza();
   if (stanza == NULL) {
@@ -114,7 +114,7 @@ int XmppTaskIq::ProcessResponse() {
   return STATE_RESPONSE;
 }
 
-bool XmppTaskIq::HandleStanza(const txmpp::XmlElement *stanza) {
+bool XmppTaskService::HandleStanza(const txmpp::XmlElement *stanza) {
 
   if (MatchResponseIq(stanza, txmpp::JID_EMPTY, task_id())) {
     QueueStanza(stanza);

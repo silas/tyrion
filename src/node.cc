@@ -79,11 +79,12 @@ int main(int argc, char* argv[]) {
         tyrion::NodeSettings::Instance()->GetInt("xmpp", "port", 5222)
     ));
 
+    // Reconnect timeout
     if (timeout > 0) {
       TLOG(INFO) << "Reconnecting in " << timeout / 1000 << " seconds...";
       for(int i = 0; i < timeout; i += 500) {
         txmpp::Thread::SleepMs(500);
-        // we're doing this because OSX doesn't support sigtimedwait
+        // We're doing this because OSX doesn't support sigtimedwait
         sigpending(&set_waiting);
         if (sigismember(&set_waiting, SIGINT) || sigismember(&set_waiting, SIGTERM)) {
           reconnect = false;
