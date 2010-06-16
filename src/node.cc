@@ -27,58 +27,18 @@
 
 #include <csignal>
 #include <pthread.h>
-#include <iostream>
 #include <txmpp/cryptstring.h>
 #include <txmpp/thread.h>
 #include <txmpp/xmppclientsettings.h>
 #include "logging.h"
-#include "node_setting.h"
+#include "node_settings.h"
+#include "node_utils.h"
 #include "xmppthread.h"
-
-#define OPTION(str) strcmp(option, str) == 0
 
 int main(int argc, char* argv[]) {
 
-  tyrion::Logging::Instance()->Debug(tyrion::Logging::DEBUG);
-
-  std::string config;
-
-  for(int i = 1; i < argc; i++) {
-    const char* option = argv[i];
-
-    if (OPTION("-c") || OPTION("--config-file")) {
-      if (i + 1 < argc) {
-        config = argv[++i];
-      } else {
-        std::cerr << "Configuration file not specified." << std::endl;
-        return 1;
-      }
-    } else if (OPTION("--help")) {
-      std::cout << "Usage: tyrion-node [OPTION]..." << std::endl;
-      std::cout << "Example: tyrion-node -c node.conf" << std::endl;
-      std::cout << std::endl;
-      std::cout << "Configuration options:" << std::endl;
-      std::cout << "  -c, --config-file         the node configuration file" << std::endl;
-      return 0;
-    } else {
-      std::cerr << "Unknown option '" << option << "'." << std::endl;
-      return 1;
-    }
-  }
-
-  if (config.empty()) {
-    std::cerr << "Configuration file required." << std::endl;
-    return 1;
-  }
-
-  if (!tyrion::NodeSetting::Instance()->Setup(config)) {
-    std::cerr << "Unable to open settings file." << std::endl;
-    return 1;
-  }
-
-  int exit_code = 0;
-  int sig;
-  sigset_t set, set_waiting;
+  sigset_t set;
+  sigset_t set_waiting;
 
   sigemptyset(&set);
   sigaddset(&set, SIGHUP);
@@ -87,31 +47,41 @@ int main(int argc, char* argv[]) {
   sigaddset(&set, SIGUSR2);
   pthread_sigmask(SIG_BLOCK, &set, NULL);
 
-  txmpp::InsecureCryptStringImpl password;
-  password.password() = "test";
+  tyrion::Logging::Instance()->Debug(tyrion::Logging::DEBUG);
+  tyrion::utils::SetupConfig(argc, argv);
 
   bool reconnect = true;
-  int reconnect_timeout = 0;
+  int code, sig, timeout = 0;
 
   while (reconnect) {
-    exit_code = 0;
+    code = 0;
 
     // Start xmpp on a different thread
     tyrion::XmppThread thread;
     thread.Start();
 
-    // Create client settings
-    txmpp::XmppClientSettings xcs;
-    xcs.set_user("test");
-    xcs.set_pass(txmpp::CryptString(password));
-    xcs.set_host("example.org");
-    xcs.set_resource("resource");
-    xcs.set_use_tls(true);
-    xcs.set_server(txmpp::SocketAddress("example.org", 5222));
+    txmpp::Jid jid(tyrion::NodeSettings::Instance()->Get("xmpp", "jid"));
 
-    if (reconnect_timeout > 0) {
-      TLOG(INFO) << "Reconnecting in " << reconnect_timeout / 1000 << " seconds...";
-      for(int i = 0; i < reconnect_timeout; i += 500) {
+    txmpp::InsecureCryptStringImpl password;
+    password.password() = tyrion::NodeSettings::Instance()->Get("xmpp", "password");
+
+    // Create client settings
+    txmpp::XmppClientSettings settings;
+    settings.set_user(jid.node());
+    settings.set_pass(txmpp::CryptString(password));
+    settings.set_host(jid.domain());
+    settings.set_resource(jid.resource());
+    settings.set_use_tls(true);
+
+    settings.set_server(txmpp::SocketAddress(
+        tyrion::NodeSettings::Instance()->Has("xmpp", "server") ?
+            tyrion::NodeSettings::Instance()->Get("xmpp", "server") : jid.domain(),
+        tyrion::NodeSettings::Instance()->GetInt("xmpp", "port", 5222)
+    ));
+
+    if (timeout > 0) {
+      TLOG(INFO) << "Reconnecting in " << timeout / 1000 << " seconds...";
+      for(int i = 0; i < timeout; i += 500) {
         txmpp::Thread::SleepMs(500);
         // we're doing this because OSX doesn't support sigtimedwait
         sigpending(&set_waiting);
@@ -123,17 +93,16 @@ int main(int argc, char* argv[]) {
     }
 
     if (reconnect) {
-      thread.Login(xcs);
+      thread.Login(settings);
 
       while (true) {
-        txmpp::Thread::SleepMs(1000);
         sigwait(&set, &sig);
 
         if (sig == SIGUSR2) {
           if (thread.state() >= tyrion::XmppThread::SHUTDOWN)
             reconnect = false;
           if (thread.state() >= tyrion::XmppThread::SHUTDOWN_ERROR)
-            exit_code = 1;
+            code = 1;
           break;
         } else if (sig == SIGHUP) {
           thread.Disconnect();
@@ -149,8 +118,8 @@ int main(int argc, char* argv[]) {
     thread.Quit();
     thread.Stop();
 
-    if (reconnect) reconnect_timeout = 10000;
+    if (reconnect) timeout = 10000;
   }
 
-  return exit_code;
+  return code;
 }

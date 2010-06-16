@@ -25,16 +25,16 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef TYRION_NODE_SETTING_H_
-#define TYRION_NODE_SETTING_H_
+#ifndef _TYRION_NODE_UTILS_H_
+#define _TYRION_NODE_UTILS_H_
 
-#include "setting.h"
+#include <string>
 
 namespace tyrion {
+namespace utils {
 
-class NodeSetting : public Setting<NodeSetting> {
-};
+void SetupConfig(int argc, char* argv[]);
 
-}  // namespace tyrion
+} };  // namespace tyrion::utils
 
-#endif  // TYRION_NODE_SETTING_H_
+#endif  // _TYRION_NODE_UTILS_H_

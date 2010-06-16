@@ -77,7 +77,11 @@ void XmppThread::Raise(State state) {
 
 void XmppThread::OnStateChange(txmpp::XmppEngine::State state, int code) {
   if (state == txmpp::XmppEngine::STATE_CLOSED) {
+    State raise_state = STOPPED_ERROR;
     switch(code) {
+      case txmpp::XmppEngine::ERROR_NONE:
+        raise_state = STOPPED;
+        break;
       case txmpp::XmppEngine::ERROR_XML:
         TLOG(ERROR) << "Malformed XML or encoding error.";
         break;
@@ -86,17 +90,18 @@ void XmppThread::OnStateChange(txmpp::XmppEngine::State state, int code) {
         break;
       case txmpp::XmppEngine::ERROR_VERSION:
         TLOG(ERROR) << "XMPP version error.";
-        Raise(SHUTDOWN_ERROR);
+        raise_state = SHUTDOWN_ERROR;
         break;
       case txmpp::XmppEngine::ERROR_UNAUTHORIZED:
         TLOG(ERROR) << "Authorization failed.";
-        Raise(SHUTDOWN_ERROR);
+        raise_state = SHUTDOWN_ERROR;
         break;
       case txmpp::XmppEngine::ERROR_TLS:
         TLOG(ERROR) << "TLS could not be negotiated.";
         break;
       case txmpp::XmppEngine::ERROR_AUTH:
         TLOG(ERROR) << "Authentication could not be negotiated.";
+        raise_state = SHUTDOWN_ERROR;
         break;
       case txmpp::XmppEngine::ERROR_BIND:
         TLOG(ERROR) << "Resource or session binding could not be negotiated.";
@@ -113,27 +118,30 @@ void XmppThread::OnStateChange(txmpp::XmppEngine::State state, int code) {
       case txmpp::XmppEngine::ERROR_NETWORK_TIMEOUT:
         TLOG(ERROR) << "Network timed out.";
         break;
+      default:
+        TLOG(ERROR) << "Unknown shutdown error: " << code;
+        raise_state = SHUTDOWN_ERROR;
+        break;
     }
-    Raise(STOPPED_ERROR);
+    Raise(raise_state);
   }
 }
 
 void XmppThread::SocketClose(int code) {
-  std::stringstream message;
+  State raise_state = STOPPED_ERROR;
 
+  // TODO(silas): figure out what socket errors we should reconnect on
   switch(code) {
     case ECONNREFUSED:
-      message << "Connection refused";
+      TLOG(ERROR) << "Connection refused.";
       break;
     default:
-      message << "Unhandled socket error";
+      TLOG(ERROR) << "Unhandled socket error: " << code;
+      raise_state = SHUTDOWN_ERROR;
       break;
   }
 
-  message << " (" << code << ").";
-  TLOG(ERROR) << message.str();
-
-  Raise(STOPPED_ERROR);
+  Raise(raise_state);
 }
 
 void XmppThread::OnMessage(txmpp::Message* pmsg) {

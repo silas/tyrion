@@ -28,14 +28,14 @@ AddOption(
 )
 
 AddOption(
-    '--with-static',
-    dest='static',
+    '--with-debug',
+    dest='debug',
     action='store_true',
 )
 
 AddOption(
-    '--with-debug',
-    dest='debug',
+    '--with-static',
+    dest='static',
     action='store_true',
 )
 
@@ -65,11 +65,11 @@ def SetupEnvironment(env):
 # Setup environment
 #
 
-if GetOption('flags'):
-    flags += GetOption('flags')
-
 if GetOption('debug'):
     flags += ' -g'
+
+if GetOption('flags'):
+    flags += GetOption('flags')
 
 if system == 'linux':
     defines += ['LINUX']
@@ -113,9 +113,19 @@ library_src = [
 ]
 
 if GetOption('static'):
-    tyrion_library = env.StaticLibrary('tyrion', library_src, CPPDEFINES=defines, LIBS=libraries)
+    tyrion_library = env.StaticLibrary(
+        'tyrion',
+        library_src,
+        CPPDEFINES=defines,
+        LIBS=libraries,
+    )
 else:
-    tyrion_library = env.SharedLibrary('tyrion', library_src, CPPDEFINES=defines, LIBS=libraries)
+    tyrion_library = env.SharedLibrary(
+        'tyrion',
+        library_src,
+        CPPDEFINES=defines,
+        LIBS=libraries,
+    )
 
 libraries += [tyrion_library]
 
@@ -125,6 +135,12 @@ libraries += [tyrion_library]
 
 node_src = [
     'src/node.cc',
+    'src/node_utils.cc',
 ]
 
-tyrion_node = env.Program(target='tyrion-node', source=node_src, CPPDEFINES=defines, LIBS=libraries)
+tyrion_node = env.Program(
+    target='tyrion-node',
+    source=node_src,
+    CPPDEFINES=defines,
+    LIBS=libraries,
+)

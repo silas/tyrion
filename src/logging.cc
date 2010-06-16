@@ -51,17 +51,17 @@ void Logging::Log(Level level, std::string text) {
     time(&rawtime);
     timeinfo = localtime(&rawtime);
 
-    std::string message = asctime(timeinfo);
-    message.erase(message.end()-1, message.end());
-    message += ": " + LevelToString(level);
-    message += ": " + text + "\n";
-
     if (level >= file_level_) {
+      std::string message = asctime(timeinfo);
+      message.erase(message.end()-1, message.end());
+      message += ": " + LevelToString(level);
+      message += ": " + text + "\n";
+
       fprintf(file_, "%s", message.c_str());
       fflush(file_);
     }
     if (level >= debug_level_) {
-      std::cerr << message;
+      std::cerr << text << std::endl;
     }
   }
 }

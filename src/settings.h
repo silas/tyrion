@@ -25,8 +25,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef TYRION_SETTING_H_
-#define TYRION_SETTING_H_
+#ifndef TYRION_SETTINGS_H_
+#define TYRION_SETTINGS_H_
 
 #include <iostream>
 #include <string>
@@ -36,9 +36,9 @@
 namespace tyrion {
 
 template <class T>
-class Setting {
+class Settings {
   public:
-    ~Setting() {
+    ~Settings() {
       if (config_) {
         delete(config_);
         config_ = NULL;
@@ -59,7 +59,7 @@ class Setting {
     }
 
     bool Reload() {
-      T* instance_ = Setting<T>::Instance();
+      T* instance_ = Settings<T>::Instance();
       if (instance_) {
         TLOG(INFO) << "Reloading settings...";
         T *old_instance = instance_;
@@ -76,7 +76,7 @@ class Setting {
       return false;
     }
 
-    virtual bool Valid() {
+    virtual bool Validate() {
       return true;
     }
 
@@ -99,12 +99,21 @@ class Setting {
 
     std::string path() { return path_; }
 
+    bool HasRequired(std::string section, std::string option) {
+      if (!Has(section, option) || Get(section, option).empty()) {
+        TLOG(ERROR) << "The '" << option << "' option in the '" << section
+                    << "' section is required.";
+        return false;
+      }
+      return true;
+    }
+
   protected:
-    Setting() { path_ = ""; };
+    Settings() { path_ = ""; }
     Config *config_;
     std::string path_;
 };
 
 }  // namespace tyrion
 
-#endif  // TYRION_SETTING_H_
+#endif  // TYRION_SETTINGS_H_
