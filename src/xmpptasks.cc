@@ -28,19 +28,21 @@
 #include <txmpp/constants.h>
 #include <txmpp/logging.h>
 #include <txmpp/xmppclient.h>
+#include "constants.h"
 #include "logging.h"
+#include "node_settings.h"
 #include "xmpptasks.h"
 
 namespace tyrion {
 
-XmppTaskPresence::XmppTaskPresence(txmpp::TaskParent *parent)
+XmppPresenceTask::XmppPresenceTask(txmpp::TaskParent *parent)
     : txmpp::XmppTask(parent, txmpp::XmppEngine::HL_TYPE) {
 }
 
-XmppTaskPresence::~XmppTaskPresence() {
+XmppPresenceTask::~XmppPresenceTask() {
 }
 
-int XmppTaskPresence::ProcessStart() {
+int XmppPresenceTask::ProcessStart() {
 
   txmpp::scoped_ptr<txmpp::XmlElement> presence(
       new txmpp::XmlElement(txmpp::QN_PRESENCE));
@@ -49,24 +51,17 @@ int XmppTaskPresence::ProcessStart() {
   return STATE_RESPONSE;
 }
 
-int XmppTaskPresence::ProcessResponse() {
+int XmppPresenceTask::ProcessResponse() {
 
   const txmpp::XmlElement* stanza = NextStanza();
   if (stanza == NULL) {
     return STATE_BLOCKED;
   }
 
-  std::string from = "Someone";
-
-  if (stanza->HasAttr(txmpp::QN_FROM))
-    from = stanza->Attr(txmpp::QN_FROM);
-
-  TLOG(DEBUG) << "Presence: " << from;
-
   return STATE_RESPONSE;
 }
 
-bool XmppTaskPresence::HandleStanza(const txmpp::XmlElement *stanza) {
+bool XmppPresenceTask::HandleStanza(const txmpp::XmlElement *stanza) {
 
   if (stanza->Name() == txmpp::QN_PRESENCE) {
     QueueStanza(stanza);
@@ -76,52 +71,61 @@ bool XmppTaskPresence::HandleStanza(const txmpp::XmlElement *stanza) {
   return false;
 }
 
-XmppTaskService::XmppTaskService(txmpp::TaskParent *parent)
-    : txmpp::XmppTask(parent, txmpp::XmppEngine::HL_SINGLE) {
+XmppServiceTask::XmppServiceTask(txmpp::TaskParent *parent)
+    : txmpp::XmppTask(parent, txmpp::XmppEngine::HL_TYPE) {
 }
 
-XmppTaskService::~XmppTaskService() {
+XmppServiceTask::~XmppServiceTask() {
 }
 
-int XmppTaskService::ProcessStart() {
-
-  set_task_id(GetClient()->NextId());
-
-  txmpp::scoped_ptr<txmpp::XmlElement> privacy(
-      MakeIq("get", txmpp::JID_EMPTY, task_id()));
-  txmpp::XmlElement *query = new txmpp::XmlElement(txmpp::QN_PRIVACY_QUERY);
-  privacy->AddElement(query);
-
-  SendStanza(privacy.get());
-
+int XmppServiceTask::ProcessStart() {
   return STATE_RESPONSE;
 }
 
-int XmppTaskService::ProcessResponse() {
+int XmppServiceTask::ProcessResponse() {
 
   const txmpp::XmlElement* stanza = NextStanza();
   if (stanza == NULL) {
     return STATE_BLOCKED;
   }
 
-  std::string from = "Someone";
+  std::string from;
 
   if (stanza->HasAttr(txmpp::QN_FROM))
     from = stanza->Attr(txmpp::QN_FROM);
 
-  TLOG(DEBUG) << "Iq: " << from;
+  TLOG(ERROR) << "Valid message from: " << from;
 
   return STATE_RESPONSE;
 }
 
-bool XmppTaskService::HandleStanza(const txmpp::XmlElement *stanza) {
+bool XmppServiceTask::HandleStanza(const txmpp::XmlElement *stanza) {
 
-  if (MatchResponseIq(stanza, txmpp::JID_EMPTY, task_id())) {
+  if (IsValid(stanza)) {
     QueueStanza(stanza);
     return true;
   }
 
   return false;
+}
+
+bool XmppServiceTask::IsValid(const txmpp::XmlElement *stanza) {
+
+  if (stanza->Name() != txmpp::QN_IQ ||
+      !stanza->HasAttr(txmpp::QN_FROM)) return false;
+
+  const txmpp::XmlElement *service = stanza->FirstWithNamespace(NS_SERVICE);
+
+  if (service == NULL ||
+      service->Name() != QN_SERVICE ||
+      !service->HasAttr(txmpp::QN_TYPE) ||
+      !service->HasAttr(txmpp::QN_XMLNS) ||
+      service->Attr(txmpp::QN_XMLNS) != NS_SERVICE) return false;
+
+  txmpp::Jid jid(stanza->Attr(txmpp::QN_FROM));
+  std::string type(service->Attr(txmpp::QN_TYPE));
+
+  return NodeAcls::Instance()->GetBool(type, jid.BareJid().Str());
 }
 
 }  // namespace tyrion

@@ -33,6 +33,8 @@
 
 namespace tyrion {
 
+class NodeAcls : public Settings<NodeAcls> {};
+
 class NodeSettings : public Settings<NodeSettings> {
   public:
     bool Validate() {
@@ -47,15 +49,18 @@ class NodeSettings : public Settings<NodeSettings> {
 
       txmpp::Jid jid(s->Get("xmpp", "jid"));
       if (jid.node().empty()) {
-        TLOG(ERROR) << "The node portion of the 'jid' in the 'xmpp' section is required (node@domain/resource).";
+        TLOG(ERROR) << "The node portion of the 'jid' in the 'xmpp' section is "
+                    << "required (node@domain/resource).";
         return false;
       }
       if (jid.domain().empty()) {
-        TLOG(ERROR) << "The domain portion of the 'jid' in the 'xmpp' section is required (node@domain/resource).";
+        TLOG(ERROR) << "The domain portion of the 'jid' in the 'xmpp' section "
+                    << "is required (node@domain/resource).";
         return false;
       }
       if (jid.resource().empty()) {
-        TLOG(ERROR) << "The resource portion of the 'jid' in the 'xmpp' section is required (node@domain/resource).";
+        TLOG(ERROR) << "The resource portion of the 'jid' in the 'xmpp' section"
+                    << " is required (node@domain/resource).";
         return false;
       }
 

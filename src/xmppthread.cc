@@ -62,8 +62,11 @@ void XmppThread::ProcessMessages(int cms) {
   txmpp::Thread::ProcessMessages(cms);
 }
 
-void XmppThread::Login(const txmpp::XmppClientSettings& xcs) {
-  Post(this, MSG_LOGIN, new LoginData(xcs));
+void XmppThread::Login(const txmpp::XmppClientSettings& xcs, int delay) {
+  if (delay > 0)
+    PostDelayed(delay, this, MSG_LOGIN, new LoginData(xcs));
+  else
+    Post(this, MSG_LOGIN, new LoginData(xcs));
 }
 
 void XmppThread::Disconnect() {
@@ -78,6 +81,7 @@ void XmppThread::Raise(State state) {
 void XmppThread::OnStateChange(txmpp::XmppEngine::State state, int code) {
   if (state == txmpp::XmppEngine::STATE_CLOSED) {
     State raise_state = STOPPED_ERROR;
+
     switch(code) {
       case txmpp::XmppEngine::ERROR_NONE:
         raise_state = STOPPED;
@@ -130,8 +134,25 @@ void XmppThread::OnStateChange(txmpp::XmppEngine::State state, int code) {
 void XmppThread::SocketClose(int code) {
   State raise_state = STOPPED_ERROR;
 
-  // TODO(silas): figure out what socket errors we should reconnect on
   switch(code) {
+    case 0:
+      raise_state = STOPPED;
+      break;
+    case ENETDOWN:
+      TLOG(ERROR) << "Network is down.";
+      break;
+    case ENETUNREACH:
+      TLOG(ERROR) << "Network is unreachable.";
+      break;
+    case ENETRESET:
+      TLOG(ERROR) << "Network dropped connection on reset.";
+      break;
+    case ECONNABORTED:
+      TLOG(ERROR) << "Software caused connection abort.";
+      break;
+    case ECONNRESET:
+      TLOG(ERROR) << "Connection reset by peer.";
+      break;
     case ECONNREFUSED:
       TLOG(ERROR) << "Connection refused.";
       break;

@@ -52,7 +52,7 @@ class XmppThread: public txmpp::Thread, XmppPumpNotify, txmpp::MessageHandler, p
     txmpp::XmppClient* client() { return pump_->client(); }
 
     void ProcessMessages(int cms);
-    void Login(const txmpp::XmppClientSettings & xcs);
+    void Login(const txmpp::XmppClientSettings & xcs, int delay = 0);
     void Disconnect();
 
     void SocketClose(int code);

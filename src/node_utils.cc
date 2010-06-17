@@ -66,13 +66,19 @@ void SetupConfig(int argc, char* argv[]) {
     exit(1);
   }
 
-  if (!tyrion::NodeSettings::Instance()->Setup(config)) {
+  if (!NodeSettings::Instance()->Setup(config)) {
     TLOG(ERROR) << "Unable to open settings file.";
     exit(1);
   }
 
-  if (!tyrion::NodeSettings::Instance()->Validate()) {
+  if (!NodeSettings::Instance()->Validate()) {
     TLOG(ERROR) << "Invalid settings.";
+    exit(1);
+  }
+
+  std::string acl = NodeSettings::Instance()->Get("general", "acl");
+  if (!NodeAcls::Instance()->Setup(acl)) {
+    TLOG(ERROR) << "Unable to open acl file.";
     exit(1);
   }
 }

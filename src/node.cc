@@ -34,8 +34,15 @@
 #include "node_settings.h"
 #include "node_utils.h"
 #include "xmppthread.h"
+#ifdef _DEBUG
+#include <txmpp/logging.h>
+#endif
 
 int main(int argc, char* argv[]) {
+
+#ifdef _DEBUG
+  txmpp::LogMessage::LogToDebug(txmpp::LS_SENSITIVE);
+#endif
 
   sigset_t set;
   sigset_t set_waiting;
@@ -56,7 +63,6 @@ int main(int argc, char* argv[]) {
   while (reconnect) {
     code = 0;
 
-    // Start xmpp on a different thread
     tyrion::XmppThread thread;
     thread.Start();
 
@@ -65,7 +71,6 @@ int main(int argc, char* argv[]) {
     txmpp::InsecureCryptStringImpl password;
     password.password() = tyrion::NodeSettings::Instance()->Get("xmpp", "password");
 
-    // Create client settings
     txmpp::XmppClientSettings settings;
     settings.set_user(jid.node());
     settings.set_pass(txmpp::CryptString(password));
@@ -79,22 +84,11 @@ int main(int argc, char* argv[]) {
         tyrion::NodeSettings::Instance()->GetInt("xmpp", "port", 5222)
     ));
 
-    // Reconnect timeout
-    if (timeout > 0) {
+    if (timeout > 0)
       TLOG(INFO) << "Reconnecting in " << timeout / 1000 << " seconds...";
-      for(int i = 0; i < timeout; i += 500) {
-        txmpp::Thread::SleepMs(500);
-        // We're doing this because OSX doesn't support sigtimedwait
-        sigpending(&set_waiting);
-        if (sigismember(&set_waiting, SIGINT) || sigismember(&set_waiting, SIGTERM)) {
-          reconnect = false;
-          break;
-        }
-      }
-    }
 
     if (reconnect) {
-      thread.Login(settings);
+      thread.Login(settings, timeout);
 
       while (true) {
         sigwait(&set, &sig);
@@ -119,7 +113,7 @@ int main(int argc, char* argv[]) {
     thread.Quit();
     thread.Stop();
 
-    if (reconnect) timeout = 10000;
+    if (timeout < 1) timeout = 10000;
   }
 
   return code;

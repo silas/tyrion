@@ -25,33 +25,19 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _TYRION_XMPPTASKS_H_
-#define _TYRION_XMPPTASKS_H_
+#ifndef _TYRION_CONSTANTS_H_
+#define _TYRION_CONSTANTS_H_
 
-#include <txmpp/taskparent.h>
-#include <txmpp/xmpptask.h>
+#include <string>
+#include <txmpp/qname.h>
 
 namespace tyrion {
 
-class XmppPresenceTask : public txmpp::XmppTask {
-  public:
-    explicit XmppPresenceTask(txmpp::TaskParent *parent);
-    virtual ~XmppPresenceTask();
-    virtual int ProcessStart();
-    virtual int ProcessResponse();
-    bool HandleStanza(const txmpp::XmlElement *stanza);
-};
+extern const std::string NS_SERVICE;
 
-class XmppServiceTask : public txmpp::XmppTask {
-  public:
-    explicit XmppServiceTask(txmpp::TaskParent *parent);
-    virtual ~XmppServiceTask();
-    virtual int ProcessStart();
-    virtual int ProcessResponse();
-    bool HandleStanza(const txmpp::XmlElement *stanza);
-    bool IsValid(const txmpp::XmlElement *stanza);
-};
+extern const txmpp::QName QN_SERVICE;
+extern const txmpp::QName QN_TYPE;
 
-}  // namespace tyrion
+};  // namespace tyrion
 
-#endif  // _TYRION_XMPPTASK_H_
+#endif  // _TYRION_CONSTANTS_H_

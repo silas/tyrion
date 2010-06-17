@@ -105,6 +105,7 @@ env = conf.Finish()
 
 library_src = [
     'src/config.cc',
+    'src/constants.cc',
     'src/logging.cc',
     'src/third_party/inih/ini.c',
     'src/xmpppump.cc',
