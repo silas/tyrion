@@ -25,13 +25,47 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "node_stanza.h"
+
+#include <txmpp/constants.h>
 #include "constants.h"
+#include "node_settings.h"
 
 namespace tyrion {
 
-const std::string NS_SERVICE("http://tyrion.org/protocol/1.0/service");
+ServiceIq::ServiceIq() {
+}
 
-const txmpp::QName QN_INPUT(true, NS_SERVICE, "input");
-const txmpp::QName QN_SERVICE(true, NS_SERVICE, "service");
+ServiceIq::ServiceIq(const txmpp::XmlElement *stanza) {
+  if (stanza->Name() != txmpp::QN_IQ ||
+      !stanza->HasAttr(txmpp::QN_FROM) ||
+      !stanza->HasAttr(txmpp::QN_ID)) return;
+
+  jid_ = txmpp::Jid(stanza->Attr(txmpp::QN_FROM));
+  id_ = stanza->Attr(txmpp::QN_ID);
+
+  const txmpp::XmlElement *service = stanza->FirstWithNamespace(NS_SERVICE);
+
+  if (service == NULL ||
+      service->Name() != QN_SERVICE ||
+      !service->HasAttr(txmpp::QN_TYPE) ||
+      !service->HasAttr(txmpp::QN_XMLNS) ||
+      service->Attr(txmpp::QN_XMLNS) != NS_SERVICE) return;
+
+  type_ = service->Attr(txmpp::QN_TYPE);
+
+  const txmpp::XmlElement *input = service->FirstNamed(QN_INPUT);
+
+  if (input == NULL) return;
+
+  input_ = input->BodyText();
+}
+
+ServiceIq::~ServiceIq() {
+}
+
+bool ServiceIq::HasAcl() {
+  return NodeAcls::Instance()->GetBool(type_, jid_.BareJid().Str());
+}
 
 };  // namespace tyrion

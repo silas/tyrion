@@ -25,13 +25,42 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "constants.h"
+#ifndef _TYRION_NODE_STANZA_H_
+#define _TYRION_NODE_STANZA_H_
+
+#include <string>
+#include <txmpp/jid.h>
+#include <txmpp/xmlelement.h>
 
 namespace tyrion {
 
-const std::string NS_SERVICE("http://tyrion.org/protocol/1.0/service");
+class ServiceIq {
+  public:
+    ServiceIq();
+    ServiceIq(const txmpp::XmlElement *stanza);
+    ~ServiceIq();
 
-const txmpp::QName QN_INPUT(true, NS_SERVICE, "input");
-const txmpp::QName QN_SERVICE(true, NS_SERVICE, "service");
+    bool HasAcl();
 
-};  // namespace tyrion
+    inline txmpp::Jid jid() { return jid_; }
+    inline void set_jid(txmpp::Jid jid) { jid_ = jid; }
+
+    inline std::string id() { return id_; }
+    inline void set_id(std::string id) { id_ = id; }
+
+    inline std::string type() { return type_; }
+    inline void set_type(std::string type) { type_ = type; }
+
+    inline std::string input() { return input_; }
+    inline void set_input(std::string input) { input_ = input; }
+
+  private:
+    txmpp::Jid jid_;
+    std::string id_;
+    std::string input_;
+    std::string type_;
+};
+
+}  // tyrion
+
+#endif  // _TYRION_NODE_STANZA_H_

@@ -25,13 +25,24 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "constants.h"
+#include "utils.h"
+
+#include <limits.h>
+#include <stdlib.h>
 
 namespace tyrion {
+namespace utils {
 
-const std::string NS_SERVICE("http://tyrion.org/protocol/1.0/service");
+std::string Error(std::string code, std::string message) {
+  return "Error: org.tyrion.error." + code + (!message.empty() ? ": " +
+      message : message) + "\n";
+}
 
-const txmpp::QName QN_INPUT(true, NS_SERVICE, "input");
-const txmpp::QName QN_SERVICE(true, NS_SERVICE, "service");
+std::string RealPath(std::string path) {
+  char buffer[PATH_MAX + 1];
+  char *rc = realpath(path.c_str(), buffer);
 
-};  // namespace tyrion
+  return rc ? std::string(buffer) : "";
+}
+
+} }  // namespace tyrion::utils
