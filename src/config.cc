@@ -52,7 +52,8 @@ std::string Config::Get(std::string section, std::string name,
   return values_.count(key) ? values_[key] : default_value;
 }
 
-long Config::GetInt(std::string section, std::string name, long default_value) {
+long Config::GetInt(std::string section, std::string name,
+                    long default_value) {
   std::string valstr = Get(section, name, "");
   const char* value = valstr.c_str();
   char* end;

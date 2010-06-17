@@ -89,8 +89,10 @@ class Settings {
       return config_->Get(section, name, default_);
     }
 
-    bool GetBool(std::string section, std::string name, bool default_ = false) {
-      return config_->Get(section, name, default_ ? "true" : "false") == "true";
+    bool GetBool(std::string section, std::string name,
+                 bool default_ = false) {
+      return config_->Get(section, name, default_ ?
+                          "true" :"false") == "true";
     }
 
     long GetInt(std::string section, std::string name, long default_ = 0) {

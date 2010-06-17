@@ -53,7 +53,8 @@ void SetupConfig(int argc, char* argv[]) {
       std::cout << "Example: tyrion-node -c node.conf" << std::endl;
       std::cout << std::endl;
       std::cout << "Configuration options:" << std::endl;
-      std::cout << "  -c, --config-file         the node configuration file" << std::endl;
+      std::cout << "  -c, --config-file         the node configuration file"
+                << std::endl;
       exit(0);
     } else {
       TLOG(ERROR) << "Unknown option '" << option << "'.";

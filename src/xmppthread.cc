@@ -171,7 +171,8 @@ void XmppThread::OnMessage(txmpp::Message* pmsg) {
       assert(pmsg->pdata);
       LoginData* data = reinterpret_cast<LoginData*>(pmsg->pdata);
       state_ = STARTED;
-      txmpp::XmppAsyncSocketImpl* socket = new txmpp::XmppAsyncSocketImpl(true);
+      txmpp::XmppAsyncSocketImpl* socket =
+          new txmpp::XmppAsyncSocketImpl(true);
       socket->SignalCloseEvent.connect(this, &XmppThread::SocketClose);
       pump_->DoLogin(data->xcs, socket,
                      new txmpp::PreXmppAuthImpl());

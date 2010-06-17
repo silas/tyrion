@@ -69,7 +69,8 @@ int main(int argc, char* argv[]) {
     txmpp::Jid jid(tyrion::NodeSettings::Instance()->Get("xmpp", "jid"));
 
     txmpp::InsecureCryptStringImpl password;
-    password.password() = tyrion::NodeSettings::Instance()->Get("xmpp", "password");
+    password.password() = tyrion::NodeSettings::Instance()->Get("xmpp",
+                                                                "password");
 
     txmpp::XmppClientSettings settings;
     settings.set_user(jid.node());
@@ -80,7 +81,8 @@ int main(int argc, char* argv[]) {
 
     settings.set_server(txmpp::SocketAddress(
         tyrion::NodeSettings::Instance()->Has("xmpp", "server") ?
-            tyrion::NodeSettings::Instance()->Get("xmpp", "server") : jid.domain(),
+            tyrion::NodeSettings::Instance()->Get("xmpp", "server") :
+            jid.domain(),
         tyrion::NodeSettings::Instance()->GetInt("xmpp", "port", 5222)
     ));
 

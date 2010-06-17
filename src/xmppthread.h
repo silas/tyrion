@@ -35,7 +35,8 @@
 
 namespace tyrion {
 
-class XmppThread: public txmpp::Thread, XmppPumpNotify, txmpp::MessageHandler, public txmpp::has_slots<> {
+class XmppThread : public txmpp::Thread, XmppPumpNotify, txmpp::MessageHandler,
+                   public txmpp::has_slots<> {
   public:
     enum State {
       NONE,
