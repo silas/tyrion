@@ -45,20 +45,19 @@ XmppPresenceTask::~XmppPresenceTask() {
 }
 
 int XmppPresenceTask::ProcessStart() {
-
   txmpp::scoped_ptr<txmpp::XmlElement> presence(
       new txmpp::XmlElement(txmpp::QN_PRESENCE));
+
   SendStanza(presence.get());
 
   return STATE_RESPONSE;
 }
 
 int XmppPresenceTask::ProcessResponse() {
-
   const txmpp::XmlElement* stanza = NextStanza();
-  if (stanza == NULL) {
+
+  if (stanza == NULL)
     return STATE_BLOCKED;
-  }
 
   return STATE_RESPONSE;
 }
@@ -87,9 +86,9 @@ int XmppServiceTask::ProcessStart() {
 int XmppServiceTask::ProcessResponse() {
 
   const txmpp::XmlElement* stanza = NextStanza();
-  if (stanza == NULL) {
+
+  if (stanza == NULL)
     return STATE_BLOCKED;
-  }
 
   TLOG(ERROR) << "Raw: " << stanza->Str();
   ServiceIq iq(stanza);

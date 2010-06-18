@@ -44,11 +44,14 @@ void XmppPump::DoLogin(const txmpp::XmppClientSettings & xcs,
                        txmpp::XmppAsyncSocket* socket,
                        txmpp::PreXmppAuth* auth) {
   OnStateChange(txmpp::XmppEngine::STATE_START);
+
   if (!AllChildrenDone()) {
     client_->SignalStateChange.connect(this, &XmppPump::OnStateChange);
+
     if (client_->Connect(xcs, "", socket, auth) != txmpp::XMPP_RETURN_OK) {
       TLOG(ERROR) << "Failed to connect.";
     }
+
     client_->Start();
   }
 }
@@ -62,7 +65,9 @@ void XmppPump::DoDisconnect() {
 void XmppPump::OnStateChange(txmpp::XmppEngine::State state) {
   if (state_ == state)
     return;
+
   int code = 0;
+
   switch(state) {
     case txmpp::XmppEngine::STATE_OPEN: {
       // Presence handler
@@ -82,7 +87,9 @@ void XmppPump::OnStateChange(txmpp::XmppEngine::State state) {
       code = client_->GetError(NULL);
       break;
   }
+
   state_ = state;
+
   if (notify_ != NULL)
     notify_->OnStateChange(state, code);
 }
@@ -102,6 +109,7 @@ void XmppPump::OnMessage(txmpp::Message *pmsg) {
 txmpp::XmppReturnStatus XmppPump::SendStanza(const txmpp::XmlElement *stanza) {
   if (!AllChildrenDone())
     return client_->SendStanza(stanza);
+
   return txmpp::XMPP_RETURN_BADSTATE;
 }
 
