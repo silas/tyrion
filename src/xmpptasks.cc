@@ -91,7 +91,13 @@ int XmppServiceTask::ProcessResponse() {
     return STATE_BLOCKED;
   }
 
+  TLOG(ERROR) << "Raw: " << stanza->Str();
   ServiceIq iq(stanza);
+  TLOG(ERROR) << "Type: " << iq.type();
+  TLOG(ERROR) << "Timeout: " << iq.timeout();
+  TLOG(ERROR) << "User: " << iq.user();
+  TLOG(ERROR) << "Group: " << iq.group();
+  TLOG(ERROR) << "Input: " << iq.input();
 
   TLOG(ERROR) << "Valid message from: " << iq.jid().Str();
 

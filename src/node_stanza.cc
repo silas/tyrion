@@ -27,6 +27,7 @@
 
 #include "node_stanza.h"
 
+#include <sstream>
 #include <txmpp/constants.h>
 #include "constants.h"
 #include "node_settings.h"
@@ -53,6 +54,20 @@ ServiceIq::ServiceIq(const txmpp::XmlElement *stanza) {
       service->Attr(txmpp::QN_XMLNS) != NS_SERVICE) return;
 
   type_ = service->Attr(txmpp::QN_TYPE);
+
+  if (service->HasAttr(QN_USER))
+    user_ = service->Attr(QN_USER);
+
+  if (service->HasAttr(QN_GROUP))
+    group_ = service->Attr(QN_GROUP);
+
+  timeout_ = PROCESS_TIMEOUT;
+  if (service->HasAttr(QN_TIMEOUT)) {
+    std::istringstream timeout_stream(service->Attr(QN_TIMEOUT));
+    timeout_stream >> timeout_;
+    if (timeout_ <= 0)
+      timeout_ = PROCESS_TIMEOUT;
+  }
 
   const txmpp::XmlElement *input = service->FirstNamed(QN_INPUT);
 

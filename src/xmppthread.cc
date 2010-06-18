@@ -47,7 +47,7 @@ struct LoginData : public txmpp::MessageData {
   txmpp::XmppClientSettings xcs;
 };
 
-} // namespace
+}  // namespace
 
 XmppThread::XmppThread() {
   pump_ = new XmppPump(this);
@@ -127,6 +127,7 @@ void XmppThread::OnStateChange(txmpp::XmppEngine::State state, int code) {
         raise_state = SHUTDOWN_ERROR;
         break;
     }
+
     Raise(raise_state);
   }
 }
@@ -174,8 +175,7 @@ void XmppThread::OnMessage(txmpp::Message* pmsg) {
       txmpp::XmppAsyncSocketImpl* socket =
           new txmpp::XmppAsyncSocketImpl(true);
       socket->SignalCloseEvent.connect(this, &XmppThread::SocketClose);
-      pump_->DoLogin(data->xcs, socket,
-                     new txmpp::PreXmppAuthImpl());
+      pump_->DoLogin(data->xcs, socket, new txmpp::PreXmppAuthImpl());
       delete data;
       }
       break;

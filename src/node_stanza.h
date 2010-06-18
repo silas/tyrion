@@ -54,11 +54,23 @@ class ServiceIq {
     inline std::string input() { return input_; }
     inline void set_input(std::string input) { input_ = input; }
 
+    inline int timeout() { return timeout_; }
+    inline void set_timeout(int timeout) { timeout_ = timeout; }
+
+    inline std::string user() { return user_; }
+    inline void set_user(std::string user) { user_ = user; }
+
+    inline std::string group() { return group_; }
+    inline void set_group(std::string group) { group_ = group; }
+
   private:
     txmpp::Jid jid_;
     std::string id_;
     std::string input_;
     std::string type_;
+    std::string user_;
+    std::string group_;
+    int timeout_;
 };
 
 }  // tyrion

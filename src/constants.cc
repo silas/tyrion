@@ -27,11 +27,18 @@
 
 #include "constants.h"
 
+#include <txmpp/constants.h>
+
 namespace tyrion {
 
 const std::string NS_SERVICE("http://tyrion.org/protocol/1.0/service");
 
-const txmpp::QName QN_INPUT(true, NS_SERVICE, "input");
 const txmpp::QName QN_SERVICE(true, NS_SERVICE, "service");
+const txmpp::QName QN_INPUT(true, NS_SERVICE, "input");
+const txmpp::QName QN_TIMEOUT(true, txmpp::STR_EMPTY, "timeout");
+const txmpp::QName QN_USER(true, txmpp::STR_EMPTY, "user");
+const txmpp::QName QN_GROUP(true, txmpp::STR_EMPTY, "group");
+
+const int PROCESS_TIMEOUT = 300;
 
 };  // namespace tyrion

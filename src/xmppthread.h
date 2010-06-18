@@ -39,7 +39,7 @@ class XmppThread : public txmpp::Thread, XmppPumpNotify, txmpp::MessageHandler,
                    public txmpp::has_slots<> {
   public:
     enum State {
-      NONE,
+      NONE = 0,
       STARTED,
       STOPPED,
       STOPPED_ERROR,

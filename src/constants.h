@@ -37,6 +37,11 @@ extern const std::string NS_SERVICE;
 
 extern const txmpp::QName QN_INPUT;
 extern const txmpp::QName QN_SERVICE;
+extern const txmpp::QName QN_TIMEOUT;
+extern const txmpp::QName QN_USER;
+extern const txmpp::QName QN_GROUP;
+
+extern const int PROCESS_TIMEOUT;
 
 };  // namespace tyrion
 
