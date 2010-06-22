@@ -139,8 +139,8 @@ node_src = [
     'src/node_loop.cc',
     'src/node_service_handler.cc',
     'src/node_utils.cc',
-    'src/xmpppump.cc',
-    'src/xmpptasks.cc',
+    'src/node_xmpp_pump.cc',
+    'src/node_xmpp_tasks.cc',
 ]
 
 tyrion_node = env.Program(

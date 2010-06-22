@@ -25,12 +25,12 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "xmpppump.h"
+#include "node_xmpp_pump.h"
 
 #include <txmpp/logging.h>
 #include <txmpp/prexmppauthimpl.h>
 #include "logging.h"
-#include "xmpptasks.h"
+#include "node_xmpp_tasks.h"
 
 namespace tyrion {
 

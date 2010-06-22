@@ -25,49 +25,33 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _TYRION_XMPPPUMP_H_
-#define _TYRION_XMPPPUMP_H_
+#ifndef _TYRION_NODE_XMPP_TASKS_H_
+#define _TYRION_NODE_XMPP_TASKS_H_
 
-#include <txmpp/messagequeue.h>
-#include <txmpp/taskrunner.h>
-#include <txmpp/thread.h>
-#include <txmpp/time.h>
-#include <txmpp/xmppclient.h>
-#include <txmpp/xmppengine.h>
+#include <txmpp/taskparent.h>
 #include <txmpp/xmpptask.h>
 
 namespace tyrion {
 
-class XmppPumpNotify {
+class XmppPresenceTask : public txmpp::XmppTask {
   public:
-    virtual ~XmppPumpNotify() {}
-    virtual void OnStateChange(txmpp::XmppEngine::State state,
-                               int code = 0) = 0;
+    explicit XmppPresenceTask(txmpp::TaskParent *parent);
+    virtual ~XmppPresenceTask();
+    virtual int ProcessStart();
+    virtual int ProcessResponse();
+    bool HandleStanza(const txmpp::XmlElement *stanza);
 };
 
-class XmppPump : public txmpp::MessageHandler, public txmpp::TaskRunner {
+class XmppServiceTask : public txmpp::XmppTask {
   public:
-    XmppPump(XmppPumpNotify * notify = NULL);
-
-    txmpp::XmppClient *client() { return client_; }
-    txmpp::XmppReturnStatus SendStanza(const txmpp::XmlElement *stanza);
-    int64 CurrentTime();
-
-    void DoLogin(const txmpp::XmppClientSettings & xcs,
-                 txmpp::XmppAsyncSocket* socket,
-                 txmpp::PreXmppAuth* auth);
-    void DoDisconnect();
-    void WakeTasks();
-
-    void OnStateChange(txmpp::XmppEngine::State state);
-    void OnMessage(txmpp::Message *pmsg);
-
-  private:
-    txmpp::XmppClient *client_;
-    txmpp::XmppEngine::State state_;
-    XmppPumpNotify *notify_;
+    explicit XmppServiceTask(txmpp::TaskParent *parent);
+    virtual ~XmppServiceTask();
+    virtual int ProcessStart();
+    virtual int ProcessResponse();
+    bool HandleStanza(const txmpp::XmlElement *stanza);
+    bool IsValid(const txmpp::XmlElement *stanza);
 };
 
 }  // namespace tyrion
 
-#endif  // _TYRION_XMPPPUMP_H_
+#endif  // _TYRION_NODE_XMPP_TASKS_H_

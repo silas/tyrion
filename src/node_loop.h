@@ -32,7 +32,7 @@
 #include <txmpp/thread.h>
 #include <txmpp/xmppclientsettings.h>
 #include "node_envelopes.h"
-#include "xmpppump.h"
+#include "node_xmpp_pump.h"
 
 namespace tyrion {
 

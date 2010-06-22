@@ -25,7 +25,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "xmpptasks.h"
+#include "node_xmpp_tasks.h"
 
 #include <txmpp/constants.h>
 #include <txmpp/logging.h>

@@ -30,7 +30,6 @@
 
 #include <string>
 #include "node_envelopes.h"
-#include "xmpptasks.h"
 
 namespace tyrion {
 

@@ -25,33 +25,49 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _TYRION_XMPPTASKS_H_
-#define _TYRION_XMPPTASKS_H_
+#ifndef _TYRION_NODE_XMPP_PUMP_H_
+#define _TYRION_NODE_XMPP_PUMP_H_
 
-#include <txmpp/taskparent.h>
+#include <txmpp/messagequeue.h>
+#include <txmpp/taskrunner.h>
+#include <txmpp/thread.h>
+#include <txmpp/time.h>
+#include <txmpp/xmppclient.h>
+#include <txmpp/xmppengine.h>
 #include <txmpp/xmpptask.h>
 
 namespace tyrion {
 
-class XmppPresenceTask : public txmpp::XmppTask {
+class XmppPumpNotify {
   public:
-    explicit XmppPresenceTask(txmpp::TaskParent *parent);
-    virtual ~XmppPresenceTask();
-    virtual int ProcessStart();
-    virtual int ProcessResponse();
-    bool HandleStanza(const txmpp::XmlElement *stanza);
+    virtual ~XmppPumpNotify() {}
+    virtual void OnStateChange(txmpp::XmppEngine::State state,
+                               int code = 0) = 0;
 };
 
-class XmppServiceTask : public txmpp::XmppTask {
+class XmppPump : public txmpp::MessageHandler, public txmpp::TaskRunner {
   public:
-    explicit XmppServiceTask(txmpp::TaskParent *parent);
-    virtual ~XmppServiceTask();
-    virtual int ProcessStart();
-    virtual int ProcessResponse();
-    bool HandleStanza(const txmpp::XmlElement *stanza);
-    bool IsValid(const txmpp::XmlElement *stanza);
+    XmppPump(XmppPumpNotify * notify = NULL);
+
+    txmpp::XmppClient *client() { return client_; }
+    txmpp::XmppReturnStatus SendStanza(const txmpp::XmlElement *stanza);
+    int64 CurrentTime();
+
+    void DoLogin(const txmpp::XmppClientSettings & xcs,
+                 txmpp::XmppAsyncSocket* socket,
+                 txmpp::PreXmppAuth* auth);
+    void DoDisconnect();
+    void WakeTasks();
+
+    void OnStateChange(txmpp::XmppEngine::State state);
+    void OnMessage(txmpp::Message *pmsg);
+
+  private:
+    txmpp::XmppClient *client_;
+    txmpp::XmppEngine::State state_;
+    XmppPumpNotify *notify_;
 };
 
 }  // namespace tyrion
 
-#endif  // _TYRION_XMPPTASK_H_
+#endif  // _TYRION_NODE_XMPP_PUMP_H_
