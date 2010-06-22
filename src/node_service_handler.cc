@@ -34,14 +34,14 @@
 
 namespace tyrion {
 
-ServiceHandler::ServiceHandler(NodeServiceEnvelope* service) {
+NodeServiceHandler::NodeServiceHandler(NodeServiceEnvelope* service) {
   service_ = service;
 }
 
-ServiceHandler::~ServiceHandler() {
+NodeServiceHandler::~NodeServiceHandler() {
 }
 
-void ServiceHandler::Run() {
+void NodeServiceHandler::Run() {
   bool issue = false;
   std::string output;
   std::string error;

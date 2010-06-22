@@ -135,13 +135,13 @@ void NodeLoop::DoShutdown() {
 }
 
 void NodeLoop::DoRequest(ServiceData* service) {
-  ServiceHandler *sh = new ServiceHandler(service->data());
+  NodeServiceHandler *sh = new NodeServiceHandler(service->data());
   utils::CreateThread(NodeLoop::DoRequestInThread, (void *)sh);
   delete service;
 }
 
 void *NodeLoop::DoRequestInThread(void *arg) {
-  ServiceHandler *handler=(ServiceHandler*)arg;
+  NodeServiceHandler *handler=(NodeServiceHandler*)arg;
   handler->Run();
   delete(handler);
   pthread_exit(NULL);

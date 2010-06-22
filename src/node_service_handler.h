@@ -33,10 +33,10 @@
 
 namespace tyrion {
 
-class ServiceHandler {
+class NodeServiceHandler {
   public:
-    ServiceHandler(NodeServiceEnvelope* service);
-    ~ServiceHandler();
+    NodeServiceHandler(NodeServiceEnvelope* service);
+    ~NodeServiceHandler();
 
     /**
      * Create and run the service process.
