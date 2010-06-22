@@ -62,7 +62,7 @@ class Base(object):
     def setup_basic(self):
         self.timeout = 60
         self.config = ConfigParser.RawConfigParser()
-        self.config.read('test.conf')
+        self.config.read('helper.conf')
         if self.config.getboolean('general', 'logging'):
             txlog.startLogging(sys.stdout)
 
