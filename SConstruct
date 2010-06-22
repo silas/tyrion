@@ -136,7 +136,7 @@ libraries += [tyrion_library]
 
 node_src = [
     'src/node.cc',
-    'src/node_envelopes.cc',
+    'src/node_envelope.cc',
     'src/node_loop.cc',
     'src/node_service_handler.cc',
     'src/node_utils.cc',

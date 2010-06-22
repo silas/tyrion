@@ -31,7 +31,7 @@
 #include <iostream>
 #include <txmpp/thread.h>
 #include <txmpp/xmppclientsettings.h>
-#include "node_envelopes.h"
+#include "node_envelope.h"
 #include "node_xmpp_pump.h"
 
 namespace tyrion {
@@ -52,7 +52,7 @@ class NodeLoop : public txmpp::Thread, XmppPumpNotify, txmpp::MessageHandler,
       RUNNING,
       ERROR
     };
-    typedef txmpp::TypedMessageData<ServiceEnvelope*> ServiceData;
+    typedef txmpp::TypedMessageData<NodeServiceEnvelope*> ServiceData;
 
     static NodeLoop* Instance();
 
@@ -62,8 +62,8 @@ class NodeLoop : public txmpp::Thread, XmppPumpNotify, txmpp::MessageHandler,
     void Restart();
     void Disconnect();
 
-    void Request(ServiceEnvelope* envelope);
-    void Response(ServiceEnvelope* envelope);
+    void Request(NodeServiceEnvelope* envelope);
+    void Response(NodeServiceEnvelope* envelope);
 
     void ProcessMessages(int cms);
 

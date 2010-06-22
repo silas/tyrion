@@ -32,7 +32,7 @@
 #include <txmpp/xmppclient.h>
 #include "constants.h"
 #include "logging.h"
-#include "node_envelopes.h"
+#include "node_envelope.h"
 #include "node_loop.h"
 
 namespace tyrion {
@@ -90,7 +90,7 @@ int XmppServiceTask::ProcessResponse() {
   if (stanza == NULL)
     return STATE_BLOCKED;
 
-  ServiceEnvelope *envelope = new ServiceEnvelope(stanza);
+  NodeServiceEnvelope *envelope = new NodeServiceEnvelope(stanza);
   tyrion::NodeLoop::Instance()->Request(envelope);
 
   return STATE_RESPONSE;
@@ -107,7 +107,7 @@ bool XmppServiceTask::HandleStanza(const txmpp::XmlElement *stanza) {
 }
 
 bool XmppServiceTask::IsValid(const txmpp::XmlElement *stanza) {
-  return ServiceEnvelope(stanza).ValidRequest();
+  return NodeServiceEnvelope(stanza).ValidRequest();
 }
 
 }  // namespace tyrion

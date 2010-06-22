@@ -29,13 +29,13 @@
 #define TYRION_NODE_SERVICE_HANDLER_H_
 
 #include <string>
-#include "node_envelopes.h"
+#include "node_envelope.h"
 
 namespace tyrion {
 
 class ServiceHandler {
   public:
-    ServiceHandler(ServiceEnvelope* service);
+    ServiceHandler(NodeServiceEnvelope* service);
     ~ServiceHandler();
 
     /**
@@ -44,7 +44,7 @@ class ServiceHandler {
     void Run();
 
   private:
-    ServiceEnvelope* service_;
+    NodeServiceEnvelope* service_;
 };
 
 }  // namespace tyrion

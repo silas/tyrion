@@ -34,7 +34,7 @@
 
 namespace tyrion {
 
-ServiceHandler::ServiceHandler(ServiceEnvelope* service) {
+ServiceHandler::ServiceHandler(NodeServiceEnvelope* service) {
   service_ = service;
 }
 

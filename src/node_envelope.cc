@@ -25,7 +25,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "node_envelopes.h"
+#include "node_envelope.h"
 
 #include <sstream>
 #include <txmpp/constants.h>
@@ -34,13 +34,13 @@
 
 namespace tyrion {
 
-ServiceEnvelope::ServiceEnvelope() {
+NodeServiceEnvelope::NodeServiceEnvelope() {
   code_ = 0;
   timeout_ = PROCESS_TIMEOUT;
   valid_ = false;
 }
 
-ServiceEnvelope::ServiceEnvelope(const txmpp::XmlElement *stanza) {
+NodeServiceEnvelope::NodeServiceEnvelope(const txmpp::XmlElement *stanza) {
   code_ = 0;
   timeout_ = PROCESS_TIMEOUT;
   valid_ = false;
@@ -84,14 +84,14 @@ ServiceEnvelope::ServiceEnvelope(const txmpp::XmlElement *stanza) {
   valid_ = true;
 }
 
-ServiceEnvelope::~ServiceEnvelope() {
+NodeServiceEnvelope::~NodeServiceEnvelope() {
 }
 
-bool ServiceEnvelope::ValidRequest() {
+bool NodeServiceEnvelope::ValidRequest() {
   return valid_ && NodeAcls::Instance()->GetBool(type_, jid_.BareJid().Str()) && utils::RealPath(Path()) != "";
 }
 
-const txmpp::XmlElement* ServiceEnvelope::Response() {
+const txmpp::XmlElement* NodeServiceEnvelope::Response() {
   txmpp::XmlElement* iq = new txmpp::XmlElement(txmpp::QN_IQ);
   iq->SetAttr(txmpp::QN_TO, jid_.Str());
   iq->SetAttr(txmpp::QN_ID, id_);
@@ -113,7 +113,7 @@ const txmpp::XmlElement* ServiceEnvelope::Response() {
   return iq;
 }
 
-std::string ServiceEnvelope::Path() {
+std::string NodeServiceEnvelope::Path() {
   return NodeSettings::Instance()->Get("general", "service") + "/" + type_;
 }
 

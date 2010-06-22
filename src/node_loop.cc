@@ -75,11 +75,11 @@ void NodeLoop::Disconnect() {
   Post(this, MSG_DISCONNECT);
 }
 
-void NodeLoop::Request(ServiceEnvelope* envelope) {
+void NodeLoop::Request(NodeServiceEnvelope* envelope) {
   Post(this, MSG_REQUEST, new ServiceData(envelope));
 }
 
-void NodeLoop::Response(ServiceEnvelope* envelope) {
+void NodeLoop::Response(NodeServiceEnvelope* envelope) {
   Post(this, MSG_RESPONSE, new ServiceData(envelope));
 }
 
