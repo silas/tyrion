@@ -33,9 +33,7 @@
 #include "constants.h"
 #include "logging.h"
 #include "node_envelopes.h"
-#include "node_settings.h"
-#include "node_service_handler.h"
-#include "utils.h"
+#include "node_loop.h"
 
 namespace tyrion {
 
@@ -93,17 +91,9 @@ int XmppServiceTask::ProcessResponse() {
     return STATE_BLOCKED;
 
   ServiceEnvelope *envelope = new ServiceEnvelope(stanza);
-  ServiceHandler *sh = new ServiceHandler(envelope);
-  utils::CreateThread(XmppServiceTask::HandleService, (void *)sh);
+  tyrion::NodeLoop::Instance()->Request(envelope);
 
   return STATE_RESPONSE;
-}
-
-void *XmppServiceTask::HandleService(void *arg) {
-  ServiceHandler *handler=(ServiceHandler*)arg;
-  handler->Run();
-  delete(handler);
-  pthread_exit(NULL);
 }
 
 bool XmppServiceTask::HandleStanza(const txmpp::XmlElement *stanza) {

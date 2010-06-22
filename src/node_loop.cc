@@ -33,9 +33,12 @@
 #include <txmpp/prexmppauthimpl.h>
 #include <txmpp/xmppasyncsocketimpl.h>
 #include <txmpp/xmppclientsettings.h>
+#include <txmpp/xmppengine.h>
 #include "constants.h"
 #include "logging.h"
+#include "node_service_handler.h"
 #include "node_settings.h"
+#include "utils.h"
 
 namespace tyrion {
 
@@ -72,11 +75,11 @@ void NodeLoop::Disconnect() {
   Post(this, MSG_DISCONNECT);
 }
 
-void NodeLoop::Request(ServiceEnvelope& envelope) {
+void NodeLoop::Request(ServiceEnvelope* envelope) {
   Post(this, MSG_REQUEST, new ServiceData(envelope));
 }
 
-void NodeLoop::Response(ServiceEnvelope& envelope) {
+void NodeLoop::Response(ServiceEnvelope* envelope) {
   Post(this, MSG_RESPONSE, new ServiceData(envelope));
 }
 
@@ -113,11 +116,13 @@ void NodeLoop::DoLogin() {
 }
 
 void NodeLoop::DoDisconnect() {
+  state_ = NONE;
   if (pump_ == NULL) return;
   pump_->DoDisconnect();
 }
 
 void NodeLoop::DoRestart() {
+  state_ = NONE;
   if (pump_ != NULL) {
     delete pump_;
     pump_ = NULL;
@@ -130,11 +135,31 @@ void NodeLoop::DoShutdown() {
 }
 
 void NodeLoop::DoRequest(ServiceData* service) {
+  ServiceHandler *sh = new ServiceHandler(service->data());
+  utils::CreateThread(NodeLoop::DoRequestInThread, (void *)sh);
   delete service;
 }
 
+void *NodeLoop::DoRequestInThread(void *arg) {
+  ServiceHandler *handler=(ServiceHandler*)arg;
+  handler->Run();
+  delete(handler);
+  pthread_exit(NULL);
+}
+
 void NodeLoop::DoResponse(ServiceData* service) {
-  delete service;
+  if (state_ == RUNNING && pump_ != NULL &&
+      pump_->client() != NULL &&
+      pump_->client()->GetState() == txmpp::XmppEngine::STATE_OPEN) {
+    TLOG(ERROR) << service->data()->output();
+    delete service->data();
+    delete service;
+  } else {
+    TLOG(WARNING) << "Retrying service response in "
+                  << SERVICE_RETRY_TIMEOUT / 1000 << " seconds ("
+                  << service->data()->id() << ")";
+    PostDelayed(SERVICE_RETRY_TIMEOUT, this, MSG_RESPONSE, service);
+  }
 }
 
 void NodeLoop::OnMessage(txmpp::Message* pmsg) {

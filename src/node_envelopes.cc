@@ -29,15 +29,21 @@
 
 #include <sstream>
 #include <txmpp/constants.h>
-#include "constants.h"
 #include "node_settings.h"
 
 namespace tyrion {
 
 ServiceEnvelope::ServiceEnvelope() {
+  code_ = 0;
+  timeout_ = PROCESS_TIMEOUT;
+  valid_ = false;
 }
 
 ServiceEnvelope::ServiceEnvelope(const txmpp::XmlElement *stanza) {
+  code_ = 0;
+  timeout_ = PROCESS_TIMEOUT;
+  valid_ = false;
+
   if (stanza->Name() != txmpp::QN_IQ ||
       !stanza->HasAttr(txmpp::QN_FROM) ||
       !stanza->HasAttr(txmpp::QN_ID)) return;
@@ -61,12 +67,11 @@ ServiceEnvelope::ServiceEnvelope(const txmpp::XmlElement *stanza) {
   if (service->HasAttr(QN_GROUP))
     group_ = service->Attr(QN_GROUP);
 
-  timeout_ = PROCESS_TIMEOUT;
+  int timeout = 0;
   if (service->HasAttr(QN_TIMEOUT)) {
     std::istringstream timeout_stream(service->Attr(QN_TIMEOUT));
-    timeout_stream >> timeout_;
-    if (timeout_ <= 0)
-      timeout_ = PROCESS_TIMEOUT;
+    timeout_stream >> timeout;
+    set_timeout(timeout);
   }
 
   const txmpp::XmlElement *input = service->FirstNamed(QN_INPUT);
@@ -74,6 +79,8 @@ ServiceEnvelope::ServiceEnvelope(const txmpp::XmlElement *stanza) {
   if (input == NULL) return;
 
   input_ = input->BodyText();
+
+  valid_ = true;
 }
 
 ServiceEnvelope::~ServiceEnvelope() {

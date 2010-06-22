@@ -41,5 +41,6 @@ const txmpp::QName QN_GROUP(true, txmpp::STR_EMPTY, "group");
 
 const int PROCESS_TIMEOUT = 300; // secoonds
 const int RECONNECT_TIMEOUT = 10000; // milliseconds
+const int SERVICE_RETRY_TIMEOUT = 12000; // milliseconds
 
 };  // namespace tyrion

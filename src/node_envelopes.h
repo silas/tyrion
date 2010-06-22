@@ -31,6 +31,7 @@
 #include <string>
 #include <txmpp/jid.h>
 #include <txmpp/xmlelement.h>
+#include "constants.h"
 
 namespace tyrion {
 
@@ -55,8 +56,11 @@ class ServiceEnvelope {
     inline std::string input() { return input_; }
     inline void set_input(std::string input) { input_ = input; }
 
-    inline int timeout() { return timeout_; }
-    inline void set_timeout(int timeout) { timeout_ = timeout; }
+    inline std::string output() { return output_; }
+    inline void set_output(std::string output) { output_ = output; }
+
+    inline std::string error() { return error_; }
+    inline void set_error(std::string error) { error_ = error; }
 
     inline std::string user() { return user_; }
     inline void set_user(std::string user) { user_ = user; }
@@ -64,14 +68,27 @@ class ServiceEnvelope {
     inline std::string group() { return group_; }
     inline void set_group(std::string group) { group_ = group; }
 
+    inline int timeout() { return timeout_; }
+    inline void set_timeout(int timeout) { timeout_ = timeout > 0 ? timeout : PROCESS_TIMEOUT; }
+
+    inline int code() { return code_; }
+    inline void set_code(int code) { code_ = code; }
+
+    inline bool valid() { return valid_; }
+    inline void set_valid(bool valid) { valid_ = valid; }
+
   private:
     txmpp::Jid jid_;
     std::string id_;
     std::string input_;
+    std::string output_;
+    std::string error_;
     std::string type_;
     std::string user_;
     std::string group_;
+    int code_;
     int timeout_;
+    bool valid_;
 };
 
 }  // tyrion

@@ -27,6 +27,7 @@
 
 #include "node_service_handler.h"
 
+#include "node_loop.h"
 #include "node_settings.h"
 #include "process.h"
 #include "utils.h"
@@ -38,7 +39,6 @@ ServiceHandler::ServiceHandler(ServiceEnvelope* service) {
 }
 
 ServiceHandler::~ServiceHandler() {
-  delete(service_);
 }
 
 void ServiceHandler::Run() {
@@ -112,15 +112,14 @@ void ServiceHandler::Run() {
     code = p.Close();
   }
 
-  if (issue) {
-    TLOG(ERROR) << "Issue";
-  } else {
-    TLOG(ERROR) << "Path: " << service_->Path();
-    TLOG(ERROR) << "Code: " << code;
-    TLOG(ERROR) << "Output: " << output;
-    TLOG(ERROR) << "Error: " << error;
-  }
-  // SEND RESPONSE
+  if (issue)
+    service_->set_valid(false);
+
+  service_->set_code(code);
+  service_->set_output(output);
+  service_->set_error(error);
+
+  tyrion::NodeLoop::Instance()->Response(service_);
 }
 
 } // namespace tyrion

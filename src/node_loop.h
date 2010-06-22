@@ -52,7 +52,7 @@ class NodeLoop : public txmpp::Thread, XmppPumpNotify, txmpp::MessageHandler,
       RUNNING,
       ERROR
     };
-    typedef txmpp::TypedMessageData<ServiceEnvelope> ServiceData;
+    typedef txmpp::TypedMessageData<ServiceEnvelope*> ServiceData;
 
     static NodeLoop* Instance();
 
@@ -62,8 +62,8 @@ class NodeLoop : public txmpp::Thread, XmppPumpNotify, txmpp::MessageHandler,
     void Restart();
     void Disconnect();
 
-    void Request(ServiceEnvelope& envelope);
-    void Response(ServiceEnvelope& envelope);
+    void Request(ServiceEnvelope* envelope);
+    void Response(ServiceEnvelope* envelope);
 
     void ProcessMessages(int cms);
 
@@ -79,6 +79,7 @@ class NodeLoop : public txmpp::Thread, XmppPumpNotify, txmpp::MessageHandler,
     void DoShutdown();
 
     void DoRequest(ServiceData* service);
+    static void *DoRequestInThread(void *arg);
     void DoResponse(ServiceData* service);
 
     void OnMessage(txmpp::Message* pmsg);
