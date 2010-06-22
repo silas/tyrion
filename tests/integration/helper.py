@@ -170,12 +170,12 @@ class BaseXMPP(Base):
     @property
     def handle_service_unavailable_success(self):
         def handle(xml):
-            raise Exception('Should have got service-unavailable')
+            raise Exception('Should have got feature-not-implemented')
         return handle
 
     @property
     def handle_service_unavailable_error(self):
         def handle(failure):
             self.assertTrue(failure.check(error.StanzaError))
-            self.assertTrue('service-unavailable' in failure.getErrorMessage())
+            self.assertTrue('feature-not-implemented' in failure.getErrorMessage())
         return handle
