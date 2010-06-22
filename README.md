@@ -11,7 +11,7 @@ Tyrion
 ### Test Requirements
 
 * [gtest](http://code.google.com/p/googletest/) (unit)
-* [txtyrion](http://github.com/silas/txtyrion) (integration)
+* [twisted](http://twistedmatrix.com/) (integration)
 
 ### License
 
