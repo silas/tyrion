@@ -1,15 +1,16 @@
 #include <gtest/gtest.h>
-#include "../src/setting.h"
+#include "../src/settings.h"
 
 namespace {
 
 using namespace tyrion;
 
-TEST(SettingTest, Basic) {
-  Setting *s = Setting::Instance();
-  s->File("assets/test.ini");
+class TestSettings : public Settings<TestSettings> {};
 
-  EXPECT_FALSE(s->HasError());
+TEST(SettingTest, Basic) {
+  TestSettings *s = TestSettings::Instance();
+
+  EXPECT_TRUE(s->Setup("assets/test.ini"));
 
   // string
   EXPECT_TRUE(s->Has("string", "space"));
