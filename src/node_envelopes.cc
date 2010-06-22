@@ -30,6 +30,7 @@
 #include <sstream>
 #include <txmpp/constants.h>
 #include "node_settings.h"
+#include "utils.h"
 
 namespace tyrion {
 
@@ -86,8 +87,8 @@ ServiceEnvelope::ServiceEnvelope(const txmpp::XmlElement *stanza) {
 ServiceEnvelope::~ServiceEnvelope() {
 }
 
-bool ServiceEnvelope::HasAcl() {
-  return NodeAcls::Instance()->GetBool(type_, jid_.BareJid().Str());
+bool ServiceEnvelope::ValidRequest() {
+  return valid_ && NodeAcls::Instance()->GetBool(type_, jid_.BareJid().Str()) && utils::RealPath(Path()) != "";
 }
 
 const txmpp::XmlElement* ServiceEnvelope::Response() {

@@ -41,34 +41,34 @@ class ServiceEnvelope {
     ServiceEnvelope(const txmpp::XmlElement *stanza);
     ~ServiceEnvelope();
 
-    bool HasAcl();
+    bool ValidRequest();
     std::string Path();
 
     const txmpp::XmlElement* Response();
 
     inline txmpp::Jid jid() { return jid_; }
-    inline void set_jid(txmpp::Jid jid) { jid_ = jid; }
+    inline void set_jid(const txmpp::Jid& jid) { jid_ = jid; }
 
     inline std::string id() { return id_; }
-    inline void set_id(std::string id) { id_ = id; }
+    inline void set_id(const std::string& id) { id_ = id; }
 
     inline std::string type() { return type_; }
-    inline void set_type(std::string type) { type_ = type; }
+    inline void set_type(const std::string& type) { type_ = type; }
 
     inline std::string input() { return input_; }
-    inline void set_input(std::string input) { input_ = input; }
+    inline void set_input(const std::string& input) { input_ = input; }
 
     inline std::string output() { return output_; }
-    inline void set_output(std::string output) { output_ = output; }
+    inline void set_output(const std::string& output) { output_ = output; }
 
     inline std::string error() { return error_; }
-    inline void set_error(std::string error) { error_ = error; }
+    inline void set_error(const std::string& error) { error_ = error; }
 
     inline std::string user() { return user_; }
-    inline void set_user(std::string user) { user_ = user; }
+    inline void set_user(const std::string& user) { user_ = user; }
 
     inline std::string group() { return group_; }
-    inline void set_group(std::string group) { group_ = group; }
+    inline void set_group(const std::string& group) { group_ = group; }
 
     inline int timeout() { return timeout_; }
     inline void set_timeout(int timeout) { timeout_ = timeout > 0 ? timeout : PROCESS_TIMEOUT; }

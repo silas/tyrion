@@ -107,7 +107,7 @@ bool XmppServiceTask::HandleStanza(const txmpp::XmlElement *stanza) {
 }
 
 bool XmppServiceTask::IsValid(const txmpp::XmlElement *stanza) {
-  return ServiceEnvelope(stanza).HasAcl();
+  return ServiceEnvelope(stanza).ValidRequest();
 }
 
 }  // namespace tyrion
