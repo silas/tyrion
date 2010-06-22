@@ -151,7 +151,9 @@ void NodeLoop::DoResponse(ServiceData* service) {
   if (state_ == RUNNING && pump_ != NULL &&
       pump_->client() != NULL &&
       pump_->client()->GetState() == txmpp::XmppEngine::STATE_OPEN) {
-    TLOG(ERROR) << service->data()->output();
+    const txmpp::XmlElement* iq = service->data()->Response();
+    pump_->SendStanza(iq);
+    delete iq;
     delete service->data();
     delete service;
   } else {

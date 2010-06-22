@@ -44,6 +44,8 @@ class ServiceEnvelope {
     bool HasAcl();
     std::string Path();
 
+    const txmpp::XmlElement* Response();
+
     inline txmpp::Jid jid() { return jid_; }
     inline void set_jid(txmpp::Jid jid) { jid_ = jid; }
 

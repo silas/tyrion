@@ -90,6 +90,30 @@ bool ServiceEnvelope::HasAcl() {
   return NodeAcls::Instance()->GetBool(type_, jid_.BareJid().Str());
 }
 
+const txmpp::XmlElement* ServiceEnvelope::Response() {
+  txmpp::XmlElement* iq = new txmpp::XmlElement(txmpp::QN_IQ);
+  iq->SetAttr(txmpp::QN_TO, jid_.Str());
+  iq->SetAttr(txmpp::QN_ID, id_);
+  iq->SetAttr(txmpp::QN_TYPE, txmpp::STR_RESULT);
+
+  txmpp::XmlElement* service = iq->FindOrAddNamedChild(QN_SERVICE);
+  service->SetAttr(txmpp::QN_TYPE, type_);
+
+  std::ostringstream code_stream;
+  code_stream << code_;
+  service->SetAttr(QN_CODE, code_stream.str());
+
+  txmpp::XmlElement* output = service->FindOrAddNamedChild(QN_OUTPUT);
+  output->SetBodyText(output_);
+
+  txmpp::XmlElement* error = service->FindOrAddNamedChild(QN_ERROR);
+  error->SetBodyText(error_);
+
+  TLOG(ERROR) << "SEND: " << iq->Str();
+
+  return iq;
+}
+
 std::string ServiceEnvelope::Path() {
   return NodeSettings::Instance()->Get("general", "service") + "/" + type_;
 }
