@@ -34,6 +34,11 @@ namespace tyrion {
 namespace utils {
 
 /**
+ * Create a detached thread and return true if it was successfully created.
+ */
+bool CreateThread(void *func(void*), void *arg);
+
+/**
  * Create a standardized error message which can be return in a service
  * response in stderr.
  */

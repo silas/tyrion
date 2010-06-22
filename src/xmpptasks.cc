@@ -32,8 +32,10 @@
 #include <txmpp/xmppclient.h>
 #include "constants.h"
 #include "logging.h"
+#include "node_envelopes.h"
 #include "node_settings.h"
-#include "node_stanza.h"
+#include "node_service_handler.h"
+#include "utils.h"
 
 namespace tyrion {
 
@@ -90,17 +92,18 @@ int XmppServiceTask::ProcessResponse() {
   if (stanza == NULL)
     return STATE_BLOCKED;
 
-  TLOG(ERROR) << "Raw: " << stanza->Str();
-  ServiceIq iq(stanza);
-  TLOG(ERROR) << "Type: " << iq.type();
-  TLOG(ERROR) << "Timeout: " << iq.timeout();
-  TLOG(ERROR) << "User: " << iq.user();
-  TLOG(ERROR) << "Group: " << iq.group();
-  TLOG(ERROR) << "Input: " << iq.input();
-
-  TLOG(ERROR) << "Valid message from: " << iq.jid().Str();
+  ServiceEnvelope *envelope = new ServiceEnvelope(stanza);
+  ServiceHandler *sh = new ServiceHandler(envelope);
+  utils::CreateThread(XmppServiceTask::HandleService, (void *)sh);
 
   return STATE_RESPONSE;
+}
+
+void *XmppServiceTask::HandleService(void *arg) {
+  ServiceHandler *handler=(ServiceHandler*)arg;
+  handler->Run();
+  delete(handler);
+  pthread_exit(NULL);
 }
 
 bool XmppServiceTask::HandleStanza(const txmpp::XmlElement *stanza) {
@@ -114,7 +117,7 @@ bool XmppServiceTask::HandleStanza(const txmpp::XmlElement *stanza) {
 }
 
 bool XmppServiceTask::IsValid(const txmpp::XmlElement *stanza) {
-  return ServiceIq(stanza).HasAcl();
+  return ServiceEnvelope(stanza).HasAcl();
 }
 
 }  // namespace tyrion

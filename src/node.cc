@@ -31,9 +31,9 @@
 #include <txmpp/thread.h>
 #include <txmpp/xmppclientsettings.h>
 #include "logging.h"
+#include "node_loop.h"
 #include "node_settings.h"
 #include "node_utils.h"
-#include "xmppthread.h"
 #ifdef _DEBUG
 #include <txmpp/logging.h>
 #endif
@@ -44,6 +44,8 @@ int main(int argc, char* argv[]) {
   txmpp::LogMessage::LogToDebug(txmpp::LS_SENSITIVE);
 #endif
 
+  int code = 0;
+  int sig;
   sigset_t set;
   sigset_t set_waiting;
 
@@ -51,71 +53,28 @@ int main(int argc, char* argv[]) {
   sigaddset(&set, SIGHUP);
   sigaddset(&set, SIGINT);
   sigaddset(&set, SIGTERM);
-  sigaddset(&set, SIGUSR2);
   pthread_sigmask(SIG_BLOCK, &set, NULL);
 
   tyrion::Logging::Instance()->Debug(tyrion::Logging::DEBUG);
   tyrion::utils::SetupConfig(argc, argv);
 
-  bool reconnect = true;
-  int code, sig, timeout = 0;
+  tyrion::NodeLoop* loop = tyrion::NodeLoop::Instance();
+  loop->Start();
+  loop->Login();
 
-  while (reconnect) {
-    code = 0;
+  while (true) {
+    sigwait(&set, &sig);
 
-    tyrion::XmppThread thread;
-    thread.Start();
-
-    txmpp::Jid jid(tyrion::NodeSettings::Instance()->Get("xmpp", "jid"));
-
-    txmpp::InsecureCryptStringImpl password;
-    password.password() = tyrion::NodeSettings::Instance()->Get("xmpp",
-                                                                "password");
-
-    txmpp::XmppClientSettings settings;
-    settings.set_user(jid.node());
-    settings.set_pass(txmpp::CryptString(password));
-    settings.set_host(jid.domain());
-    settings.set_resource(jid.resource());
-    settings.set_use_tls(true);
-
-    settings.set_server(txmpp::SocketAddress(
-        tyrion::NodeSettings::Instance()->Has("xmpp", "server") ?
-            tyrion::NodeSettings::Instance()->Get("xmpp", "server") :
-            jid.domain(),
-        tyrion::NodeSettings::Instance()->GetInt("xmpp", "port", 5222)
-    ));
-
-    if (timeout > 0)
-      TLOG(INFO) << "Reconnecting in " << timeout / 1000 << " seconds...";
-
-    if (reconnect) {
-      thread.Login(settings, timeout);
-
-      while (true) {
-        sigwait(&set, &sig);
-
-        if (sig == SIGUSR2) {
-          if (thread.state() >= tyrion::XmppThread::SHUTDOWN)
-            reconnect = false;
-          if (thread.state() >= tyrion::XmppThread::SHUTDOWN_ERROR)
-            code = 1;
-          break;
-        } else if (sig == SIGHUP) {
-          thread.Disconnect();
-          break;
-        } else if (sig == SIGINT || sig == SIGTERM) {
-          reconnect = false;
-          thread.Disconnect();
-          break;
-        }
-      }
+    if (sig == SIGHUP) {
+      loop->Restart();
+      break;
+    } else if (sig == SIGINT || sig == SIGTERM) {
+      if (loop->state() == tyrion::NodeLoop::ERROR) code = 1;
+      loop->Disconnect();
+      loop->Quit();
+      loop->Stop();
+      break;
     }
-
-    thread.Quit();
-    thread.Stop();
-
-    if (timeout < 1) timeout = 10000;
   }
 
   return code;

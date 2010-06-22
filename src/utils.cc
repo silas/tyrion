@@ -28,10 +28,24 @@
 #include "utils.h"
 
 #include <limits.h>
+#include <pthread.h>
 #include <stdlib.h>
 
 namespace tyrion {
 namespace utils {
+
+bool CreateThread(void *func(void*), void *arg) {
+  pthread_t handler;
+  pthread_attr_t attr;
+  pthread_attr_init(&attr);
+  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+
+  int rc = pthread_create(&handler, &attr, func, arg);
+
+  pthread_attr_destroy(&attr);
+
+  return rc == 0;
+}
 
 std::string Error(std::string code, std::string message) {
   return "Error: org.tyrion.error." + code + (!message.empty() ? ": " +

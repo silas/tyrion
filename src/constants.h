@@ -42,6 +42,7 @@ extern const txmpp::QName QN_USER;
 extern const txmpp::QName QN_GROUP;
 
 extern const int PROCESS_TIMEOUT;
+extern const int RECONNECT_TIMEOUT;
 
 };  // namespace tyrion
 

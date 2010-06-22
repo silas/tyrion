@@ -48,6 +48,7 @@ class XmppServiceTask : public txmpp::XmppTask {
     virtual ~XmppServiceTask();
     virtual int ProcessStart();
     virtual int ProcessResponse();
+    static void *HandleService(void *arg);
     bool HandleStanza(const txmpp::XmlElement *stanza);
     bool IsValid(const txmpp::XmlElement *stanza);
 };

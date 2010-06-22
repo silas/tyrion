@@ -25,8 +25,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _TYRION_NODE_STANZA_H_
-#define _TYRION_NODE_STANZA_H_
+#ifndef _TYRION_NODE_ENVELOPES_H_
+#define _TYRION_NODE_ENVELOPES_H_
 
 #include <string>
 #include <txmpp/jid.h>
@@ -34,13 +34,14 @@
 
 namespace tyrion {
 
-class ServiceIq {
+class ServiceEnvelope {
   public:
-    ServiceIq();
-    ServiceIq(const txmpp::XmlElement *stanza);
-    ~ServiceIq();
+    ServiceEnvelope();
+    ServiceEnvelope(const txmpp::XmlElement *stanza);
+    ~ServiceEnvelope();
 
     bool HasAcl();
+    std::string Path();
 
     inline txmpp::Jid jid() { return jid_; }
     inline void set_jid(txmpp::Jid jid) { jid_ = jid; }

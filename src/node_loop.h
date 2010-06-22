@@ -25,48 +25,69 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _TYRION_XMPPTHREAD_H_
-#define _TYRION_XMPPTHREAD_H_
+#ifndef _TYRION_NODE_LOOP_H_
+#define _TYRION_NODE_LOOP_H_
 
 #include <iostream>
 #include <txmpp/thread.h>
 #include <txmpp/xmppclientsettings.h>
+#include "node_envelopes.h"
 #include "xmpppump.h"
 
 namespace tyrion {
 
-class XmppThread : public txmpp::Thread, XmppPumpNotify, txmpp::MessageHandler,
-                   public txmpp::has_slots<> {
+class NodeLoop : public txmpp::Thread, XmppPumpNotify, txmpp::MessageHandler,
+                 public txmpp::has_slots<> {
   public:
+    enum Message {
+      MSG_LOGIN = 1,
+      MSG_DISCONNECT,
+      MSG_RESTART,
+      MSG_SHUTDOWN,
+      MSG_REQUEST,
+      MSG_RESPONSE
+    };
     enum State {
       NONE = 0,
-      STARTED,
-      STOPPED,
-      STOPPED_ERROR,
-      SHUTDOWN,
-      SHUTDOWN_ERROR
+      RUNNING,
+      ERROR
     };
+    typedef txmpp::TypedMessageData<ServiceEnvelope> ServiceData;
 
-    XmppThread();
-    ~XmppThread();
+    static NodeLoop* Instance();
 
-    txmpp::XmppClient* client() { return pump_->client(); }
+    ~NodeLoop();
 
-    void ProcessMessages(int cms);
-    void Login(const txmpp::XmppClientSettings & xcs, int delay = 0);
+    void Login();
+    void Restart();
     void Disconnect();
 
-    void SocketClose(int code);
-    void Raise(State state);
+    void Request(ServiceEnvelope& envelope);
+    void Response(ServiceEnvelope& envelope);
 
+    void ProcessMessages(int cms);
+
+    txmpp::XmppClient* client() { return pump_->client(); }
     State state() { return state_; }
 
   private:
+    NodeLoop();
+
+    void DoLogin();
+    void DoDisconnect();
+    void DoRestart();
+    void DoShutdown();
+
+    void DoRequest(ServiceData* service);
+    void DoResponse(ServiceData* service);
+
+    void OnMessage(txmpp::Message* pmsg);
+    void OnSocketClose(int code);
+    void OnStateChange(txmpp::XmppEngine::State state, int code = 0);
+
+    static NodeLoop* instance_;
     XmppPump* pump_;
     State state_;
-
-    void OnStateChange(txmpp::XmppEngine::State state, int code = 0);
-    void OnMessage(txmpp::Message* pmsg);
 };
 
 }  // namespace tyrion

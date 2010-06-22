@@ -25,7 +25,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "node_stanza.h"
+#include "node_envelopes.h"
 
 #include <sstream>
 #include <txmpp/constants.h>
@@ -34,10 +34,10 @@
 
 namespace tyrion {
 
-ServiceIq::ServiceIq() {
+ServiceEnvelope::ServiceEnvelope() {
 }
 
-ServiceIq::ServiceIq(const txmpp::XmlElement *stanza) {
+ServiceEnvelope::ServiceEnvelope(const txmpp::XmlElement *stanza) {
   if (stanza->Name() != txmpp::QN_IQ ||
       !stanza->HasAttr(txmpp::QN_FROM) ||
       !stanza->HasAttr(txmpp::QN_ID)) return;
@@ -76,11 +76,15 @@ ServiceIq::ServiceIq(const txmpp::XmlElement *stanza) {
   input_ = input->BodyText();
 }
 
-ServiceIq::~ServiceIq() {
+ServiceEnvelope::~ServiceEnvelope() {
 }
 
-bool ServiceIq::HasAcl() {
+bool ServiceEnvelope::HasAcl() {
   return NodeAcls::Instance()->GetBool(type_, jid_.BareJid().Str());
+}
+
+std::string ServiceEnvelope::Path() {
+  return NodeSettings::Instance()->Get("general", "service") + "/" + type_;
 }
 
 };  // namespace tyrion
