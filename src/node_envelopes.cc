@@ -109,8 +109,6 @@ const txmpp::XmlElement* ServiceEnvelope::Response() {
   txmpp::XmlElement* error = service->FindOrAddNamedChild(QN_ERROR);
   error->SetBodyText(error_);
 
-  TLOG(ERROR) << "SEND: " << iq->Str();
-
   return iq;
 }
 

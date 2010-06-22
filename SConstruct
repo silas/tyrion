@@ -72,12 +72,13 @@ if GetOption('flags'):
     flags += GetOption('flags')
 
 if system == 'linux':
-    defines += ['LINUX']
+    defines += ['LINUX', 'POSIX']
 elif system == 'darwin':
-    defines += ['OSX']
+    defines += ['OSX', 'POSIX']
 
 if 'POSIX' in defines:
     flags += ' -pthread'
+    libraries += ['pthread']
 
 env = Environment(
     CXXFLAGS=flags,

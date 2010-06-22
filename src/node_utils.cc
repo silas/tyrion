@@ -25,6 +25,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <cstdlib>
+#include <cstring>
 #include <iostream>
 #include <string>
 #include "node_settings.h"
