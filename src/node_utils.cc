@@ -85,10 +85,20 @@ void NodeSetupConfig(int argc, char* argv[]) {
     NodeExit(1);
   }
 
-  std::string acl = NodeSettings::Instance()->Get("general", "acl");
-  if (!NodeAcls::Instance()->Setup(acl)) {
+  std::string acl_path = NodeSettings::Instance()->Get(STR_GENERAL, STR_ACL_PATH);
+  if (!NodeAcls::Instance()->Setup(acl_path)) {
     TLOG(ERROR) << "Unable to open acl file.";
     NodeExit(1);
+  }
+
+  Logging::Level log_level = Logging::StringToLevel(
+      NodeSettings::Instance()->Get(STR_GENERAL, STR_LOG_LEVEL), Logging::INFO);
+  std::string log_path = NodeSettings::Instance()->Get(STR_GENERAL, STR_LOG_PATH);
+  if (!Logging::Instance()->File(log_path, log_level)) {
+    TLOG(ERROR) << "Unable to open log file.";
+    NodeExit(1);
+  } else {
+    Logging::Instance()->Debug(Logging::NONE);
   }
 }
 

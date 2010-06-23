@@ -42,7 +42,7 @@ namespace tyrion {
 class Logging {
   public:
     enum Level {
-      DEBUG,
+      DEBUG = 0,
       INFO,
       WARNING,
       ERROR,
@@ -63,7 +63,8 @@ class Logging {
 
     void Log(Level level, const std::string& message);
 
-    std::string LevelToString(Level level);
+    static std::string LevelToString(Level level);
+    static Level StringToLevel(std::string level, Level default_level);
 
   private:
     Logging();

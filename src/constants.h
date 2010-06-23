@@ -46,13 +46,14 @@ extern const txmpp::QName QN_CODE;
 extern const txmpp::QName QN_OUTPUT;
 extern const txmpp::QName QN_ERROR;
 
-extern const std::string STR_ACL;
+extern const std::string STR_ACL_PATH;
 extern const std::string STR_GENERAL;
 extern const std::string STR_JID;
-extern const std::string STR_LOG;
+extern const std::string STR_LOG_LEVEL;
+extern const std::string STR_LOG_PATH;
 extern const std::string STR_PASSWORD;
 extern const std::string STR_PORT;
-extern const std::string STR_SERVICE;
+extern const std::string STR_SERVICE_PATH;
 extern const std::string STR_XMPP;
 
 extern const int XMPP_PORT;

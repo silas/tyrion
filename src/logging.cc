@@ -50,7 +50,7 @@ void Logging::Log(Level level, const std::string& text) {
     time(&rawtime);
     timeinfo = localtime(&rawtime);
 
-    if (level >= file_level_) {
+    if (level >= file_level_ && file_ != NULL) {
       std::string message = asctime(timeinfo);
       message.erase(message.end()-1, message.end());
       message += ": " + LevelToString(level);
@@ -67,17 +67,21 @@ void Logging::Log(Level level, const std::string& text) {
 }
 
 bool Logging::File(const std::string& path, Level level) {
-  if (level < DEBUG || level > NONE) return false;
   if (level < lowest_level_) lowest_level_ = level;
+
   file_level_ = level;
-  if (level == NONE && file_) {
+
+  if (level == NONE && file_ != NULL) {
     fclose(file_);
-  } else {
+    file_ = NULL;
+    return true;
+  } else if (level != NONE && file_ == NULL) {
     file_path_ = path;
     file_ = fopen(file_path_.c_str(), "a+");
-    return file_ == NULL;
+    return file_ != NULL;
   }
-  return true;
+
+  return false;
 }
 
 bool Logging::Debug(Level level) {
@@ -101,6 +105,24 @@ std::string Logging::LevelToString(Level level) {
       return "Critical";
     default:
       return "None";
+  }
+}
+
+Logging::Level Logging::StringToLevel(std::string level, Level default_level) {
+  std::transform(level.begin(), level.end(), level.begin(), ::tolower);
+
+  if (level == "critical") {
+    return CRITICAL;
+  } else if (level == "error") {
+    return ERROR;
+  } else if (level == "warning") {
+    return WARNING;
+  } else if (level == "info") {
+    return INFO;
+  } else if (level == "debug") {
+    return DEBUG;
+  } else {
+    return default_level;
   }
 }
 

@@ -114,7 +114,8 @@ const txmpp::XmlElement* NodeServiceEnvelope::Response() {
 }
 
 std::string NodeServiceEnvelope::Path() {
-  return NodeSettings::Instance()->Get("general", "service") + "/" + type_;
+  return NodeSettings::Instance()->Get(STR_GENERAL, STR_SERVICE_PATH) \
+      + "/" + type_;
 }
 
 };  // namespace tyrion

@@ -69,7 +69,7 @@ if GetOption('debug'):
     flags += ' -g'
 
 if GetOption('flags'):
-    flags += GetOption('flags')
+    flags += ' %s' % GetOption('flags')
 
 if system == 'linux':
     defines += ['LINUX', 'POSIX']

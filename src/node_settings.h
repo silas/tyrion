@@ -41,9 +41,9 @@ class NodeSettings : public Settings<NodeSettings> {
     bool Validate() {
       NodeSettings* s = NodeSettings::Instance();
 
-      if (!s->HasRequired(STR_GENERAL, STR_ACL)) return false;
-      if (!s->HasRequired(STR_GENERAL, STR_SERVICE)) return false;
-      if (!s->HasRequired(STR_GENERAL, STR_LOG)) return false;
+      if (!s->HasRequired(STR_GENERAL, STR_ACL_PATH)) return false;
+      if (!s->HasRequired(STR_GENERAL, STR_SERVICE_PATH)) return false;
+      if (!s->HasRequired(STR_GENERAL, STR_LOG_PATH)) return false;
 
       if (!s->HasRequired(STR_XMPP, STR_JID)) return false;
       if (!s->HasRequired(STR_XMPP, STR_PASSWORD)) return false;
