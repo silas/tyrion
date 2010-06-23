@@ -125,8 +125,9 @@ void NodeLoop::DoDisconnect() {
 }
 
 void NodeLoop::DoRestart() {
+  if (state_ == RESTARTING) return;
   TLOG(INFO) << "Reconnecting in " << RECONNECT_TIMEOUT / 1000 << " seconds...";
-  state_ = NONE;
+  state_ = RESTARTING;
   if (pump_ != NULL) {
     delete pump_;
     pump_ = NULL;

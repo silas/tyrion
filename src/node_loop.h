@@ -51,6 +51,7 @@ class NodeLoop : public txmpp::Thread, NodeXmppPumpNotify,
     enum State {
       NONE = 0,
       RUNNING,
+      RESTARTING,
       ERROR
     };
     typedef txmpp::TypedMessageData<NodeServiceEnvelope*> ServiceData;
