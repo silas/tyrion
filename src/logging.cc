@@ -85,6 +85,7 @@ bool Logging::Debug(Level level) {
   if (level < DEBUG || level > NONE) return false;
   if (level < lowest_level_) lowest_level_ = level;
   debug_level_ = level;
+  return true;
 }
 
 std::string Logging::LevelToString(Level level) {
