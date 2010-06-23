@@ -36,19 +36,21 @@ namespace tyrion {
 
 class Config {
   public:
-    Config(std::string filename);
+    Config(const std::string& filename);
 
     int ParseError();
 
-    bool Has(std::string section, std::string name);
-    std::string Get(std::string section, std::string name,
-                    std::string default_value);
-    long GetInt(std::string section, std::string name, long default_value);
+    bool Has(const std::string& section, const std::string& name);
+    std::string Get(const std::string& section, const std::string& name,
+                    const std::string& default_value);
+    long GetInt(const std::string& section, const std::string& name,
+                long default_value);
 
   private:
     int error_;
     std::map<std::string, std::string> values_;
-    static std::string MakeKey(std::string section, std::string name);
+    static std::string MakeKey(const std::string& section,
+                               const std::string& name);
     static int ValueHandler(void* user, const char* section,
                             const char* name, const char* value);
 };

@@ -44,7 +44,7 @@ Logging::~Logging() {
     fclose(file_);
 }
 
-void Logging::Log(Level level, std::string text) {
+void Logging::Log(Level level, const std::string& text) {
   if (level >= lowest_level_) {
     time_t rawtime;
     struct tm * timeinfo;
@@ -60,13 +60,14 @@ void Logging::Log(Level level, std::string text) {
       fprintf(file_, "%s", message.c_str());
       fflush(file_);
     }
+
     if (level >= debug_level_) {
       std::cerr << text << std::endl;
     }
   }
 }
 
-bool Logging::File(std::string path, Level level) {
+bool Logging::File(const std::string& path, Level level) {
   if (level < DEBUG || level > NONE) return false;
   if (level < lowest_level_) lowest_level_ = level;
   file_level_ = level;

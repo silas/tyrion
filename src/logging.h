@@ -59,9 +59,9 @@ class Logging {
     }
 
     bool Debug(Level level);
-    bool File(std::string path, Level level);
+    bool File(const std::string& path, Level level);
 
-    void Log(Level level, std::string message);
+    void Log(Level level, const std::string& message);
 
     std::string LevelToString(Level level);
 

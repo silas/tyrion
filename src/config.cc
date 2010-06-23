@@ -34,7 +34,7 @@
 
 namespace tyrion {
 
-Config::Config(std::string filename) {
+Config::Config(const std::string& filename) {
   error_ = ini_parse(filename.c_str(), ValueHandler, this);
 }
 
@@ -42,17 +42,17 @@ int Config::ParseError() {
   return error_;
 }
 
-bool Config::Has(std::string section, std::string name) {
+bool Config::Has(const std::string& section, const std::string& name) {
   return values_.count(MakeKey(section, name));
 }
 
-std::string Config::Get(std::string section, std::string name,
-                        std::string default_value) {
+std::string Config::Get(const std::string& section, const std::string& name,
+                        const std::string& default_value) {
   std::string key = MakeKey(section, name);
   return values_.count(key) ? values_[key] : default_value;
 }
 
-long Config::GetInt(std::string section, std::string name,
+long Config::GetInt(const std::string& section, const std::string& name,
                     long default_value) {
   std::string valstr = Get(section, name, "");
   const char* value = valstr.c_str();
@@ -61,7 +61,8 @@ long Config::GetInt(std::string section, std::string name,
   return end > value ? n : default_value;
 }
 
-std::string Config::MakeKey(std::string section, std::string name) {
+std::string Config::MakeKey(const std::string& section,
+                            const std::string& name) {
   std::string key = section + "." + name;
   for (size_t i = 0; i < key.length(); i++) {
     key[i] = tolower(key[i]);
