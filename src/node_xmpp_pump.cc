@@ -36,9 +36,14 @@
 namespace tyrion {
 
 NodeXmppPump::NodeXmppPump(NodeXmppPumpNotify * notify) {
+  pthread_mutex_init(&mutex_, NULL);
   state_ = txmpp::XmppEngine::STATE_NONE;
   notify_ = notify;
   client_ = new txmpp::XmppClient(this);  // deleted by TaskRunner
+}
+
+void NodeXmppPump::Stop() {
+  pthread_mutex_lock(&mutex_);
 }
 
 void NodeXmppPump::DoLogin(const txmpp::XmppClientSettings & xcs,
@@ -83,6 +88,7 @@ void NodeXmppPump::OnStateChange(txmpp::XmppEngine::State state) {
       break;
     case txmpp::XmppEngine::STATE_START:
     case txmpp::XmppEngine::STATE_OPENING:
+    case txmpp::XmppEngine::STATE_NONE:
       break;
     case txmpp::XmppEngine::STATE_CLOSED:
       code = client_->GetError(NULL);
@@ -104,7 +110,9 @@ int64 NodeXmppPump::CurrentTime() {
 }
 
 void NodeXmppPump::OnMessage(txmpp::Message *pmsg) {
+  pthread_mutex_lock(&mutex_);
   RunTasks();
+  pthread_mutex_unlock(&mutex_);
 }
 
 txmpp::XmppReturnStatus NodeXmppPump::SendStanza(const txmpp::XmlElement *stanza) {

@@ -6,7 +6,7 @@ import platform
 #
 
 defines = []
-flags = ''
+flags = '-Wall'
 frameworks = []
 libraries = ['txmpp']
 name = 'tyrion'

@@ -56,7 +56,10 @@ NodeLoop::NodeLoop() {
 }
 
 NodeLoop::~NodeLoop() {
-  if (pump_ != NULL) delete pump_;
+  if (pump_ != NULL) {
+    pump_->Stop();
+    delete pump_;
+  }
 }
 
 void NodeLoop::ProcessMessages(int cms) {
@@ -124,6 +127,7 @@ void NodeLoop::DoDisconnect() {
 void NodeLoop::DoRestart() {
   state_ = NONE;
   if (pump_ != NULL) {
+    pump_->Stop();
     delete pump_;
     pump_ = NULL;
   }
