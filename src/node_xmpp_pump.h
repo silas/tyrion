@@ -49,7 +49,6 @@ class NodeXmppPump : public txmpp::MessageHandler, public txmpp::TaskRunner {
   public:
     NodeXmppPump(NodeXmppPumpNotify* notify);
 
-    txmpp::XmppClient *client() { return client_; }
     txmpp::XmppReturnStatus SendStanza(const txmpp::XmlElement *stanza);
     int64 CurrentTime();
 
@@ -61,6 +60,8 @@ class NodeXmppPump : public txmpp::MessageHandler, public txmpp::TaskRunner {
 
     void OnStateChange(txmpp::XmppEngine::State state);
     void OnMessage(txmpp::Message *pmsg);
+
+    inline txmpp::XmppClient *client() { return client_; }
 
   private:
     txmpp::XmppClient *client_;

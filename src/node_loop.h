@@ -69,8 +69,8 @@ class NodeLoop : public txmpp::Thread, NodeXmppPumpNotify,
 
     void ProcessMessages(int cms);
 
-    txmpp::XmppClient* client() { return pump_->client(); }
-    State state() { return state_; }
+    inline txmpp::XmppClient* client() { return pump_->client(); }
+    inline State state() { return state_; }
 
   private:
     NodeLoop();

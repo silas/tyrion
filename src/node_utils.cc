@@ -35,6 +35,13 @@
 
 namespace tyrion {
 
+void NodeExit(int code) {
+  delete Logging::Instance();
+  delete NodeSettings::Instance();
+  delete NodeAcls::Instance();
+  exit(code);
+}
+
 void NodeSetupConfig(int argc, char* argv[]) {
 
   const char *config = NULL;
@@ -47,7 +54,7 @@ void NodeSetupConfig(int argc, char* argv[]) {
         config = argv[++i];
       } else {
         TLOG(ERROR) << "Configuration file not specified.";
-        exit(1);
+        NodeExit(1);
       }
     } else if (OPTION("--help")) {
       std::cout << "Usage: tyrion-node [OPTION]..." << std::endl;
@@ -56,32 +63,32 @@ void NodeSetupConfig(int argc, char* argv[]) {
       std::cout << "Configuration options:" << std::endl;
       std::cout << "  -c, --config-file         the node configuration file"
                 << std::endl;
-      exit(0);
+      NodeExit(0);
     } else {
       TLOG(ERROR) << "Unknown option '" << option << "'.";
-      exit(1);
+      NodeExit(1);
     }
   }
 
   if (config == NULL || strlen(config) < 1) {
     TLOG(ERROR) << "Configuration file required.";
-    exit(1);
+    NodeExit(1);
   }
 
   if (!NodeSettings::Instance()->Setup(config)) {
     TLOG(ERROR) << "Unable to open settings file.";
-    exit(1);
+    NodeExit(1);
   }
 
   if (!NodeSettings::Instance()->Validate()) {
     TLOG(ERROR) << "Invalid settings.";
-    exit(1);
+    NodeExit(1);
   }
 
   std::string acl = NodeSettings::Instance()->Get("general", "acl");
   if (!NodeAcls::Instance()->Setup(acl)) {
     TLOG(ERROR) << "Unable to open acl file.";
-    exit(1);
+    NodeExit(1);
   }
 }
 

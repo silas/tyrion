@@ -44,6 +44,16 @@ const txmpp::QName QN_CODE(true, txmpp::STR_EMPTY, "code");
 const txmpp::QName QN_OUTPUT(true, NS_SERVICE, "output");
 const txmpp::QName QN_ERROR(true, NS_SERVICE, "error");
 
+const std::string STR_ACL = "acl";
+const std::string STR_GENERAL = "general";
+const std::string STR_JID = "jid";
+const std::string STR_LOG = "log";
+const std::string STR_PASSWORD = "password";
+const std::string STR_PORT = "port";
+const std::string STR_SERVICE = "service";
+const std::string STR_XMPP = "xmpp";
+
+const int XMPP_PORT = 5222;
 const int PROCESS_TIMEOUT = 300; // secoonds
 const int RECONNECT_TIMEOUT = 10000; // milliseconds
 const int SERVICE_RETRY_TIMEOUT = 12000; // milliseconds

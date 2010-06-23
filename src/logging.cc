@@ -40,8 +40,7 @@ Logging::Logging() {
 }
 
 Logging::~Logging() {
-  if (file_)
-    fclose(file_);
+  if (file_) fclose(file_);
 }
 
 void Logging::Log(Level level, const std::string& text) {

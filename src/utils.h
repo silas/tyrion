@@ -46,7 +46,7 @@ bool CreateThread(void *func(void*), void *arg);
 /**
  * Return the real path of the specified file.
  */
-std::string RealPath(std::string path);
+std::string RealPath(const std::string& path);
 
 }  // namespace tyrion
 

@@ -51,7 +51,7 @@ bool CreateThread(void *func(void*), void *arg) {
   return rc == 0;
 }
 
-std::string RealPath(std::string path) {
+std::string RealPath(const std::string& path) {
   char buffer[PATH_MAX + 1];
   char *rc = realpath(path.c_str(), buffer);
 

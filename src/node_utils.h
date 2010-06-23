@@ -32,6 +32,7 @@
 
 namespace tyrion {
 
+void NodeExit(int code);
 void NodeSetupConfig(int argc, char* argv[]);
 
 };  // namespace tyrion

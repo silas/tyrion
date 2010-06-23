@@ -40,7 +40,7 @@ class Settings {
   public:
     ~Settings() {
       if (config_) {
-        delete(config_);
+        delete config_;
         config_ = NULL;
       }
     }
@@ -52,7 +52,7 @@ class Settings {
       return instance_;
     }
 
-    bool Setup(std::string path) {
+    bool Setup(const std::string& path) {
       path_ = path;
       config_ = new Config(path_);
       return config_->ParseError() >= 0;
@@ -66,11 +66,11 @@ class Settings {
         T *new_instance = new T;
         if (new_instance->Setup(old_instance->path())) {
           instance_ = new_instance;
-          delete(old_instance);
+          delete old_instance;
           return true;
         } else {
           TLOG(WARNING) << "Unable to reload settings...";
-          delete(new_instance);
+          delete new_instance;
         }
       }
       return false;
@@ -80,28 +80,27 @@ class Settings {
       return true;
     }
 
-    bool Has(std::string section, std::string name) {
+    bool Has(const std::string& section, const std::string& name) {
       return config_->Has(section, name);
     }
 
-    std::string Get(std::string section, std::string name,
-                    std::string default_ = "") {
+    std::string Get(const std::string& section, const std::string& name,
+                    const std::string& default_ = "") {
       return config_->Get(section, name, default_);
     }
 
-    bool GetBool(std::string section, std::string name,
+    bool GetBool(const std::string& section, const std::string& name,
                  bool default_ = false) {
       return config_->Get(section, name, default_ ?
                           "true" :"false") == "true";
     }
 
-    long GetInt(std::string section, std::string name, long default_ = 0) {
+    long GetInt(const std::string& section, const std::string& name,
+                long default_ = 0) {
       return config_->GetInt(section, name, default_);
     }
 
-    std::string path() { return path_; }
-
-    bool HasRequired(std::string section, std::string option) {
+    bool HasRequired(const std::string& section, const std::string& option) {
       if (!Has(section, option) || Get(section, option).empty()) {
         TLOG(ERROR) << "The '" << option << "' option in the '" << section
                     << "' section is required.";
@@ -110,8 +109,10 @@ class Settings {
       return true;
     }
 
+    inline std::string path() { return path_; }
+
   protected:
-    Settings() { path_ = ""; }
+    Settings() { config_ = NULL; }
     Config *config_;
     std::string path_;
 };

@@ -29,6 +29,7 @@
 #define TYRION_NODE_SETTINGS_H_
 
 #include <txmpp/jid.h>
+#include "constants.h"
 #include "settings.h"
 
 namespace tyrion {
@@ -40,14 +41,14 @@ class NodeSettings : public Settings<NodeSettings> {
     bool Validate() {
       NodeSettings* s = NodeSettings::Instance();
 
-      if (!s->HasRequired("general", "acl")) return false;
-      if (!s->HasRequired("general", "service")) return false;
-      if (!s->HasRequired("general", "log")) return false;
+      if (!s->HasRequired(STR_GENERAL, STR_ACL)) return false;
+      if (!s->HasRequired(STR_GENERAL, STR_SERVICE)) return false;
+      if (!s->HasRequired(STR_GENERAL, STR_LOG)) return false;
 
-      if (!s->HasRequired("xmpp", "jid")) return false;
-      if (!s->HasRequired("xmpp", "password")) return false;
+      if (!s->HasRequired(STR_XMPP, STR_JID)) return false;
+      if (!s->HasRequired(STR_XMPP, STR_PASSWORD)) return false;
 
-      txmpp::Jid jid(s->Get("xmpp", "jid"));
+      txmpp::Jid jid(s->Get(STR_XMPP, STR_JID));
       if (jid.node().empty()) {
         TLOG(ERROR) << "The node portion of the 'jid' in the 'xmpp' section is"
                     << " required (node@domain/resource).";

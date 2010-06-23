@@ -84,11 +84,11 @@ void NodeLoop::Response(NodeServiceEnvelope* envelope) {
 }
 
 void NodeLoop::DoLogin() {
-  txmpp::Jid jid(tyrion::NodeSettings::Instance()->Get("xmpp", "jid"));
+  txmpp::Jid jid(tyrion::NodeSettings::Instance()->Get(STR_XMPP, STR_JID));
 
   txmpp::InsecureCryptStringImpl password;
-  password.password() = tyrion::NodeSettings::Instance()->Get("xmpp",
-                                                              "password");
+  password.password() = tyrion::NodeSettings::Instance()->Get(STR_XMPP,
+                                                              STR_PASSWORD);
 
   txmpp::XmppClientSettings settings;
   settings.set_user(jid.node());
@@ -98,10 +98,10 @@ void NodeLoop::DoLogin() {
   settings.set_use_tls(true);
 
   settings.set_server(txmpp::SocketAddress(
-      tyrion::NodeSettings::Instance()->Has("xmpp", "server") ?
-          tyrion::NodeSettings::Instance()->Get("xmpp", "server") :
+      tyrion::NodeSettings::Instance()->Has(STR_XMPP, "server") ?
+          tyrion::NodeSettings::Instance()->Get(STR_XMPP, "server") :
           jid.domain(),
-      tyrion::NodeSettings::Instance()->GetInt("xmpp", "port", 5222)
+      tyrion::NodeSettings::Instance()->GetInt(STR_XMPP, STR_PORT, XMPP_PORT)
   ));
 
   if (pump_ == NULL) pump_ = new NodeXmppPump(this);
@@ -126,8 +126,11 @@ void NodeLoop::DoDisconnect() {
 
 void NodeLoop::DoRestart() {
   if (state_ == RESTARTING) return;
-  TLOG(INFO) << "Reconnecting in " << RECONNECT_TIMEOUT / 1000 << " seconds...";
+  TLOG(INFO) << "Reconnecting in " << RECONNECT_TIMEOUT / 1000
+             << " seconds...";
   state_ = RESTARTING;
+  // TODO(silas): figure out proper method to unwind TaskRunner so
+  // InternalRunTasks never segfaults
   if (pump_ != NULL) {
     delete pump_;
     pump_ = NULL;
