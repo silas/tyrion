@@ -71,6 +71,7 @@ void NodeXmppPump::OnStateChange(txmpp::XmppEngine::State state) {
 
   switch(state) {
     case txmpp::XmppEngine::STATE_OPEN: {
+      TLOG(INFO) << "Connected.";
       // Presence handler
       XmppPresenceTask *task_presence =
           new XmppPresenceTask(client_);  // owned by XmppClient
