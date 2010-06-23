@@ -34,7 +34,6 @@
 #include <txmpp/xmppasyncsocketimpl.h>
 #include <txmpp/xmppclientsettings.h>
 #include <txmpp/xmppengine.h>
-#include "constants.h"
 #include "logging.h"
 #include "node_service_handler.h"
 #include "node_settings.h"
@@ -69,6 +68,10 @@ void NodeLoop::Login() {
 
 void NodeLoop::Restart() {
   Post(this, MSG_RESTART);
+}
+
+void NodeLoop::Reload() {
+  Post(this, MSG_RELOAD);
 }
 
 void NodeLoop::Disconnect() {
@@ -124,10 +127,8 @@ void NodeLoop::DoDisconnect() {
   pump_->DoDisconnect();
 }
 
-void NodeLoop::DoRestart() {
+void NodeLoop::DoRestart(int delay) {
   if (state_ == RESTARTING) return;
-  TLOG(INFO) << "Reconnecting in " << RECONNECT_TIMEOUT / 1000
-             << " seconds...";
   state_ = RESTARTING;
   // TODO(silas): figure out proper method to unwind TaskRunner so
   // InternalRunTasks never segfaults
@@ -135,7 +136,16 @@ void NodeLoop::DoRestart() {
     delete pump_;
     pump_ = NULL;
   }
-  PostDelayed(RECONNECT_TIMEOUT, this, MSG_LOGIN);
+  if (delay > 0) {
+    TLOG(INFO) << "Reconnecting in " << delay / 1000 << " seconds...";
+    PostDelayed(RECONNECT_TIMEOUT, this, MSG_LOGIN);
+  } else {
+    TLOG(INFO) << "Reconnecting...";
+    Post(this, MSG_LOGIN);
+  }
+}
+
+void NodeLoop::DoReload() {
 }
 
 void NodeLoop::DoShutdown() {
@@ -179,6 +189,9 @@ void NodeLoop::OnMessage(txmpp::Message* pmsg) {
       break;
     case MSG_RESTART:
       DoRestart();
+      break;
+    case MSG_RELOAD:
+      DoReload();
       break;
     case MSG_DISCONNECT:
       DoDisconnect();

@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
   sigaddset(&set, SIGTERM);
   pthread_sigmask(SIG_BLOCK, &set, NULL);
 
-  tyrion::Logging::Instance()->Debug(tyrion::Logging::DEBUG);
+  tyrion::Logging::Instance()->Debug(tyrion::Logging::INFO);
   tyrion::NodeSetupConfig(argc, argv);
 
   tyrion::NodeLoop* loop = tyrion::NodeLoop::Instance();
@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
     sigwait(&set, &sig);
 
     if (sig == SIGHUP) {
-      loop->Restart();
+      loop->Reload();
     } else if (sig == SIGINT || sig == SIGTERM) {
       if (loop->state() == tyrion::NodeLoop::ERROR) code = 1;
       loop->Disconnect();

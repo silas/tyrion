@@ -38,9 +38,7 @@ class NodeAcls : public Settings<NodeAcls> {};
 
 class NodeSettings : public Settings<NodeSettings> {
   public:
-    bool Validate() {
-      NodeSettings* s = NodeSettings::Instance();
-
+    bool ValidateInstance(NodeSettings* s) {
       if (!s->HasRequired(STR_GENERAL, STR_ACL_PATH)) return false;
       if (!s->HasRequired(STR_GENERAL, STR_SERVICE_PATH)) return false;
       if (!s->HasRequired(STR_GENERAL, STR_LOG_PATH)) return false;

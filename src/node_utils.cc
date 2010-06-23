@@ -45,6 +45,7 @@ void NodeExit(int code) {
 void NodeSetupConfig(int argc, char* argv[]) {
 
   const char *config = NULL;
+  bool debug = false;
 
   for(int i = 1; i < argc; i++) {
     const char* option = argv[i];
@@ -56,6 +57,8 @@ void NodeSetupConfig(int argc, char* argv[]) {
         TLOG(ERROR) << "Configuration file not specified.";
         NodeExit(1);
       }
+    } else if (OPTION("--debug")) {
+      debug = true;
     } else if (OPTION("--help")) {
       std::cout << "Usage: tyrion-node [OPTION]..." << std::endl;
       std::cout << "Example: tyrion-node -c node.conf" << std::endl;
@@ -63,12 +66,15 @@ void NodeSetupConfig(int argc, char* argv[]) {
       std::cout << "Configuration options:" << std::endl;
       std::cout << "  -c, --config-file         the node configuration file"
                 << std::endl;
+      std::cout << "  --deubg                   enable debugging" << std::endl;
       NodeExit(0);
     } else {
       TLOG(ERROR) << "Unknown option '" << option << "'.";
       NodeExit(1);
     }
   }
+
+  if (debug) Logging::Instance()->Debug(Logging::DEBUG);
 
   if (config == NULL || strlen(config) < 1) {
     TLOG(ERROR) << "Configuration file required.";
@@ -97,7 +103,7 @@ void NodeSetupConfig(int argc, char* argv[]) {
   if (!Logging::Instance()->File(log_path, log_level)) {
     TLOG(ERROR) << "Unable to open log file.";
     NodeExit(1);
-  } else {
+  } else if (!debug) {
     Logging::Instance()->Debug(Logging::NONE);
   }
 }

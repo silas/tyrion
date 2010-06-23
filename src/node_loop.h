@@ -31,6 +31,7 @@
 #include <iostream>
 #include <txmpp/thread.h>
 #include <txmpp/xmppclientsettings.h>
+#include "constants.h"
 #include "node_envelope.h"
 #include "node_xmpp_pump.h"
 
@@ -44,6 +45,7 @@ class NodeLoop : public txmpp::Thread, NodeXmppPumpNotify,
       MSG_LOGIN = 1,
       MSG_DISCONNECT,
       MSG_RESTART,
+      MSG_RELOAD,
       MSG_SHUTDOWN,
       MSG_REQUEST,
       MSG_RESPONSE
@@ -62,6 +64,7 @@ class NodeLoop : public txmpp::Thread, NodeXmppPumpNotify,
 
     void Login();
     void Restart();
+    void Reload();
     void Disconnect();
 
     void Request(NodeServiceEnvelope* envelope);
@@ -77,7 +80,8 @@ class NodeLoop : public txmpp::Thread, NodeXmppPumpNotify,
 
     void DoLogin();
     void DoDisconnect();
-    void DoRestart();
+    void DoRestart(int delay = RECONNECT_TIMEOUT);
+    void DoReload();
     void DoShutdown();
 
     void DoRequest(ServiceData* service);

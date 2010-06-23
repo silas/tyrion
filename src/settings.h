@@ -76,7 +76,12 @@ class Settings {
       return false;
     }
 
-    virtual bool Validate() {
+    bool Validate() {
+      T* instance_ = Settings<T>::Instance();
+      return ValidateInstance(instance_);
+    }
+
+    virtual bool ValidateInstance(T* instance) {
       return true;
     }
 
