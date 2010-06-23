@@ -32,7 +32,11 @@
 #include <stdlib.h>
 
 namespace tyrion {
-namespace utils {
+
+std::string CreateError(std::string code, std::string message) {
+  return "Error: org.tyrion.error." + code + (!message.empty() ? ": " +
+      message : message) + "\n";
+}
 
 bool CreateThread(void *func(void*), void *arg) {
   pthread_t handler;
@@ -47,11 +51,6 @@ bool CreateThread(void *func(void*), void *arg) {
   return rc == 0;
 }
 
-std::string Error(std::string code, std::string message) {
-  return "Error: org.tyrion.error." + code + (!message.empty() ? ": " +
-      message : message) + "\n";
-}
-
 std::string RealPath(std::string path) {
   char buffer[PATH_MAX + 1];
   char *rc = realpath(path.c_str(), buffer);
@@ -59,4 +58,4 @@ std::string RealPath(std::string path) {
   return rc ? std::string(buffer) : "";
 }
 
-} }  // namespace tyrion::utils
+}  // namespace tyrion

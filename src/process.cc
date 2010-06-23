@@ -91,7 +91,7 @@ void Process::Run() {
       int sg = setgid(gid_);
 
       if (sg != 0) {
-        std::cerr << utils::Error("group.set", "Unable to set gid");
+        std::cerr << CreateError("group.set", "Unable to set gid");
         issue = true;
       }
     }
@@ -100,7 +100,7 @@ void Process::Run() {
       int su = setuid(uid_);
 
       if (su != 0) {
-        std::cerr << utils::Error("user.set", "Unable to set uid");
+        std::cerr << CreateError("user.set", "Unable to set uid");
         issue = true;
       }
     }

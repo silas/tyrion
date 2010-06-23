@@ -136,7 +136,7 @@ void NodeLoop::DoShutdown() {
 
 void NodeLoop::DoRequest(ServiceData* service) {
   NodeServiceHandler *sh = new NodeServiceHandler(service->data());
-  utils::CreateThread(NodeLoop::DoRequestInThread, (void *)sh);
+  CreateThread(NodeLoop::DoRequestInThread, (void *)sh);
   delete service;
 }
 

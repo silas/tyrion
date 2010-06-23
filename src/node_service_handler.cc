@@ -59,7 +59,7 @@ void NodeServiceHandler::Run() {
 
   if (!issue && user_lock) {
     if (user.empty()) {
-      error += utils::Error("user.lock",
+      error += CreateError("user.lock",
                             "Unable to lock user because none set.");
       issue = true;
     }
@@ -69,7 +69,7 @@ void NodeServiceHandler::Run() {
 
   if (!issue && group_lock) {
     if (group.empty()) {
-      error += utils::Error("group.lock",
+      error += CreateError("group.lock",
           "Unable to lock group because none set.");
       issue = true;
     }
@@ -78,7 +78,7 @@ void NodeServiceHandler::Run() {
 
   if (!issue && timeout_lock) {
     if (!timeout > 0) {
-      error += utils::Error("timeout.lock",
+      error += CreateError("timeout.lock",
                             "Unable to lock timeout because none set.");
       issue = true;
     }
@@ -89,13 +89,13 @@ void NodeServiceHandler::Run() {
   Process p = Process(service_->Path(), false, timeout);
 
   if (!issue && !user.empty() && !p.set_user(user)) {
-    error += utils::Error("user.lookup", "Unable to find user '" +
+    error += CreateError("user.lookup", "Unable to find user '" +
                           user + "'");
     issue = true;
   }
 
   if (!issue && !group.empty() && !p.set_group(group)) {
-    error += utils::Error("group.lookup", "Unable to find group '" +
+    error += CreateError("group.lookup", "Unable to find group '" +
                           group + "'");
     issue = true;
   }

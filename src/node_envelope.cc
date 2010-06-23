@@ -88,7 +88,7 @@ NodeServiceEnvelope::~NodeServiceEnvelope() {
 }
 
 bool NodeServiceEnvelope::ValidRequest() {
-  return valid_ && NodeAcls::Instance()->GetBool(type_, jid_.BareJid().Str()) && utils::RealPath(Path()) != "";
+  return valid_ && NodeAcls::Instance()->GetBool(type_, jid_.BareJid().Str()) && RealPath(Path()) != "";
 }
 
 const txmpp::XmlElement* NodeServiceEnvelope::Response() {
