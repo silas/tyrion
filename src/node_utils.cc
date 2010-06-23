@@ -34,9 +34,8 @@
 #define OPTION(str) strcmp(option, str) == 0
 
 namespace tyrion {
-namespace utils {
 
-void SetupConfig(int argc, char* argv[]) {
+void NodeSetupConfig(int argc, char* argv[]) {
 
   const char *config = NULL;
 
@@ -86,4 +85,4 @@ void SetupConfig(int argc, char* argv[]) {
   }
 }
 
-} };  // namespace tyrion::utils
+};  // namespace tyrion

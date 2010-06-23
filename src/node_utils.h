@@ -31,10 +31,9 @@
 #include <string>
 
 namespace tyrion {
-namespace utils {
 
-void SetupConfig(int argc, char* argv[]);
+void NodeSetupConfig(int argc, char* argv[]);
 
-} };  // namespace tyrion::utils
+};  // namespace tyrion
 
 #endif  // _TYRION_NODE_UTILS_H_
