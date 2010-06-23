@@ -36,7 +36,8 @@
 
 namespace tyrion {
 
-class NodeLoop : public txmpp::Thread, XmppPumpNotify, txmpp::MessageHandler,
+class NodeLoop : public txmpp::Thread, NodeXmppPumpNotify,
+                        txmpp::MessageHandler,
                  public txmpp::has_slots<> {
   public:
     enum Message {

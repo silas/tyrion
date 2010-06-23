@@ -34,7 +34,7 @@
 
 namespace tyrion {
 
-XmppPump::XmppPump(XmppPumpNotify * notify) {
+XmppPump::XmppPump(NodeXmppPumpNotify * notify) {
   state_ = txmpp::XmppEngine::STATE_NONE;
   notify_ = notify;
   client_ = new txmpp::XmppClient(this);  // deleted by TaskRunner

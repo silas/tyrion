@@ -38,16 +38,16 @@
 
 namespace tyrion {
 
-class XmppPumpNotify {
+class NodeXmppPumpNotify {
   public:
-    virtual ~XmppPumpNotify() {}
+    virtual ~NodeXmppPumpNotify() {}
     virtual void OnStateChange(txmpp::XmppEngine::State state,
                                int code = 0) = 0;
 };
 
 class XmppPump : public txmpp::MessageHandler, public txmpp::TaskRunner {
   public:
-    XmppPump(XmppPumpNotify * notify = NULL);
+    XmppPump(NodeXmppPumpNotify * notify = NULL);
 
     txmpp::XmppClient *client() { return client_; }
     txmpp::XmppReturnStatus SendStanza(const txmpp::XmlElement *stanza);
@@ -65,7 +65,7 @@ class XmppPump : public txmpp::MessageHandler, public txmpp::TaskRunner {
   private:
     txmpp::XmppClient *client_;
     txmpp::XmppEngine::State state_;
-    XmppPumpNotify *notify_;
+    NodeXmppPumpNotify *notify_;
 };
 
 }  // namespace tyrion
