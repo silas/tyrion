@@ -30,7 +30,8 @@
 #include <txmpp/logging.h>
 #include <txmpp/prexmppauthimpl.h>
 #include "logging.h"
-#include "node_xmpp_tasks.h"
+#include "node_xmpp_service_task.h"
+#include "xmpp_presence_task.h"
 
 namespace tyrion {
 
@@ -75,8 +76,8 @@ void NodeXmppPump::OnStateChange(txmpp::XmppEngine::State state) {
           new XmppPresenceTask(client_);  // owned by XmppClient
       task_presence->Start();
       // Service iq handler
-      XmppServiceTask *task_service =
-          new XmppServiceTask(client_);  // owned by XmppClient
+      NodeXmppServiceTask *task_service =
+          new NodeXmppServiceTask(client_);  // owned by XmppClient
       task_service->Start();
       }
       break;

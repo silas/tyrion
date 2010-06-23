@@ -25,27 +25,18 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _TYRION_NODE_XMPP_TASKS_H_
-#define _TYRION_NODE_XMPP_TASKS_H_
+#ifndef _TYRION_NODE_XMPP_SERVICE_TASK_H_
+#define _TYRION_NODE_XMPP_SERVICE_TASK_H_
 
 #include <txmpp/taskparent.h>
 #include <txmpp/xmpptask.h>
 
 namespace tyrion {
 
-class XmppPresenceTask : public txmpp::XmppTask {
+class NodeXmppServiceTask : public txmpp::XmppTask {
   public:
-    explicit XmppPresenceTask(txmpp::TaskParent *parent);
-    virtual ~XmppPresenceTask();
-    virtual int ProcessStart();
-    virtual int ProcessResponse();
-    bool HandleStanza(const txmpp::XmlElement *stanza);
-};
-
-class XmppServiceTask : public txmpp::XmppTask {
-  public:
-    explicit XmppServiceTask(txmpp::TaskParent *parent);
-    virtual ~XmppServiceTask();
+    explicit NodeXmppServiceTask(txmpp::TaskParent *parent);
+    virtual ~NodeXmppServiceTask();
     virtual int ProcessStart();
     virtual int ProcessResponse();
     bool HandleStanza(const txmpp::XmlElement *stanza);
@@ -54,4 +45,4 @@ class XmppServiceTask : public txmpp::XmppTask {
 
 }  // namespace tyrion
 
-#endif  // _TYRION_NODE_XMPP_TASKS_H_
+#endif  // _TYRION_NODE_XMPP_SERVICE_TASK_H_

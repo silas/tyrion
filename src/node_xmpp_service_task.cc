@@ -25,7 +25,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "node_xmpp_tasks.h"
+#include "node_xmpp_service_task.h"
 
 #include <txmpp/constants.h>
 #include <txmpp/logging.h>
@@ -37,53 +37,18 @@
 
 namespace tyrion {
 
-XmppPresenceTask::XmppPresenceTask(txmpp::TaskParent *parent)
+NodeXmppServiceTask::NodeXmppServiceTask(txmpp::TaskParent *parent)
     : txmpp::XmppTask(parent, txmpp::XmppEngine::HL_TYPE) {
 }
 
-XmppPresenceTask::~XmppPresenceTask() {
+NodeXmppServiceTask::~NodeXmppServiceTask() {
 }
 
-int XmppPresenceTask::ProcessStart() {
-  txmpp::scoped_ptr<txmpp::XmlElement> presence(
-      new txmpp::XmlElement(txmpp::QN_PRESENCE));
-
-  SendStanza(presence.get());
-
+int NodeXmppServiceTask::ProcessStart() {
   return STATE_RESPONSE;
 }
 
-int XmppPresenceTask::ProcessResponse() {
-  const txmpp::XmlElement* stanza = NextStanza();
-
-  if (stanza == NULL)
-    return STATE_BLOCKED;
-
-  return STATE_RESPONSE;
-}
-
-bool XmppPresenceTask::HandleStanza(const txmpp::XmlElement *stanza) {
-
-  if (stanza->Name() == txmpp::QN_PRESENCE) {
-    QueueStanza(stanza);
-    return true;
-  }
-
-  return false;
-}
-
-XmppServiceTask::XmppServiceTask(txmpp::TaskParent *parent)
-    : txmpp::XmppTask(parent, txmpp::XmppEngine::HL_TYPE) {
-}
-
-XmppServiceTask::~XmppServiceTask() {
-}
-
-int XmppServiceTask::ProcessStart() {
-  return STATE_RESPONSE;
-}
-
-int XmppServiceTask::ProcessResponse() {
+int NodeXmppServiceTask::ProcessResponse() {
 
   const txmpp::XmlElement* stanza = NextStanza();
 
@@ -96,7 +61,7 @@ int XmppServiceTask::ProcessResponse() {
   return STATE_RESPONSE;
 }
 
-bool XmppServiceTask::HandleStanza(const txmpp::XmlElement *stanza) {
+bool NodeXmppServiceTask::HandleStanza(const txmpp::XmlElement *stanza) {
 
   if (IsValid(stanza)) {
     QueueStanza(stanza);
@@ -106,7 +71,7 @@ bool XmppServiceTask::HandleStanza(const txmpp::XmlElement *stanza) {
   return false;
 }
 
-bool XmppServiceTask::IsValid(const txmpp::XmlElement *stanza) {
+bool NodeXmppServiceTask::IsValid(const txmpp::XmlElement *stanza) {
   return NodeServiceEnvelope(stanza).ValidRequest();
 }
 

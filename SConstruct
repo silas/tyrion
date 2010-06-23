@@ -111,6 +111,7 @@ library_src = [
     'src/process.cc',
     'src/third_party/inih/ini.c',
     'src/utils.cc',
+    'src/xmpp_presence_task.cc',
 ]
 
 if GetOption('static'):
@@ -141,7 +142,7 @@ node_src = [
     'src/node_service_handler.cc',
     'src/node_utils.cc',
     'src/node_xmpp_pump.cc',
-    'src/node_xmpp_tasks.cc',
+    'src/node_xmpp_service_task.cc',
 ]
 
 tyrion_node = env.Program(
