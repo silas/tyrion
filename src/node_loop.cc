@@ -105,7 +105,7 @@ void NodeLoop::DoLogin() {
       tyrion::NodeSettings::Instance()->GetInt("xmpp", "port", 5222)
   ));
 
-  if (pump_ == NULL) pump_ = new XmppPump(this);
+  if (pump_ == NULL) pump_ = new NodeXmppPump(this);
 
   state_ = RUNNING;
 

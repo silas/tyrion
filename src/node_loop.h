@@ -88,7 +88,7 @@ class NodeLoop : public txmpp::Thread, NodeXmppPumpNotify,
     void OnStateChange(txmpp::XmppEngine::State state, int code = 0);
 
     static NodeLoop* instance_;
-    XmppPump* pump_;
+    NodeXmppPump* pump_;
     State state_;
 };
 

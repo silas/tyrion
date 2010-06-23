@@ -45,9 +45,9 @@ class NodeXmppPumpNotify {
                                int code = 0) = 0;
 };
 
-class XmppPump : public txmpp::MessageHandler, public txmpp::TaskRunner {
+class NodeXmppPump : public txmpp::MessageHandler, public txmpp::TaskRunner {
   public:
-    XmppPump(NodeXmppPumpNotify * notify = NULL);
+    NodeXmppPump(NodeXmppPumpNotify * notify = NULL);
 
     txmpp::XmppClient *client() { return client_; }
     txmpp::XmppReturnStatus SendStanza(const txmpp::XmlElement *stanza);

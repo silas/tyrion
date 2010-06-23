@@ -34,19 +34,19 @@
 
 namespace tyrion {
 
-XmppPump::XmppPump(NodeXmppPumpNotify * notify) {
+NodeXmppPump::NodeXmppPump(NodeXmppPumpNotify * notify) {
   state_ = txmpp::XmppEngine::STATE_NONE;
   notify_ = notify;
   client_ = new txmpp::XmppClient(this);  // deleted by TaskRunner
 }
 
-void XmppPump::DoLogin(const txmpp::XmppClientSettings & xcs,
+void NodeXmppPump::DoLogin(const txmpp::XmppClientSettings & xcs,
                        txmpp::XmppAsyncSocket* socket,
                        txmpp::PreXmppAuth* auth) {
   OnStateChange(txmpp::XmppEngine::STATE_START);
 
   if (!AllChildrenDone()) {
-    client_->SignalStateChange.connect(this, &XmppPump::OnStateChange);
+    client_->SignalStateChange.connect(this, &NodeXmppPump::OnStateChange);
 
     if (client_->Connect(xcs, "", socket, auth) != txmpp::XMPP_RETURN_OK) {
       TLOG(ERROR) << "Failed to connect.";
@@ -56,13 +56,13 @@ void XmppPump::DoLogin(const txmpp::XmppClientSettings & xcs,
   }
 }
 
-void XmppPump::DoDisconnect() {
+void NodeXmppPump::DoDisconnect() {
   if (!AllChildrenDone())
     client_->Disconnect();
   OnStateChange(txmpp::XmppEngine::STATE_CLOSED);
 }
 
-void XmppPump::OnStateChange(txmpp::XmppEngine::State state) {
+void NodeXmppPump::OnStateChange(txmpp::XmppEngine::State state) {
   if (state_ == state)
     return;
 
@@ -94,19 +94,19 @@ void XmppPump::OnStateChange(txmpp::XmppEngine::State state) {
     notify_->OnStateChange(state, code);
 }
 
-void XmppPump::WakeTasks() {
+void NodeXmppPump::WakeTasks() {
   txmpp::Thread::Current()->Post(this);
 }
 
-int64 XmppPump::CurrentTime() {
+int64 NodeXmppPump::CurrentTime() {
   return (int64)txmpp::Time();
 }
 
-void XmppPump::OnMessage(txmpp::Message *pmsg) {
+void NodeXmppPump::OnMessage(txmpp::Message *pmsg) {
   RunTasks();
 }
 
-txmpp::XmppReturnStatus XmppPump::SendStanza(const txmpp::XmlElement *stanza) {
+txmpp::XmppReturnStatus NodeXmppPump::SendStanza(const txmpp::XmlElement *stanza) {
   if (!AllChildrenDone())
     return client_->SendStanza(stanza);
 
