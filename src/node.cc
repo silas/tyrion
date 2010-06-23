@@ -66,7 +66,6 @@ int main(int argc, char* argv[]) {
 
     if (sig == SIGHUP) {
       loop->Restart();
-      break;
     } else if (sig == SIGINT || sig == SIGTERM) {
       if (loop->state() == tyrion::NodeLoop::ERROR) code = 1;
       loop->Disconnect();

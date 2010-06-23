@@ -56,10 +56,7 @@ NodeLoop::NodeLoop() {
 }
 
 NodeLoop::~NodeLoop() {
-  if (pump_ != NULL) {
-    pump_->Stop();
-    delete pump_;
-  }
+  if (pump_ != NULL) delete pump_;
 }
 
 void NodeLoop::ProcessMessages(int cms) {
@@ -87,7 +84,6 @@ void NodeLoop::Response(NodeServiceEnvelope* envelope) {
 }
 
 void NodeLoop::DoLogin() {
-
   txmpp::Jid jid(tyrion::NodeSettings::Instance()->Get("xmpp", "jid"));
 
   txmpp::InsecureCryptStringImpl password;
@@ -115,19 +111,23 @@ void NodeLoop::DoLogin() {
   txmpp::XmppAsyncSocketImpl* socket =
       new txmpp::XmppAsyncSocketImpl(true);
   socket->SignalCloseEvent.connect(this, &NodeLoop::OnSocketClose);
+
+  TLOG(INFO) << "Connecting...";
+
   pump_->DoLogin(settings, socket, new txmpp::PreXmppAuthImpl());
 }
 
 void NodeLoop::DoDisconnect() {
+  TLOG(INFO) << "Disconnecting...";
   state_ = NONE;
   if (pump_ == NULL) return;
   pump_->DoDisconnect();
 }
 
 void NodeLoop::DoRestart() {
+  TLOG(INFO) << "Reconnecting in " << RECONNECT_TIMEOUT / 1000 << " seconds...";
   state_ = NONE;
   if (pump_ != NULL) {
-    pump_->Stop();
     delete pump_;
     pump_ = NULL;
   }
@@ -147,7 +147,7 @@ void NodeLoop::DoRequest(ServiceData* service) {
 void *NodeLoop::DoRequestInThread(void *arg) {
   NodeServiceHandler *handler=(NodeServiceHandler*)arg;
   handler->Run();
-  delete(handler);
+  delete handler;
   pthread_exit(NULL);
 }
 
@@ -227,7 +227,7 @@ void NodeLoop::OnSocketClose(int code) {
   }
 
   Post(this, restart ? MSG_RESTART : MSG_SHUTDOWN);
-  }
+}
 
 void NodeLoop::OnStateChange(txmpp::XmppEngine::State state, int code) {
   if (state == txmpp::XmppEngine::STATE_CLOSED) {

@@ -28,7 +28,6 @@
 #ifndef _TYRION_NODE_XMPP_PUMP_H_
 #define _TYRION_NODE_XMPP_PUMP_H_
 
-#include <pthread.h>
 #include <txmpp/messagequeue.h>
 #include <txmpp/taskrunner.h>
 #include <txmpp/thread.h>
@@ -48,9 +47,7 @@ class NodeXmppPumpNotify {
 
 class NodeXmppPump : public txmpp::MessageHandler, public txmpp::TaskRunner {
   public:
-    NodeXmppPump(NodeXmppPumpNotify * notify = NULL);
-
-    void Stop();
+    NodeXmppPump(NodeXmppPumpNotify* notify);
 
     txmpp::XmppClient *client() { return client_; }
     txmpp::XmppReturnStatus SendStanza(const txmpp::XmlElement *stanza);
@@ -69,7 +66,6 @@ class NodeXmppPump : public txmpp::MessageHandler, public txmpp::TaskRunner {
     txmpp::XmppClient *client_;
     txmpp::XmppEngine::State state_;
     NodeXmppPumpNotify *notify_;
-    pthread_mutex_t mutex_;
 };
 
 }  // namespace tyrion
