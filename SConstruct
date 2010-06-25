@@ -107,6 +107,7 @@ env = conf.Finish()
 library_src = [
     'src/config.cc',
     'src/constants.cc',
+    'src/envelope.cc',
     'src/logging.cc',
     'src/process.cc',
     'src/third_party/inih/ini.c',

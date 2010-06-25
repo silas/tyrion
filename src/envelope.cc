@@ -25,26 +25,62 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _TYRION_NODE_ENVELOPE_H_
-#define _TYRION_NODE_ENVELOPE_H_
-
 #include "envelope.h"
+
+#include <sstream>
+#include <txmpp/constants.h>
+#include "utils.h"
 
 namespace tyrion {
 
-class NodeServiceEnvelope : public ServiceEnvelope {
-  public:
-    NodeServiceEnvelope() : ServiceEnvelope() {}
-    NodeServiceEnvelope(const txmpp::XmlElement *stanza)
-        : ServiceEnvelope(stanza) {}
-    ~NodeServiceEnvelope() {}
+ServiceEnvelope::ServiceEnvelope() {
+  code_ = 0;
+  timeout_ = PROCESS_TIMEOUT;
+  valid_ = false;
+}
 
-    bool ValidRequest();
-    std::string Path();
+ServiceEnvelope::ServiceEnvelope(const txmpp::XmlElement *stanza) {
+  code_ = 0;
+  timeout_ = PROCESS_TIMEOUT;
+  valid_ = false;
 
-    const txmpp::XmlElement* Response();
-};
+  if (stanza->Name() != txmpp::QN_IQ ||
+      !stanza->HasAttr(txmpp::QN_FROM) ||
+      !stanza->HasAttr(txmpp::QN_ID)) return;
 
-}  // tyrion
+  jid_ = txmpp::Jid(stanza->Attr(txmpp::QN_FROM));
+  id_ = stanza->Attr(txmpp::QN_ID);
 
-#endif  // _TYRION_NODE_ENVELOPE_H_
+  const txmpp::XmlElement *service = stanza->FirstWithNamespace(NS_SERVICE);
+
+  if (service == NULL ||
+      service->Name() != QN_SERVICE ||
+      !service->HasAttr(txmpp::QN_TYPE) ||
+      !service->HasAttr(txmpp::QN_XMLNS) ||
+      service->Attr(txmpp::QN_XMLNS) != NS_SERVICE) return;
+
+  type_ = service->Attr(txmpp::QN_TYPE);
+
+  if (service->HasAttr(QN_USER))
+    user_ = service->Attr(QN_USER);
+
+  if (service->HasAttr(QN_GROUP))
+    group_ = service->Attr(QN_GROUP);
+
+  int timeout = 0;
+  if (service->HasAttr(QN_TIMEOUT)) {
+    std::istringstream timeout_stream(service->Attr(QN_TIMEOUT));
+    timeout_stream >> timeout;
+    set_timeout(timeout);
+  }
+
+  const txmpp::XmlElement *input = service->FirstNamed(QN_INPUT);
+
+  if (input == NULL) return;
+
+  input_ = input->BodyText();
+
+  valid_ = true;
+}
+
+};  // namespace tyrion
