@@ -27,9 +27,6 @@
 
 #include <csignal>
 #include <pthread.h>
-#include <txmpp/cryptstring.h>
-#include <txmpp/thread.h>
-#include <txmpp/xmppclientsettings.h>
 #include "logging.h"
 #include "node_loop.h"
 #include "node_settings.h"
