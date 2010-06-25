@@ -63,6 +63,18 @@ void NodeXmppPump::DoDisconnect() {
   OnStateChange(txmpp::XmppEngine::STATE_CLOSED);
 }
 
+void NodeXmppPump::DoOpen() {
+  // Presence handler
+  XmppPresenceTask *task_presence =
+      new XmppPresenceTask(client_);  // owned by XmppClient
+  task_presence->Start();
+
+  // Service iq handler
+  NodeXmppServiceTask *task_service =
+      new NodeXmppServiceTask(client_);  // owned by XmppClient
+  task_service->Start();
+}
+
 void NodeXmppPump::OnStateChange(txmpp::XmppEngine::State state) {
   if (state_ == state)
     return;
@@ -70,17 +82,9 @@ void NodeXmppPump::OnStateChange(txmpp::XmppEngine::State state) {
   int code = 0;
 
   switch(state) {
-    case txmpp::XmppEngine::STATE_OPEN: {
+    case txmpp::XmppEngine::STATE_OPEN:
       TLOG(INFO) << "Connected.";
-      // Presence handler
-      XmppPresenceTask *task_presence =
-          new XmppPresenceTask(client_);  // owned by XmppClient
-      task_presence->Start();
-      // Service iq handler
-      NodeXmppServiceTask *task_service =
-          new NodeXmppServiceTask(client_);  // owned by XmppClient
-      task_service->Start();
-      }
+      DoOpen();
       break;
     case txmpp::XmppEngine::STATE_START:
     case txmpp::XmppEngine::STATE_OPENING:
