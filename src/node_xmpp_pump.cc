@@ -27,41 +27,10 @@
 
 #include "node_xmpp_pump.h"
 
-#include <txmpp/logging.h>
-#include <txmpp/prexmppauthimpl.h>
-#include "logging.h"
 #include "node_xmpp_service_task.h"
 #include "xmpp_presence_task.h"
 
 namespace tyrion {
-
-NodeXmppPump::NodeXmppPump(NodeXmppPumpNotify * notify) {
-  state_ = txmpp::XmppEngine::STATE_NONE;
-  notify_ = notify;
-  client_ = new txmpp::XmppClient(this);  // deleted by TaskRunner
-}
-
-void NodeXmppPump::DoLogin(const txmpp::XmppClientSettings & xcs,
-                       txmpp::XmppAsyncSocket* socket,
-                       txmpp::PreXmppAuth* auth) {
-  OnStateChange(txmpp::XmppEngine::STATE_START);
-
-  if (!AllChildrenDone()) {
-    client_->SignalStateChange.connect(this, &NodeXmppPump::OnStateChange);
-
-    if (client_->Connect(xcs, "", socket, auth) != txmpp::XMPP_RETURN_OK) {
-      TLOG(ERROR) << "Failed to connect.";
-    }
-
-    client_->Start();
-  }
-}
-
-void NodeXmppPump::DoDisconnect() {
-  if (!AllChildrenDone())
-    client_->Disconnect();
-  OnStateChange(txmpp::XmppEngine::STATE_CLOSED);
-}
 
 void NodeXmppPump::DoOpen() {
   // Presence handler
@@ -73,50 +42,6 @@ void NodeXmppPump::DoOpen() {
   NodeXmppServiceTask *task_service =
       new NodeXmppServiceTask(client_);  // owned by XmppClient
   task_service->Start();
-}
-
-void NodeXmppPump::OnStateChange(txmpp::XmppEngine::State state) {
-  if (state_ == state)
-    return;
-
-  int code = 0;
-
-  switch(state) {
-    case txmpp::XmppEngine::STATE_OPEN:
-      TLOG(INFO) << "Connected.";
-      DoOpen();
-      break;
-    case txmpp::XmppEngine::STATE_START:
-    case txmpp::XmppEngine::STATE_OPENING:
-    case txmpp::XmppEngine::STATE_NONE:
-      break;
-    case txmpp::XmppEngine::STATE_CLOSED:
-      code = client_->GetError(NULL);
-      break;
-  }
-
-  state_ = state;
-
-  notify_->OnStateChange(state, code);
-}
-
-void NodeXmppPump::WakeTasks() {
-  txmpp::Thread::Current()->Post(this);
-}
-
-int64 NodeXmppPump::CurrentTime() {
-  return (int64)txmpp::Time();
-}
-
-void NodeXmppPump::OnMessage(txmpp::Message *pmsg) {
-  RunTasks();
-}
-
-txmpp::XmppReturnStatus NodeXmppPump::SendStanza(const txmpp::XmlElement *stanza) {
-  if (!AllChildrenDone())
-    return client_->SendStanza(stanza);
-
-  return txmpp::XMPP_RETURN_BADSTATE;
 }
 
 }  // namespace tyrion

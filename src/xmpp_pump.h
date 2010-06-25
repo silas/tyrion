@@ -25,20 +25,51 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _TYRION_NODE_XMPP_PUMP_H_
-#define _TYRION_NODE_XMPP_PUMP_H_
+#ifndef _TYRION_XMPP_PUMP_H_
+#define _TYRION_XMPP_PUMP_H_
 
-#include "xmpp_pump.h"
+#include <txmpp/messagequeue.h>
+#include <txmpp/taskrunner.h>
+#include <txmpp/thread.h>
+#include <txmpp/time.h>
+#include <txmpp/xmppclient.h>
+#include <txmpp/xmppengine.h>
+#include <txmpp/xmpptask.h>
 
 namespace tyrion {
 
-class NodeXmppPump : public XmppPump {
+class XmppPumpNotify {
   public:
-    NodeXmppPump(XmppPumpNotify* notify) : XmppPump(notify) {}
+    virtual ~XmppPumpNotify() {}
+    virtual void OnStateChange(txmpp::XmppEngine::State state,
+                               int code = 0) = 0;
+};
 
-    void DoOpen();
+class XmppPump : public txmpp::MessageHandler, public txmpp::TaskRunner {
+  public:
+    XmppPump(XmppPumpNotify* notify);
+
+    txmpp::XmppReturnStatus SendStanza(const txmpp::XmlElement *stanza);
+    int64 CurrentTime();
+
+    void DoLogin(const txmpp::XmppClientSettings & xcs,
+                 txmpp::XmppAsyncSocket* socket,
+                 txmpp::PreXmppAuth* auth);
+    virtual void DoOpen() {}
+    void DoDisconnect();
+    void WakeTasks();
+
+    void OnStateChange(txmpp::XmppEngine::State state);
+    void OnMessage(txmpp::Message *pmsg);
+
+    inline txmpp::XmppClient *client() { return client_; }
+
+  protected:
+    txmpp::XmppClient *client_;
+    txmpp::XmppEngine::State state_;
+    XmppPumpNotify *notify_;
 };
 
 }  // namespace tyrion
 
-#endif  // _TYRION_NODE_XMPP_PUMP_H_
+#endif  // _TYRION_XMPP_PUMP_H_

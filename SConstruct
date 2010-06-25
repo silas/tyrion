@@ -113,6 +113,7 @@ library_src = [
     'src/third_party/inih/ini.c',
     'src/utils.cc',
     'src/xmpp_presence_task.cc',
+    'src/xmpp_pump.cc',
 ]
 
 if GetOption('static'):
