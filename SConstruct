@@ -135,6 +135,12 @@ libraries += [tyrion_library]
 # Build application
 #
 
+
+client_src = [
+    'src/client.cc',
+    'src/client_utils.cc',
+]
+
 node_src = [
     'src/node.cc',
     'src/node_envelope.cc',
@@ -144,6 +150,13 @@ node_src = [
     'src/node_xmpp_pump.cc',
     'src/node_xmpp_service_task.cc',
 ]
+
+tyrion_client = env.Program(
+    target='tyrion',
+    source=client_src,
+    CPPDEFINES=defines,
+    LIBS=libraries,
+)
 
 tyrion_node = env.Program(
     target='tyrion-node',
