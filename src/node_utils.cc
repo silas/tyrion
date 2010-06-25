@@ -82,12 +82,12 @@ void NodeSetupConfig(int argc, char* argv[]) {
   }
 
   if (!NodeSettings::Instance()->Setup(config)) {
-    TLOG(ERROR) << "Unable to open settings file.";
+    TLOG(ERROR) << "Unable to open configuration file.";
     NodeExit(1);
   }
 
   if (!NodeSettings::Instance()->Validate()) {
-    TLOG(ERROR) << "Invalid settings.";
+    TLOG(ERROR) << "Invalid configuration file.";
     NodeExit(1);
   }
 
