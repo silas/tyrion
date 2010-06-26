@@ -43,6 +43,8 @@ class NodeLoop : public BaseLoop {
     static NodeLoop* Instance();
 
   protected:
+    NodeLoop();
+
     void DoRequest(ServiceData* service);
     static void *DoRequestInThread(void *arg);
     void DoResponse(ServiceData* service);

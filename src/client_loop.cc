@@ -29,6 +29,10 @@
 
 namespace tyrion {
 
+ClientLoop::ClientLoop() : BaseLoop() {
+  track = 0;
+}
+
 ClientLoop* ClientLoop::instance_ = NULL;
 
 ClientLoop* ClientLoop::Instance() {
@@ -38,9 +42,11 @@ ClientLoop* ClientLoop::Instance() {
 }
 
 void ClientLoop::DoRequest(ServiceData* service) {
+  track++;
 }
 
 void ClientLoop::DoResponse(ServiceData* service) {
+  track--;
 }
 
 }  // namespace tyrion

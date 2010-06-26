@@ -42,11 +42,13 @@ class ClientLoop : public BaseLoop {
     static ClientLoop* Instance();
 
   protected:
+    ClientLoop();
     void DoRequest(ServiceData* service);
     static void *DoRequestInThread(void *arg);
     void DoResponse(ServiceData* service);
 
     static ClientLoop* instance_;
+    int track;
 };
 
 }  // namespace tyrion

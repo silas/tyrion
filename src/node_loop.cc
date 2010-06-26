@@ -29,6 +29,9 @@
 
 namespace tyrion {
 
+NodeLoop::NodeLoop() : BaseLoop() {
+}
+
 NodeLoop* NodeLoop::instance_ = NULL;
 
 NodeLoop* NodeLoop::Instance() {
