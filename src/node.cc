@@ -71,5 +71,6 @@ int main(int argc, char* argv[]) {
     }
   }
 
+  delete loop;
   tyrion::NodeExit(code);
 }
