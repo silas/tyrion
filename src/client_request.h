@@ -38,8 +38,10 @@ typedef std::vector<std::string> StringList;
 
 class ClientRequest {
   public:
-    ClientRequest() { timeout_ = 0; }
+    ClientRequest() {}
     ~ClientRequest() {}
+
+    bool Setup();
 
     ClientServiceEnvelope* CreateClientServiceEnvelope(std::string jid);
 
@@ -49,8 +51,8 @@ class ClientRequest {
     inline std::string profile() { return profile_; }
     inline void set_profile(const std::string& profile) { profile_ = profile; }
 
-    inline int timeout() { return timeout_; }
-    inline void set_timeout(int timeout) { timeout_ = timeout; }
+    inline std::string timeout() { return timeout_; }
+    inline void set_timeout(std::string timeout) { timeout_ = timeout; }
 
     inline std::string service() { return service_; }
     inline void set_service(const std::string& service) { service_ = service; }
@@ -65,7 +67,7 @@ class ClientRequest {
     void Split(const std::string &text, char delimiter);
     StringList jid_;
     std::string profile_;
-    int timeout_;
+    std::string timeout_;
     std::string service_;
     std::string user_;
     std::string group_;

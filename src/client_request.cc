@@ -26,20 +26,68 @@
  */
 
 #include "client_request.h"
+#include "client_settings.h"
+#include "logging.h"
 
 #include <sstream>
 
+#define PROFILE(var, str) if (var.empty()) \
+  var = settings->Get("profile:" + profile_, str)
+
 namespace tyrion {
+
+bool ClientRequest::Setup() {
+  ClientSettings* settings = ClientSettings::Instance();
+
+  bool valid = true;
+
+  if (!profile_.empty()) {
+    if (jid_.empty()) set_jid(settings->Get("profile:" + profile_, "jid"));
+    PROFILE(timeout_, "timeout");
+    PROFILE(service_, "service");
+    PROFILE(user_, "user");
+    PROFILE(group_, "group");
+  }
+
+  if (jid_.empty()) {
+    valid = false;
+    TLOG(ERROR) << "The 'jid' option is required.";
+  }
+
+  if (service_.empty()) {
+    valid = false;
+    TLOG(ERROR) << "The 'service' option is required.";
+  }
+
+  if (!timeout_.empty()) {
+    int number;
+    std::istringstream number_stream(timeout_);
+    if (!(number_stream >> number)) TLOG(ERROR) << "Timeout must be a number.";
+  }
+
+  return valid;
+}
 
 ClientServiceEnvelope* ClientRequest::CreateClientServiceEnvelope(
     std::string jid) {
   ClientServiceEnvelope* envelope = new ClientServiceEnvelope();
+
   envelope->set_jid(txmpp::Jid(jid));
   envelope->set_type(service_);
-  envelope->set_timeout(timeout_);
+  if (!timeout_.empty()) {
+    int number;
+    std::istringstream number_stream(timeout_);
+    if (number_stream >> number) {
+      envelope->set_timeout(number);
+    } else {
+      TLOG(WARNING) << "Unable to convert timeout to number.";
+    }
+  }
   envelope->set_user(user_);
   envelope->set_group(group_);
   envelope->set_input(input_);
+
+  return envelope;
 }
 
 void ClientRequest::Split(const std::string &text, char delimiter) {
