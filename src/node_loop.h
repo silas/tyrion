@@ -28,75 +28,28 @@
 #ifndef _TYRION_NODE_LOOP_H_
 #define _TYRION_NODE_LOOP_H_
 
-#include <iostream>
-#include <txmpp/thread.h>
-#include <txmpp/xmppclientsettings.h>
-#include "constants.h"
+#include "loop.h"
 #include "node_envelope.h"
+#include "node_service_handler.h"
+#include "node_settings.h"
 #include "node_xmpp_pump.h"
 
 namespace tyrion {
 
-class NodeLoop : public txmpp::Thread, XmppPumpNotify,
-                        txmpp::MessageHandler,
-                 public txmpp::has_slots<> {
-  public:
-    enum Message {
-      MSG_LOGIN = 1,
-      MSG_DISCONNECT,
-      MSG_RESTART,
-      MSG_RELOAD,
-      MSG_SHUTDOWN,
-      MSG_REQUEST,
-      MSG_RESPONSE
-    };
-    enum State {
-      NONE = 0,
-      RUNNING,
-      RESTARTING,
-      ERROR
-    };
-    typedef txmpp::TypedMessageData<NodeServiceEnvelope*> ServiceData;
+typedef Loop<NodeServiceEnvelope, NodeSettings, NodeXmppPump> BaseLoop;
 
+class NodeLoop : public BaseLoop {
+  public:
     static NodeLoop* Instance();
 
-    ~NodeLoop();
-
-    void Login();
-    void Restart();
-    void Reload();
-    void Disconnect();
-
-    void Request(NodeServiceEnvelope* envelope);
-    void Response(NodeServiceEnvelope* envelope);
-
-    void ProcessMessages(int cms);
-
-    inline txmpp::XmppClient* client() { return pump_->client(); }
-    inline State state() { return state_; }
-
-  private:
-    NodeLoop();
-
-    void DoLogin();
-    void DoDisconnect();
-    void DoRestart(int delay = RECONNECT_TIMEOUT);
-    void DoReload();
-    void DoShutdown();
-
+  protected:
     void DoRequest(ServiceData* service);
     static void *DoRequestInThread(void *arg);
     void DoResponse(ServiceData* service);
 
-    void OnMessage(txmpp::Message* pmsg);
-    void OnSocketClose(int code);
-    void OnStateChange(txmpp::XmppEngine::State state, int code = 0);
-
     static NodeLoop* instance_;
-    NodeXmppPump* pump_;
-    State state_;
 };
 
 }  // namespace tyrion
 
-#endif  // _TYRION_XMPPTHREAD_H_
+#endif  // _TYRION_NODE_LOOP_H_
