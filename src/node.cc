@@ -27,7 +27,6 @@
 
 #include <csignal>
 #include <pthread.h>
-#include "logging.h"
 #include "node_loop.h"
 #include "node_settings.h"
 #include "node_utils.h"

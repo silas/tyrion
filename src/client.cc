@@ -25,8 +25,11 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <csignal>
+#include <pthread.h>
+#include "client_loop.h"
+#include "client_settings.h"
 #include "client_utils.h"
-#include "logging.h"
 #ifdef _DEBUG
 #include <txmpp/logging.h>
 #endif
@@ -37,8 +40,36 @@ int main(int argc, char* argv[]) {
   txmpp::LogMessage::LogToDebug(txmpp::LS_SENSITIVE);
 #endif
 
+  int code = 0;
+  int sig;
+  sigset_t set;
+
+  sigemptyset(&set);
+  sigaddset(&set, SIGHUP);
+  sigaddset(&set, SIGINT);
+  sigaddset(&set, SIGTERM);
+  pthread_sigmask(SIG_BLOCK, &set, NULL);
+
   tyrion::Logging::Instance()->Debug(tyrion::Logging::WARNING);
   tyrion::ClientSetupConfig(argc, argv);
+
+  tyrion::ClientLoop* loop = tyrion::ClientLoop::Instance();
+  loop->Start();
+  loop->Login();
+
+  while (true) {
+    sigwait(&set, &sig);
+
+    if (sig == SIGHUP) {
+      loop->Reload();
+    } else if (sig == SIGINT || sig == SIGTERM) {
+      if (loop->state() == tyrion::ClientLoop::ERROR) code = 1;
+      loop->Disconnect();
+      loop->Quit();
+      loop->Stop();
+      break;
+    }
+  }
 
   tyrion::ClientExit(0);
 }
