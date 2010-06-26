@@ -25,6 +25,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "client_utils.h"
+
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
@@ -36,12 +38,13 @@
 namespace tyrion {
 
 void ClientExit(int code) {
+  TLOG(DEBUG) << "Exiting...";
   delete Logging::Instance();
   delete ClientSettings::Instance();
   exit(code);
 }
 
-void ClientSetup(int argc, char* argv[]) {
+void ClientSetup(int argc, char* argv[], ClientRequest* request) {
 
   const char *config = NULL;
   bool debug = false;

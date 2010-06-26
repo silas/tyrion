@@ -25,6 +25,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "node_utils.h"
+
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
@@ -36,6 +38,7 @@
 namespace tyrion {
 
 void NodeExit(int code) {
+  TLOG(DEBUG) << "Exiting...";
   delete Logging::Instance();
   delete NodeSettings::Instance();
   delete NodeAcls::Instance();

@@ -58,19 +58,4 @@ std::string RealPath(const std::string& path) {
   return rc ? std::string(buffer) : "";
 }
 
-std::vector<std::string> &Split(const std::string &text, char delimiter,
-                                std::vector<std::string> &elements) {
-  std::stringstream ss(text);
-  std::string item;
-  while(std::getline(ss, item, delimiter)) {
-    elements.push_back(item);
-  }
-  return elements;
-}
-
-std::vector<std::string> Split(const std::string &text, char delimiter) {
-  std::vector<std::string> elements;
-  return Split(text, delimiter, elements);
-}
-
 }  // namespace tyrion

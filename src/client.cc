@@ -28,6 +28,7 @@
 #include <csignal>
 #include <pthread.h>
 #include "client_loop.h"
+#include "client_request.h"
 #include "client_settings.h"
 #include "client_utils.h"
 #ifdef _DEBUG
@@ -50,8 +51,10 @@ int main(int argc, char* argv[]) {
   sigaddset(&set, SIGTERM);
   pthread_sigmask(SIG_BLOCK, &set, NULL);
 
+  tyrion::ClientRequest request;
+
   tyrion::Logging::Instance()->Debug(tyrion::Logging::WARNING);
-  tyrion::ClientSetup(argc, argv);
+  tyrion::ClientSetup(argc, argv, &request);
 
   tyrion::ClientLoop* loop = tyrion::ClientLoop::Instance();
   loop->Start();

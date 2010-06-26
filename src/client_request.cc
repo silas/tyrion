@@ -25,17 +25,29 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _TYRION_CLIENT_UTILS_H_
-#define _TYRION_CLIENT_UTILS_H_
-
-#include <string>
 #include "client_request.h"
+
+#include <sstream>
 
 namespace tyrion {
 
-void ClientExit(int code);
-void ClientSetup(int argc, char* argv[], ClientRequest* request);
+ClientServiceEnvelope* ClientRequest::CreateClientServiceEnvelope(
+    std::string jid) {
+  ClientServiceEnvelope* envelope = new ClientServiceEnvelope();
+  envelope->set_jid(txmpp::Jid(jid));
+  envelope->set_type(service_);
+  envelope->set_timeout(timeout_);
+  envelope->set_user(user_);
+  envelope->set_group(group_);
+  envelope->set_input(input_);
+}
+
+void ClientRequest::Split(const std::string &text, char delimiter) {
+  std::stringstream ss(text);
+  std::string item;
+  while(std::getline(ss, item, delimiter)) {
+    jid_.push_back(item);
+  }
+}
 
 };  // namespace tyrion
-
-#endif  // _TYRION_CLIENT_UTILS_H_

@@ -142,6 +142,7 @@ client_src = [
     'src/client.cc',
     'src/client_envelope.cc',
     'src/client_loop.cc',
+    'src/client_request.cc',
     'src/client_utils.cc',
     'src/client_xmpp_pump.cc',
 ]

@@ -25,17 +25,53 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _TYRION_CLIENT_UTILS_H_
-#define _TYRION_CLIENT_UTILS_H_
+#ifndef _TYRION_CLIENT_REQUEST_H_
+#define _TYRION_CLIENT_REQUEST_H_
 
 #include <string>
-#include "client_request.h"
+#include <vector>
+#include "client_envelope.h"
 
 namespace tyrion {
 
-void ClientExit(int code);
-void ClientSetup(int argc, char* argv[], ClientRequest* request);
+typedef std::vector<std::string> StringList;
+
+class ClientRequest {
+  public:
+    ClientRequest() { timeout_ = 0; }
+    ~ClientRequest() {}
+
+    ClientServiceEnvelope* CreateClientServiceEnvelope(std::string jid);
+
+    inline StringList* jid() { return &jid_; }
+    inline void set_jid(const std::string& jid) { Split(jid, ','); }
+
+    inline std::string profile() { return profile_; }
+    inline void set_profile(const std::string& profile) { profile_ = profile; }
+
+    inline int timeout() { return timeout_; }
+    inline void set_timeout(int timeout) { timeout_ = timeout; }
+
+    inline std::string service() { return service_; }
+    inline void set_service(const std::string& service) { service_ = service; }
+
+    inline std::string user() { return user_; }
+    inline void set_user(const std::string& user) { user_ = user; }
+
+    inline std::string group() { return group_; }
+    inline void set_group(const std::string& group) { group_ = group; }
+
+  private:
+    void Split(const std::string &text, char delimiter);
+    StringList jid_;
+    std::string profile_;
+    int timeout_;
+    std::string service_;
+    std::string user_;
+    std::string group_;
+    std::string input_;
+};
 
 };  // namespace tyrion
 
-#endif  // _TYRION_CLIENT_UTILS_H_
+#endif  // _TYRION_CLIENT_REQUEST_H_

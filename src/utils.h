@@ -29,8 +29,6 @@
 #define TYRION_UTILS_H_
 
 #include <string>
-#include <sstream>
-#include <vector>
 
 namespace tyrion {
 
@@ -49,13 +47,6 @@ bool CreateThread(void *func(void*), void *arg);
  * Return the real path of the specified file.
  */
 std::string RealPath(const std::string& path);
-
-/**
- * Split string using a delimiter and return a vector<string>.
- */
-std::vector<std::string> Split(const std::string &text, char delimiter);
-std::vector<std::string> &Split(const std::string &text, char delimiter,
-                                std::vector<std::string> &elements);
 
 }  // namespace tyrion
 
