@@ -40,13 +40,14 @@
 #include "constants.h"
 #include "envelope.h"
 #include "logging.h"
-#include "xmpp_pump.h"
 #include "utils.h"
+#include "xmpp_pump.h"
 
 namespace tyrion {
 
 template <class E, class S, class P>
-class Loop : public txmpp::Thread, XmppPumpNotify, public txmpp::MessageHandler,
+class Loop : public txmpp::Thread, XmppPumpNotify,
+             public txmpp::MessageHandler,
              public txmpp::has_slots<> {
   public:
     enum Message {
@@ -68,10 +69,21 @@ class Loop : public txmpp::Thread, XmppPumpNotify, public txmpp::MessageHandler,
 
     ~Loop() { if (pump_ != NULL) delete pump_; }
 
-    void Login() { Post(this, MSG_LOGIN); }
-    void Restart() { Post(this, MSG_RESTART); }
-    void Reload() { Post(this, MSG_RELOAD); }
-    void Disconnect() { Post(this, MSG_DISCONNECT); }
+    void Login() {
+      Post(this, MSG_LOGIN);
+    }
+
+    void Restart() {
+      Post(this, MSG_RESTART);
+    }
+
+    void Reload() {
+      Post(this, MSG_RELOAD);
+    }
+
+    void Disconnect() {
+      Post(this, MSG_DISCONNECT);
+    }
 
     void Request(E* envelope) {
       Post(this, MSG_REQUEST, new ServiceData(envelope));
@@ -94,7 +106,7 @@ class Loop : public txmpp::Thread, XmppPumpNotify, public txmpp::MessageHandler,
       state_ = NONE;
     }
 
-    void DoLogin() {
+    virtual void DoLogin() {
       txmpp::Jid jid(S::Instance()->Get(STR_XMPP, STR_JID));
 
       txmpp::InsecureCryptStringImpl password;
@@ -127,14 +139,7 @@ class Loop : public txmpp::Thread, XmppPumpNotify, public txmpp::MessageHandler,
       pump_->DoLogin(settings, socket, new txmpp::PreXmppAuthImpl());
     }
 
-    void DoDisconnect() {
-      TLOG(INFO) << "Disconnecting...";
-      state_ = NONE;
-      if (pump_ == NULL) return;
-      pump_->DoDisconnect();
-    }
-
-    void DoRestart(int delay = RECONNECT_TIMEOUT) {
+    virtual void DoRestart(int delay = RECONNECT_TIMEOUT) {
       if (state_ == RESTARTING) return;
       state_ = RESTARTING;
       // TODO(silas): figure out proper method to unwind TaskRunner so
@@ -152,12 +157,25 @@ class Loop : public txmpp::Thread, XmppPumpNotify, public txmpp::MessageHandler,
       }
     }
 
-    void DoReload() {}
+    virtual void DoReload() {}
 
-    void DoShutdown() { raise(SIGINT); }
+    virtual void DoDisconnect() {
+      TLOG(INFO) << "Disconnecting...";
+      state_ = NONE;
+      if (pump_ == NULL) return;
+      pump_->DoDisconnect();
+    }
 
-    virtual void DoRequest(ServiceData* service) {}
-    virtual void DoResponse(ServiceData* service) {}
+
+    virtual void DoShutdown() {
+      raise(SIGINT);
+    }
+
+    virtual void DoRequest(ServiceData* service) {
+    }
+
+    virtual void DoResponse(ServiceData* service) {
+    }
 
     void OnMessage(txmpp::Message* pmsg) {
       switch (pmsg->message_id) {
