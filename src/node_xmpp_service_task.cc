@@ -55,7 +55,7 @@ int NodeXmppServiceTask::ProcessResponse() {
   if (stanza == NULL)
     return STATE_BLOCKED;
 
-  NodeServiceEnvelope *envelope = new NodeServiceEnvelope(stanza);
+  NodeEnvelope *envelope = new NodeEnvelope(stanza);
   tyrion::NodeLoop::Instance()->Request(envelope);
 
   return STATE_RESPONSE;
@@ -72,7 +72,7 @@ bool NodeXmppServiceTask::HandleStanza(const txmpp::XmlElement *stanza) {
 }
 
 bool NodeXmppServiceTask::IsValid(const txmpp::XmlElement *stanza) {
-  return NodeServiceEnvelope(stanza).ValidRequest();
+  return NodeEnvelope(stanza).Valid();
 }
 
 }  // namespace tyrion

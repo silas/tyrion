@@ -25,32 +25,53 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _TYRION_CLIENT_LOOP_H_
-#define _TYRION_CLIENT_LOOP_H_
+#include "client_xmpp_service_task.h"
 
-#include "loop.h"
+#include <txmpp/constants.h>
+#include <txmpp/logging.h>
+#include <txmpp/xmppclient.h>
+#include "constants.h"
+#include "logging.h"
 #include "client_envelope.h"
-#include "client_settings.h"
-#include "client_xmpp_pump.h"
+#include "client_loop.h"
 
 namespace tyrion {
 
-typedef Loop<ClientEnvelope, ClientSettings, ClientXmppPump> BaseLoop;
+ClientXmppServiceTask::ClientXmppServiceTask(txmpp::TaskParent *parent)
+    : txmpp::XmppTask(parent, txmpp::XmppEngine::HL_TYPE) {
+}
 
-class ClientLoop : public BaseLoop {
-  public:
-    static ClientLoop* Instance();
+ClientXmppServiceTask::~ClientXmppServiceTask() {
+}
 
-  protected:
-    ClientLoop();
-    void DoRequest(ServiceData* service);
-    static void *DoRequestInThread(void *arg);
-    void DoResponse(ServiceData* service);
+int ClientXmppServiceTask::ProcessStart() {
+  return STATE_RESPONSE;
+}
 
-    static ClientLoop* instance_;
-    int track;
-};
+int ClientXmppServiceTask::ProcessResponse() {
+  const txmpp::XmlElement* stanza = NextStanza();
+
+  if (stanza == NULL)
+    return STATE_BLOCKED;
+
+  ClientEnvelope *envelope = new ClientEnvelope(stanza);
+  tyrion::ClientLoop::Instance()->Request(envelope);
+
+  return STATE_RESPONSE;
+}
+
+bool ClientXmppServiceTask::HandleStanza(const txmpp::XmlElement *stanza) {
+
+  if (IsValid(stanza)) {
+    QueueStanza(stanza);
+    return true;
+  }
+
+  return false;
+}
+
+bool ClientXmppServiceTask::IsValid(const txmpp::XmlElement *stanza) {
+  return ClientEnvelope(stanza).Valid();
+}
 
 }  // namespace tyrion
-
-#endif  // _TYRION_CLIENT_LOOP_H_

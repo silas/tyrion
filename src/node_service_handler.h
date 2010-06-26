@@ -35,7 +35,7 @@ namespace tyrion {
 
 class NodeServiceHandler {
   public:
-    NodeServiceHandler(NodeServiceEnvelope* service);
+    NodeServiceHandler(NodeEnvelope* service);
     ~NodeServiceHandler();
 
     /**
@@ -44,7 +44,7 @@ class NodeServiceHandler {
     void Run();
 
   private:
-    NodeServiceEnvelope* service_;
+    NodeEnvelope* service_;
 };
 
 }  // namespace tyrion

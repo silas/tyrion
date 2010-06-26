@@ -32,12 +32,15 @@
 
 namespace tyrion {
 
-class ClientServiceEnvelope : public ServiceEnvelope {
+class ClientEnvelope : public Envelope {
   public:
-    ClientServiceEnvelope() : ServiceEnvelope() {}
-    ClientServiceEnvelope(const txmpp::XmlElement *stanza)
-        : ServiceEnvelope(stanza) {}
-    ~ClientServiceEnvelope() {}
+    ClientEnvelope() : Envelope() {}
+    ClientEnvelope(const txmpp::XmlElement *stanza);
+    ~ClientEnvelope() {}
+
+    bool Valid();
+
+    const txmpp::XmlElement* Request();
 };
 
 }  // tyrion

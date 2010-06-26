@@ -25,32 +25,24 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _TYRION_CLIENT_LOOP_H_
-#define _TYRION_CLIENT_LOOP_H_
+#ifndef _TYRION_CLIENT_XMPP_SERVICE_TASK_H_
+#define _TYRION_CLIENT_XMPP_SERVICE_TASK_H_
 
-#include "loop.h"
-#include "client_envelope.h"
-#include "client_settings.h"
-#include "client_xmpp_pump.h"
+#include <txmpp/taskparent.h>
+#include <txmpp/xmpptask.h>
 
 namespace tyrion {
 
-typedef Loop<ClientEnvelope, ClientSettings, ClientXmppPump> BaseLoop;
-
-class ClientLoop : public BaseLoop {
+class ClientXmppServiceTask : public txmpp::XmppTask {
   public:
-    static ClientLoop* Instance();
-
-  protected:
-    ClientLoop();
-    void DoRequest(ServiceData* service);
-    static void *DoRequestInThread(void *arg);
-    void DoResponse(ServiceData* service);
-
-    static ClientLoop* instance_;
-    int track;
+    explicit ClientXmppServiceTask(txmpp::TaskParent *parent);
+    virtual ~ClientXmppServiceTask();
+    virtual int ProcessStart();
+    virtual int ProcessResponse();
+    bool HandleStanza(const txmpp::XmlElement *stanza);
+    bool IsValid(const txmpp::XmlElement *stanza);
 };
 
 }  // namespace tyrion
 
-#endif  // _TYRION_CLIENT_LOOP_H_
+#endif  // _TYRION_CLIENT_XMPP_SERVICE_TASK_H_

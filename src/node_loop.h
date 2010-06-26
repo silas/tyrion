@@ -36,7 +36,7 @@
 
 namespace tyrion {
 
-typedef Loop<NodeServiceEnvelope, NodeSettings, NodeXmppPump> BaseLoop;
+typedef Loop<NodeEnvelope, NodeSettings, NodeXmppPump> BaseLoop;
 
 class NodeLoop : public BaseLoop {
   public:

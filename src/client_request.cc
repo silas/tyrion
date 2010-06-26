@@ -68,9 +68,9 @@ bool ClientRequest::Setup() {
   return valid;
 }
 
-ClientServiceEnvelope* ClientRequest::CreateClientServiceEnvelope(
+ClientEnvelope* ClientRequest::CreateClientEnvelope(
     std::string jid) {
-  ClientServiceEnvelope* envelope = new ClientServiceEnvelope();
+  ClientEnvelope* envelope = new ClientEnvelope();
 
   envelope->set_jid(txmpp::Jid(jid));
   envelope->set_type(service_);

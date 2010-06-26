@@ -145,6 +145,7 @@ client_src = [
     'src/client_request.cc',
     'src/client_utils.cc',
     'src/client_xmpp_pump.cc',
+    'src/client_xmpp_service_task.cc',
 ]
 
 node_src = [

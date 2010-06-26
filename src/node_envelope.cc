@@ -34,12 +34,56 @@
 
 namespace tyrion {
 
-bool NodeServiceEnvelope::ValidRequest() {
+NodeEnvelope::NodeEnvelope(const txmpp::XmlElement *stanza) {
+  code_ = 0;
+  timeout_ = PROCESS_TIMEOUT;
+  valid_ = false;
+
+  if (stanza->Name() != txmpp::QN_IQ ||
+      !stanza->HasAttr(txmpp::QN_FROM) ||
+      !stanza->HasAttr(txmpp::QN_ID)) return;
+
+  jid_ = txmpp::Jid(stanza->Attr(txmpp::QN_FROM));
+  id_ = stanza->Attr(txmpp::QN_ID);
+
+  const txmpp::XmlElement *service = stanza->FirstWithNamespace(NS_SERVICE);
+
+  if (service == NULL ||
+      service->Name() != QN_SERVICE ||
+      !service->HasAttr(txmpp::QN_TYPE) ||
+      !service->HasAttr(txmpp::QN_XMLNS) ||
+      service->Attr(txmpp::QN_XMLNS) != NS_SERVICE) return;
+
+  type_ = service->Attr(txmpp::QN_TYPE);
+
+  if (service->HasAttr(QN_USER))
+    user_ = service->Attr(QN_USER);
+
+  if (service->HasAttr(QN_GROUP))
+    group_ = service->Attr(QN_GROUP);
+
+  int timeout = 0;
+  if (service->HasAttr(QN_TIMEOUT)) {
+    std::istringstream timeout_stream(service->Attr(QN_TIMEOUT));
+    timeout_stream >> timeout;
+    set_timeout(timeout);
+  }
+
+  const txmpp::XmlElement *input = service->FirstNamed(QN_INPUT);
+
+  if (input == NULL) return;
+
+  input_ = input->BodyText();
+
+  valid_ = true;
+}
+
+bool NodeEnvelope::Valid() {
   return valid_ && NodeAcls::Instance()->GetBool(type_, jid_.BareJid().Str()) &&
       RealPath(Path()) != "";
 }
 
-const txmpp::XmlElement* NodeServiceEnvelope::Response() {
+const txmpp::XmlElement* NodeEnvelope::Response() {
   txmpp::XmlElement* iq = new txmpp::XmlElement(txmpp::QN_IQ);
   iq->SetAttr(txmpp::QN_TO, jid_.Str());
   iq->SetAttr(txmpp::QN_ID, id_);
@@ -61,7 +105,7 @@ const txmpp::XmlElement* NodeServiceEnvelope::Response() {
   return iq;
 }
 
-std::string NodeServiceEnvelope::Path() {
+std::string NodeEnvelope::Path() {
   return NodeSettings::Instance()->Get(STR_GENERAL, STR_SERVICE_PATH)
       + "/" + type_;
 }

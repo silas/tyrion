@@ -27,6 +27,7 @@
 
 #include "client_xmpp_pump.h"
 
+#include "client_xmpp_service_task.h"
 #include "xmpp_presence_task.h"
 
 namespace tyrion {
@@ -36,6 +37,11 @@ void ClientXmppPump::DoOpen() {
   XmppPresenceTask *task_presence =
       new XmppPresenceTask(client_);  // owned by XmppClient
   task_presence->Start();
+
+  // Service iq handler
+  ClientXmppServiceTask *task_service =
+      new ClientXmppServiceTask(client_);  // owned by XmppClient
+  task_service->Start();
 }
 
 }  // namespace tyrion

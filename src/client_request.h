@@ -43,7 +43,7 @@ class ClientRequest {
 
     bool Setup();
 
-    ClientServiceEnvelope* CreateClientServiceEnvelope(std::string jid);
+    ClientEnvelope* CreateClientEnvelope(std::string jid);
 
     inline StringList* jid() { return &jid_; }
     inline void set_jid(const std::string& jid) { Split(jid, ','); }
