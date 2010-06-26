@@ -140,7 +140,10 @@ libraries += [tyrion_library]
 
 client_src = [
     'src/client.cc',
+    'src/client_envelope.cc',
+    'src/client_loop.cc',
     'src/client_utils.cc',
+    'src/client_xmpp_pump.cc',
 ]
 
 node_src = [
