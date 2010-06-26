@@ -33,7 +33,7 @@
 namespace tyrion {
 
 void ClientExit(int code);
-void ClientSetupConfig(int argc, char* argv[]);
+void ClientSetup(int argc, char* argv[]);
 
 };  // namespace tyrion
 

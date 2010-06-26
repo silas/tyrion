@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
   pthread_sigmask(SIG_BLOCK, &set, NULL);
 
   tyrion::Logging::Instance()->Debug(tyrion::Logging::INFO);
-  tyrion::NodeSetupConfig(argc, argv);
+  tyrion::NodeSetup(argc, argv);
 
   tyrion::NodeLoop* loop = tyrion::NodeLoop::Instance();
   loop->Start();

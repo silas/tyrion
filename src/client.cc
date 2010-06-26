@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
   pthread_sigmask(SIG_BLOCK, &set, NULL);
 
   tyrion::Logging::Instance()->Debug(tyrion::Logging::WARNING);
-  tyrion::ClientSetupConfig(argc, argv);
+  tyrion::ClientSetup(argc, argv);
 
   tyrion::ClientLoop* loop = tyrion::ClientLoop::Instance();
   loop->Start();

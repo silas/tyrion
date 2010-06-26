@@ -42,7 +42,7 @@ void NodeExit(int code) {
   exit(code);
 }
 
-void NodeSetupConfig(int argc, char* argv[]) {
+void NodeSetup(int argc, char* argv[]) {
 
   const char *config = NULL;
   bool debug = false;

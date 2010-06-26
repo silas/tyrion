@@ -41,7 +41,7 @@ void ClientExit(int code) {
   exit(code);
 }
 
-void ClientSetupConfig(int argc, char* argv[]) {
+void ClientSetup(int argc, char* argv[]) {
 
   const char *config = NULL;
   bool debug = false;
