@@ -67,8 +67,6 @@ NodeEnvelope::NodeEnvelope(const txmpp::XmlElement *stanza) {
 
   const txmpp::XmlElement *input = service->FirstNamed(QN_INPUT);
 
-  TLOG(ERROR) << "GOT HERE";
-
   if (input == NULL) return;
 
   input_ = input->BodyText();
