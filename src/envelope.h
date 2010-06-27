@@ -40,6 +40,8 @@ class Envelope {
     Envelope();
     virtual ~Envelope() {}
 
+    int Retry();
+
     inline txmpp::Jid jid() { return jid_; }
     inline void set_jid(const txmpp::Jid& jid) { jid_ = jid; }
 
@@ -84,6 +86,7 @@ class Envelope {
     std::string group_;
     int code_;
     int timeout_;
+    int retry_;
     bool valid_;
 };
 

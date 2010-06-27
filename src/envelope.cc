@@ -35,7 +35,13 @@ namespace tyrion {
 Envelope::Envelope() {
   code_ = 0;
   timeout_ = PROCESS_TIMEOUT;
+  retry_ = 1;
   valid_ = false;
+}
+
+int Envelope::Retry() {
+  if (retry_ < 32) retry_ *= 2;
+  return retry_;
 }
 
 };  // namespace tyrion

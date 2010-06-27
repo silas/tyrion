@@ -63,10 +63,10 @@ void NodeLoop::DoResponse(ServiceData* service) {
     delete service->data();
     delete service;
   } else {
-    TLOG(WARNING) << "Retrying service response in "
-                  << SERVICE_RETRY_TIMEOUT / 1000 << " seconds ("
+    int retry = service->data()->Retry();
+    TLOG(WARNING) << "Retrying service response in " << retry << " seconds ("
                   << service->data()->id() << ")";
-    PostDelayed(SERVICE_RETRY_TIMEOUT, this, MSG_RESPONSE, service);
+    PostDelayed(retry * 1000, this, MSG_RESPONSE, service);
   }
 }
 

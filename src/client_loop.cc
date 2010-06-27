@@ -46,7 +46,19 @@ void ClientLoop::DoRestart(int delay) {
 }
 
 void ClientLoop::DoRequest(ServiceData* service) {
-  track++;
+  if (state_ == RUNNING && pump_ != NULL &&
+      pump_->client() != NULL &&
+      pump_->client()->GetState() == txmpp::XmppEngine::STATE_OPEN) {
+    track++;
+    delete service->data();
+    delete service;
+  } else {
+    int retry = service->data()->Retry();
+    if (retry > 6)
+      TLOG(WARNING) << "Retrying service request in " << retry << " seconds ("
+                    << service->data()->id() << ")";
+    PostDelayed(retry * 1000, this, MSG_RESPONSE, service);
+  }
 }
 
 void ClientLoop::DoResponse(ServiceData* service) {

@@ -33,9 +33,7 @@
 namespace tyrion {
 
 ClientEnvelope::ClientEnvelope(const txmpp::XmlElement *stanza) {
-  code_ = 0;
-  timeout_ = PROCESS_TIMEOUT;
-  valid_ = false;
+  ClientEnvelope::ClientEnvelope();
 
   if (stanza->Name() != txmpp::QN_IQ ||
       !stanza->HasAttr(txmpp::QN_FROM) ||
