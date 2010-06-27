@@ -63,9 +63,7 @@ int main(int argc, char* argv[]) {
   while (true) {
     sigwait(&set, &sig);
 
-    if (sig == SIGHUP) {
-      loop->Reload();
-    } else if (sig == SIGINT || sig == SIGTERM) {
+    if (sig == SIGHUP || sig == SIGINT || sig == SIGTERM) {
       if (loop->state() == tyrion::ClientLoop::ERROR) code = 1;
       loop->Disconnect();
       loop->Quit();
