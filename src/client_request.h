@@ -43,7 +43,7 @@ class ClientRequest {
 
     bool Setup();
 
-    ClientEnvelope* CreateClientEnvelope(std::string jid);
+    ClientEnvelope* CreateClientEnvelope(const std::string& jid);
 
     inline StringList* jid() { return &jid_; }
     inline void set_jid(const std::string& jid) { Split(jid, ','); }
@@ -62,6 +62,9 @@ class ClientRequest {
 
     inline std::string group() { return group_; }
     inline void set_group(const std::string& group) { group_ = group; }
+
+    inline std::string input() { return input_; }
+    inline void set_input(const std::string& input) { input_ = input; }
 
   private:
     void Split(const std::string &text, char delimiter);

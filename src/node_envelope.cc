@@ -48,9 +48,7 @@ NodeEnvelope::NodeEnvelope(const txmpp::XmlElement *stanza) {
 
   if (service == NULL ||
       service->Name() != QN_SERVICE ||
-      !service->HasAttr(txmpp::QN_TYPE) ||
-      !service->HasAttr(txmpp::QN_XMLNS) ||
-      service->Attr(txmpp::QN_XMLNS) != NS_SERVICE) return;
+      !service->HasAttr(txmpp::QN_TYPE)) return;
 
   type_ = service->Attr(txmpp::QN_TYPE);
 
@@ -68,6 +66,8 @@ NodeEnvelope::NodeEnvelope(const txmpp::XmlElement *stanza) {
   }
 
   const txmpp::XmlElement *input = service->FirstNamed(QN_INPUT);
+
+  TLOG(ERROR) << "GOT HERE";
 
   if (input == NULL) return;
 

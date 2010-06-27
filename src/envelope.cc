@@ -35,12 +35,16 @@ namespace tyrion {
 Envelope::Envelope() {
   code_ = 0;
   timeout_ = PROCESS_TIMEOUT;
-  retry_ = 1;
+  retry_ = 0;
   valid_ = false;
 }
 
 int Envelope::Retry() {
-  if (retry_ < 32) retry_ *= 2;
+  if (retry_ <= 0) {
+    retry_ = 1;
+  } else if (retry_ < 32) {
+    retry_ *= 2;
+  }
   return retry_;
 }
 

@@ -69,7 +69,7 @@ bool ClientRequest::Setup() {
 }
 
 ClientEnvelope* ClientRequest::CreateClientEnvelope(
-    std::string jid) {
+    const std::string& jid) {
   ClientEnvelope* envelope = new ClientEnvelope();
 
   envelope->set_jid(txmpp::Jid(jid));

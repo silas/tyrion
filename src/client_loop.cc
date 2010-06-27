@@ -27,6 +27,8 @@
 
 #include "client_loop.h"
 
+#include <iostream>
+
 namespace tyrion {
 
 ClientLoop::ClientLoop() : BaseLoop() {
@@ -50,19 +52,41 @@ void ClientLoop::DoRequest(ServiceData* service) {
       pump_->client() != NULL &&
       pump_->client()->GetState() == txmpp::XmppEngine::STATE_OPEN) {
     track++;
+    service->data()->set_id(pump_->client()->NextId());
+    const txmpp::XmlElement* iq = service->data()->Request();
+    pump_->SendStanza(iq);
     delete service->data();
     delete service;
+    delete iq;
   } else {
     int retry = service->data()->Retry();
     if (retry > 6)
       TLOG(WARNING) << "Retrying service request in " << retry << " seconds ("
                     << service->data()->id() << ")";
-    PostDelayed(retry * 1000, this, MSG_RESPONSE, service);
+    PostDelayed(retry * 1000, this, MSG_REQUEST, service);
   }
 }
 
 void ClientLoop::DoResponse(ServiceData* service) {
-  track--;
+    int code = service->data()->code();
+    std::string jid = service->data()->jid().Str();
+    std::string output = service->data()->output();
+    std::string error = service->data()->error();
+
+    std::ostringstream header;
+    header << "<== " << jid << " (" << code << ") ==> " << std::endl;
+
+    if (code == 0) {
+      std::cout << header.str();
+    } else {
+      std::cerr << header.str();
+    }
+    if (!output.empty()) std::cout << output << std::endl;
+    if (!error.empty()) std::cerr << error << std::endl;
+
+    delete service->data();
+    delete service;
+  if (--track <= 0) Disconnect();
 }
 
 }  // namespace tyrion

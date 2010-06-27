@@ -55,7 +55,7 @@ int ClientXmppServiceTask::ProcessResponse() {
     return STATE_BLOCKED;
 
   ClientEnvelope *envelope = new ClientEnvelope(stanza);
-  tyrion::ClientLoop::Instance()->Request(envelope);
+  tyrion::ClientLoop::Instance()->Response(envelope);
 
   return STATE_RESPONSE;
 }

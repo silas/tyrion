@@ -60,6 +60,18 @@ int main(int argc, char* argv[]) {
   loop->Start();
   loop->Login();
 
+  std::string data, x;
+  while (!std::cin.eof()) {
+    std::getline(std::cin, x);
+    data += x + '\n';
+  }
+  request.set_input(data);
+
+  tyrion::StringList* jid = request.jid();
+  for(tyrion::StringList::iterator it = jid->begin(); it != jid->end(); ++it) {
+    loop->Request(request.CreateClientEnvelope(*it));
+  }
+
   while (true) {
     sigwait(&set, &sig);
 

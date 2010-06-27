@@ -47,9 +47,7 @@ ClientEnvelope::ClientEnvelope(const txmpp::XmlElement *stanza) {
   if (service == NULL ||
       service->Name() != QN_SERVICE ||
       !service->HasAttr(txmpp::QN_CODE) ||
-      !service->HasAttr(txmpp::QN_TYPE) ||
-      !service->HasAttr(txmpp::QN_XMLNS) ||
-      service->Attr(txmpp::QN_XMLNS) != NS_SERVICE) return;
+      !service->HasAttr(txmpp::QN_TYPE)) return;
 
   std::istringstream code_stream(service->Attr(QN_CODE));
   code_stream >> code_;
@@ -67,7 +65,7 @@ ClientEnvelope::ClientEnvelope(const txmpp::XmlElement *stanza) {
   if (output == NULL) return;
   output_ = output->BodyText();
 
-  const txmpp::XmlElement *error = service->FirstNamed(QN_OUTPUT);
+  const txmpp::XmlElement *error = service->FirstNamed(QN_ERROR);
 
   if (error == NULL) return;
   error_ = error->BodyText();
