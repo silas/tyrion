@@ -6,10 +6,3 @@ This software contains a modified version of INIReader.cpp and INIReader.h (Brus
   * src/third_party/ini
   * src/config.cc
   * src/config.h
-
-This software contains a modified version of a split algorithm (Evan Teran).
-  http://stackoverflow.com/questions/236129/c-how-to-split-a-string#236803 -- CC-SA 2.5
-  * src/client_request.cc
-  * src/client_request.h
-
-CC-SA 2.5: http://creativecommons.org/licenses/by-sa/2.5/
