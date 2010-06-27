@@ -30,17 +30,21 @@
 
 #include <txmpp/taskparent.h>
 #include <txmpp/xmpptask.h>
+#include "client_envelope.h"
 
 namespace tyrion {
 
 class ClientXmppServiceTask : public txmpp::XmppTask {
   public:
-    explicit ClientXmppServiceTask(txmpp::TaskParent *parent);
+    explicit ClientXmppServiceTask(txmpp::TaskParent *parent,
+                                   ClientEnvelope* envelope);
     virtual ~ClientXmppServiceTask();
     virtual int ProcessStart();
     virtual int ProcessResponse();
     bool HandleStanza(const txmpp::XmlElement *stanza);
-    bool IsValid(const txmpp::XmlElement *stanza);
+
+  private:
+    ClientEnvelope* envelope_;
 };
 
 }  // namespace tyrion

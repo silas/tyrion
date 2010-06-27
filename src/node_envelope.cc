@@ -34,12 +34,10 @@
 
 namespace tyrion {
 
-NodeEnvelope::NodeEnvelope(const txmpp::XmlElement *stanza) {
-  NodeEnvelope::NodeEnvelope();
-
+bool NodeEnvelope::Update(const txmpp::XmlElement *stanza) {
   if (stanza->Name() != txmpp::QN_IQ ||
       !stanza->HasAttr(txmpp::QN_FROM) ||
-      !stanza->HasAttr(txmpp::QN_ID)) return;
+      !stanza->HasAttr(txmpp::QN_ID)) return false;
 
   jid_ = txmpp::Jid(stanza->Attr(txmpp::QN_FROM));
   id_ = stanza->Attr(txmpp::QN_ID);
@@ -48,7 +46,7 @@ NodeEnvelope::NodeEnvelope(const txmpp::XmlElement *stanza) {
 
   if (service == NULL ||
       service->Name() != QN_SERVICE ||
-      !service->HasAttr(txmpp::QN_TYPE)) return;
+      !service->HasAttr(txmpp::QN_TYPE)) return false;
 
   type_ = service->Attr(txmpp::QN_TYPE);
 
@@ -67,15 +65,15 @@ NodeEnvelope::NodeEnvelope(const txmpp::XmlElement *stanza) {
 
   const txmpp::XmlElement *input = service->FirstNamed(QN_INPUT);
 
-  if (input == NULL) return;
+  if (input == NULL) return false;
 
   input_ = input->BodyText();
 
-  valid_ = true;
+  return true;
 }
 
-bool NodeEnvelope::Valid() {
-  return valid_ && NodeAcls::Instance()->GetBool(type_, jid_.BareJid().Str()) &&
+bool NodeEnvelope::Check() {
+  return NodeAcls::Instance()->GetBool(type_, jid_.BareJid().Str()) &&
       RealPath(Path()) != "";
 }
 

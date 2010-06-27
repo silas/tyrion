@@ -40,7 +40,6 @@ class NodeXmppServiceTask : public txmpp::XmppTask {
     virtual int ProcessStart();
     virtual int ProcessResponse();
     bool HandleStanza(const txmpp::XmlElement *stanza);
-    bool IsValid(const txmpp::XmlElement *stanza);
 };
 
 }  // namespace tyrion

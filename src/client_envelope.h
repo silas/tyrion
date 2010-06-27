@@ -35,10 +35,9 @@ namespace tyrion {
 class ClientEnvelope : public Envelope {
   public:
     ClientEnvelope() : Envelope() {}
-    ClientEnvelope(const txmpp::XmlElement *stanza);
     ~ClientEnvelope() {}
 
-    bool Valid();
+    bool Update(const txmpp::XmlElement *stanza);
 
     const txmpp::XmlElement* Request();
 };

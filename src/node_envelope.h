@@ -35,10 +35,11 @@ namespace tyrion {
 class NodeEnvelope : public Envelope {
   public:
     NodeEnvelope() : Envelope() {}
-    NodeEnvelope(const txmpp::XmlElement *stanza);
     ~NodeEnvelope() {}
 
-    bool Valid();
+    bool Update(const txmpp::XmlElement *stanza);
+
+    bool Check();
     std::string Path();
 
     const txmpp::XmlElement* Response();

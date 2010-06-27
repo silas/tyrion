@@ -46,7 +46,6 @@ class ClientLoop : public BaseLoop {
     void DoRestart(int delay = RECONNECT_TIMEOUT);
 
     void DoRequest(ServiceData* service);
-    static void *DoRequestInThread(void *arg);
     void DoResponse(ServiceData* service);
 
     static ClientLoop* instance_;

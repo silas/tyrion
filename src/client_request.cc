@@ -93,8 +93,14 @@ ClientEnvelope* ClientRequest::CreateClientEnvelope(
 void ClientRequest::Split(const std::string &text, char delimiter) {
   std::stringstream ss(text);
   std::string item;
+  size_t begin, end;
   while(std::getline(ss, item, delimiter)) {
-    jid_.push_back(item);
+    begin = item.find_first_not_of(" \t");
+    end = item.find_last_not_of(" \t");
+    if((begin != std::string::npos) && (end != std::string::npos)) {
+      item = item.substr(begin, end-begin+1);
+      jid_.push_back(item);
+    }
   }
 }
 

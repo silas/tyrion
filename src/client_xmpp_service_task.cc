@@ -32,19 +32,23 @@
 #include <txmpp/xmppclient.h>
 #include "constants.h"
 #include "logging.h"
-#include "client_envelope.h"
 #include "client_loop.h"
 
 namespace tyrion {
 
-ClientXmppServiceTask::ClientXmppServiceTask(txmpp::TaskParent *parent)
-    : txmpp::XmppTask(parent, txmpp::XmppEngine::HL_TYPE) {
+ClientXmppServiceTask::ClientXmppServiceTask(txmpp::TaskParent *parent,
+                                             ClientEnvelope* envelope)
+    : txmpp::XmppTask(parent, txmpp::XmppEngine::HL_SINGLE) {
+  envelope_ = envelope;
+  set_task_id(GetClient()->NextId());
+  envelope_->set_id(task_id());
 }
 
 ClientXmppServiceTask::~ClientXmppServiceTask() {
 }
 
 int ClientXmppServiceTask::ProcessStart() {
+  SendStanza(envelope_->Request());
   return STATE_RESPONSE;
 }
 
@@ -54,24 +58,20 @@ int ClientXmppServiceTask::ProcessResponse() {
   if (stanza == NULL)
     return STATE_BLOCKED;
 
-  ClientEnvelope *envelope = new ClientEnvelope(stanza);
-  tyrion::ClientLoop::Instance()->Response(envelope);
+  envelope_->Update(stanza);
+  tyrion::ClientLoop::Instance()->Response(envelope_);
 
   return STATE_RESPONSE;
 }
 
 bool ClientXmppServiceTask::HandleStanza(const txmpp::XmlElement *stanza) {
 
-  if (IsValid(stanza)) {
+  if (MatchResponseIq(stanza, envelope_->jid(), task_id())) {
     QueueStanza(stanza);
     return true;
   }
 
   return false;
-}
-
-bool ClientXmppServiceTask::IsValid(const txmpp::XmlElement *stanza) {
-  return ClientEnvelope(stanza).Valid();
 }
 
 }  // namespace tyrion

@@ -32,12 +32,10 @@
 
 namespace tyrion {
 
-ClientEnvelope::ClientEnvelope(const txmpp::XmlElement *stanza) {
-  ClientEnvelope::ClientEnvelope();
-
+bool ClientEnvelope::Update(const txmpp::XmlElement *stanza) {
   if (stanza->Name() != txmpp::QN_IQ ||
       !stanza->HasAttr(txmpp::QN_FROM) ||
-      !stanza->HasAttr(txmpp::QN_ID)) return;
+      !stanza->HasAttr(txmpp::QN_ID)) return false;
 
   jid_ = txmpp::Jid(stanza->Attr(txmpp::QN_FROM));
   id_ = stanza->Attr(txmpp::QN_ID);
@@ -47,7 +45,7 @@ ClientEnvelope::ClientEnvelope(const txmpp::XmlElement *stanza) {
   if (service == NULL ||
       service->Name() != QN_SERVICE ||
       !service->HasAttr(txmpp::QN_CODE) ||
-      !service->HasAttr(txmpp::QN_TYPE)) return;
+      !service->HasAttr(txmpp::QN_TYPE)) return false;
 
   std::istringstream code_stream(service->Attr(QN_CODE));
   code_stream >> code_;
@@ -62,15 +60,15 @@ ClientEnvelope::ClientEnvelope(const txmpp::XmlElement *stanza) {
 
   const txmpp::XmlElement *output = service->FirstNamed(QN_OUTPUT);
 
-  if (output == NULL) return;
+  if (output == NULL) return false;
   output_ = output->BodyText();
 
   const txmpp::XmlElement *error = service->FirstNamed(QN_ERROR);
 
-  if (error == NULL) return;
+  if (error == NULL) return false;
   error_ = error->BodyText();
 
-  valid_ = true;
+  return true;
 }
 
 const txmpp::XmlElement* ClientEnvelope::Request() {
@@ -90,10 +88,6 @@ const txmpp::XmlElement* ClientEnvelope::Request() {
   input->SetBodyText(input_);
 
   return iq;
-}
-
-bool ClientEnvelope::Valid() {
-  return valid_;
 }
 
 };  // namespace tyrion
