@@ -36,7 +36,6 @@ Envelope::Envelope() {
   code_ = 0;
   timeout_ = PROCESS_TIMEOUT;
   retry_ = 0;
-  valid_ = false;
 }
 
 int Envelope::Retry() {

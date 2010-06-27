@@ -112,9 +112,6 @@ void NodeServiceHandler::Run() {
     code = p.Close();
   }
 
-  if (issue)
-    service_->set_valid(false);
-
   service_->set_code(code);
   service_->set_output(output);
   service_->set_error(error);

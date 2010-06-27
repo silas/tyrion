@@ -72,9 +72,6 @@ class Envelope {
     inline int code() { return code_; }
     inline void set_code(int code) { code_ = code; }
 
-    inline bool valid() { return valid_; }
-    inline void set_valid(bool valid) { valid_ = valid; }
-
   protected:
     txmpp::Jid jid_;
     std::string id_;
@@ -87,7 +84,6 @@ class Envelope {
     int code_;
     int timeout_;
     int retry_;
-    bool valid_;
 };
 
 }  // tyrion
