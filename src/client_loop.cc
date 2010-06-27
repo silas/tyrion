@@ -41,6 +41,10 @@ ClientLoop* ClientLoop::Instance() {
   return instance_;
 }
 
+void ClientLoop::DoRestart(int delay) {
+  DoShutdown();
+}
+
 void ClientLoop::DoRequest(ServiceData* service) {
   track++;
 }

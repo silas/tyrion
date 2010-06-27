@@ -177,7 +177,7 @@ class Loop : public txmpp::Thread, XmppPumpNotify,
     virtual void DoResponse(ServiceData* service) {
     }
 
-    void OnMessage(txmpp::Message* pmsg) {
+    virtual void OnMessage(txmpp::Message* pmsg) {
       switch (pmsg->message_id) {
         case MSG_LOGIN:
           DoLogin();
