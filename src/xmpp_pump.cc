@@ -70,7 +70,6 @@ void XmppPump::OnStateChange(txmpp::XmppEngine::State state) {
 
   switch(state) {
     case txmpp::XmppEngine::STATE_OPEN:
-      TLOG(INFO) << "Connected.";
       DoOpen();
       break;
     case txmpp::XmppEngine::STATE_START:

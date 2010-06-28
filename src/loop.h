@@ -52,6 +52,7 @@ class Loop : public txmpp::Thread, XmppPumpNotify,
   public:
     enum Message {
       MSG_LOGIN = 1,
+      MSG_OPEN,
       MSG_DISCONNECT,
       MSG_RESTART,
       MSG_RELOAD,
@@ -104,6 +105,7 @@ class Loop : public txmpp::Thread, XmppPumpNotify,
     Loop() {
       pump_ = NULL;
       state_ = NONE;
+      retry_ = 1;
     }
 
     virtual void DoLogin() {
@@ -139,7 +141,12 @@ class Loop : public txmpp::Thread, XmppPumpNotify,
       pump_->DoLogin(settings, socket, new txmpp::PreXmppAuthImpl());
     }
 
-    virtual void DoRestart(int delay = RECONNECT_TIMEOUT) {
+    virtual void DoOpen() {
+      TLOG(INFO) << "Connected.";
+      retry_ = 1;
+    }
+
+    virtual void DoRestart(bool delay = true) {
       if (state_ == RESTARTING) return;
       state_ = RESTARTING;
       // TODO(silas): figure out proper method to unwind TaskRunner so
@@ -148,9 +155,10 @@ class Loop : public txmpp::Thread, XmppPumpNotify,
         delete pump_;
         pump_ = NULL;
       }
-      if (delay > 0) {
-        TLOG(INFO) << "Reconnecting in " << delay / 1000 << " seconds...";
-        PostDelayed(RECONNECT_TIMEOUT, this, MSG_LOGIN);
+      if (delay) {
+        TLOG(INFO) << "Reconnecting in " << retry_ << " seconds...";
+        PostDelayed(retry_ * 1000, this, MSG_LOGIN);
+        if (retry_ < MAX_RECONNECT_TIMEOUT) retry_ *= 2;
       } else {
         TLOG(INFO) << "Reconnecting...";
         Post(this, MSG_LOGIN);
@@ -181,6 +189,9 @@ class Loop : public txmpp::Thread, XmppPumpNotify,
       switch (pmsg->message_id) {
         case MSG_LOGIN:
           DoLogin();
+          break;
+        case MSG_OPEN:
+          DoOpen();
           break;
         case MSG_RESTART:
           DoRestart();
@@ -242,7 +253,9 @@ class Loop : public txmpp::Thread, XmppPumpNotify,
     }
 
     void OnStateChange(txmpp::XmppEngine::State state, int code = 0) {
-      if (state == txmpp::XmppEngine::STATE_CLOSED) {
+      if (state == txmpp::XmppEngine::STATE_OPEN) {
+        Post(this, MSG_OPEN);
+      } else if (state == txmpp::XmppEngine::STATE_CLOSED) {
         state_ = ERROR;
         bool restart = true;
 
@@ -297,6 +310,7 @@ class Loop : public txmpp::Thread, XmppPumpNotify,
 
     P* pump_;
     State state_;
+    int retry_;
 };
 
 

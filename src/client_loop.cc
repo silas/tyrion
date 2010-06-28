@@ -44,7 +44,7 @@ ClientLoop* ClientLoop::Instance() {
   return instance_;
 }
 
-void ClientLoop::DoRestart(int delay) {
+void ClientLoop::DoRestart(bool delay) {
   DoShutdown();
 }
 

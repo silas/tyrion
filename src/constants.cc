@@ -56,6 +56,6 @@ const std::string STR_XMPP = "xmpp";
 
 const int XMPP_PORT = 5222;
 const int PROCESS_TIMEOUT = 300; // secoonds
-const int RECONNECT_TIMEOUT = 10000; // milliseconds
+const int MAX_RECONNECT_TIMEOUT = 256; // seconds
 
 };  // namespace tyrion

@@ -43,7 +43,7 @@ class ClientLoop : public BaseLoop {
 
   protected:
     ClientLoop();
-    void DoRestart(int delay = RECONNECT_TIMEOUT);
+    void DoRestart(bool delay = true);
 
     void DoRequest(ServiceData* service);
     void DoResponse(ServiceData* service);
