@@ -44,9 +44,20 @@ std::string CreateError(std::string code, std::string message = "");
 bool CreateThread(void *func(void*), void *arg);
 
 /**
+ * Escape various hidden and whitespace characters.
+ */
+void Escape(std::string& text);
+
+/**
  * Return the real path of the specified file.
  */
 std::string RealPath(const std::string& path);
+
+/**
+ * In-place string search and replace.
+ */
+void StringReplace(std::string& text, const std::string& search,
+                   const std::string& replace);
 
 }  // namespace tyrion
 

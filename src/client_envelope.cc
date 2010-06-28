@@ -29,13 +29,23 @@
 
 #include <sstream>
 #include <txmpp/constants.h>
+#include "utils.h"
+#include "logging.h"
 
 namespace tyrion {
 
 bool ClientEnvelope::Update(const txmpp::XmlElement *stanza) {
+
   if (stanza->Name() != txmpp::QN_IQ ||
       !stanza->HasAttr(txmpp::QN_FROM) ||
-      !stanza->HasAttr(txmpp::QN_ID)) return false;
+      !stanza->HasAttr(txmpp::QN_TYPE)) return false;
+
+  if (stanza->Attr(txmpp::QN_TYPE) == "error") {
+    code_ = -1;
+    error_ += CreateError("xmpp", stanza->Str());
+  }
+
+  if (!stanza->HasAttr(txmpp::QN_ID)) return false;
 
   jid_ = txmpp::Jid(stanza->Attr(txmpp::QN_FROM));
   id_ = stanza->Attr(txmpp::QN_ID);
@@ -61,12 +71,12 @@ bool ClientEnvelope::Update(const txmpp::XmlElement *stanza) {
   const txmpp::XmlElement *output = service->FirstNamed(QN_OUTPUT);
 
   if (output == NULL) return false;
-  output_ = output->BodyText();
+  output_ += output->BodyText();
 
   const txmpp::XmlElement *error = service->FirstNamed(QN_ERROR);
 
   if (error == NULL) return false;
-  error_ = error->BodyText();
+  error_ += error->BodyText();
 
   return true;
 }
