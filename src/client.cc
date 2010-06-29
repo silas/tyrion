@@ -57,6 +57,7 @@ int main(int argc, char* argv[]) {
   tyrion::ClientSetup(argc, argv, &request);
 
   tyrion::ClientLoop* loop = tyrion::ClientLoop::Instance();
+  loop->set_pthread(pthread_self());
   loop->Start();
   loop->Login();
 

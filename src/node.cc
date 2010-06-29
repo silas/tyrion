@@ -54,6 +54,7 @@ int main(int argc, char* argv[]) {
   tyrion::NodeSetup(argc, argv);
 
   tyrion::NodeLoop* loop = tyrion::NodeLoop::Instance();
+  loop->set_pthread(pthread_self());
   loop->Start();
   loop->Login();
 

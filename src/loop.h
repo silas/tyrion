@@ -64,6 +64,7 @@ class Loop : public txmpp::Thread, XmppPumpNotify,
       NONE = 0,
       RUNNING,
       RESTARTING,
+      STOPPED,
       ERROR
     };
     typedef txmpp::TypedMessageData<E*> ServiceData;
@@ -100,6 +101,9 @@ class Loop : public txmpp::Thread, XmppPumpNotify,
 
     inline txmpp::XmppClient* client() { return pump_->client(); }
     inline State state() { return state_; }
+
+    inline pthread_t pthread() { return pthread_; }
+    inline void set_pthread(pthread_t pthread) { pthread_ = pthread; };
 
   protected:
     Loop() {
@@ -176,7 +180,8 @@ class Loop : public txmpp::Thread, XmppPumpNotify,
 
 
     virtual void DoShutdown() {
-      raise(SIGINT);
+      if (state_ != ERROR) state_ = STOPPED;
+      pthread_kill(pthread_, SIGINT);
     }
 
     virtual void DoRequest(ServiceData* service) {
@@ -310,6 +315,7 @@ class Loop : public txmpp::Thread, XmppPumpNotify,
 
     P* pump_;
     State state_;
+    pthread_t pthread_;
     int retry_;
 };
 
