@@ -45,6 +45,7 @@ class NodeLoop : public BaseLoop {
   protected:
     NodeLoop();
 
+    void DoReload();
     void DoRequest(ServiceData* service);
     static void *DoRequestInThread(void *arg);
     void DoResponse(ServiceData* service);

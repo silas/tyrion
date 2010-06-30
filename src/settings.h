@@ -45,10 +45,17 @@ class Settings {
       }
     }
 
-    static T* Instance() {
+    static T* New() {
+      return new T;
+    }
+
+    static T* Instance(T* instance = NULL) {
       static T* instance_;
-      if (!instance_)
-        instance_ = new T;
+      if (instance != NULL) {
+        instance_ = instance;
+      } else if (!instance_) {
+        instance_ = New();
+      }
       return instance_;
     }
 
@@ -56,24 +63,6 @@ class Settings {
       path_ = path;
       config_ = new Config(path_);
       return config_->ParseError() >= 0;
-    }
-
-    bool Reload() {
-      T* instance_ = Settings<T>::Instance();
-      if (instance_) {
-        TLOG(INFO) << "Reloading settings...";
-        T *old_instance = instance_;
-        T *new_instance = new T;
-        if (new_instance->Setup(old_instance->path())) {
-          instance_ = new_instance;
-          delete old_instance;
-          return true;
-        } else {
-          TLOG(WARNING) << "Unable to reload settings...";
-          delete new_instance;
-        }
-      }
-      return false;
     }
 
     bool Validate() {
