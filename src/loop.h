@@ -225,7 +225,6 @@ class Loop : public txmpp::Thread, XmppPumpNotify,
 
     void OnSocketClose(int code) {
       state_ = ERROR;
-      bool restart = true;
 
       switch(code) {
         case 0:
@@ -250,11 +249,10 @@ class Loop : public txmpp::Thread, XmppPumpNotify,
           break;
         default:
           TLOG(ERROR) << "Unhandled socket error: " << code;
-          restart = false;
           break;
       }
 
-      Post(this, restart ? MSG_RESTART : MSG_SHUTDOWN);
+      Post(this, MSG_RESTART);
     }
 
     void OnStateChange(txmpp::XmppEngine::State state, int code = 0) {
@@ -262,7 +260,6 @@ class Loop : public txmpp::Thread, XmppPumpNotify,
         Post(this, MSG_OPEN);
       } else if (state == txmpp::XmppEngine::STATE_CLOSED) {
         state_ = ERROR;
-        bool restart = true;
 
         switch(code) {
           case txmpp::XmppEngine::ERROR_NONE:
@@ -275,18 +272,15 @@ class Loop : public txmpp::Thread, XmppPumpNotify,
             break;
           case txmpp::XmppEngine::ERROR_VERSION:
             TLOG(ERROR) << "XMPP version error.";
-            restart = false;
             break;
           case txmpp::XmppEngine::ERROR_UNAUTHORIZED:
             TLOG(ERROR) << "Authorization failed.";
-            restart = false;
             break;
           case txmpp::XmppEngine::ERROR_TLS:
             TLOG(ERROR) << "TLS could not be negotiated.";
             break;
           case txmpp::XmppEngine::ERROR_AUTH:
             TLOG(ERROR) << "Authentication could not be negotiated.";
-            restart = false;
             break;
           case txmpp::XmppEngine::ERROR_BIND:
             TLOG(ERROR) << "Resource or session binding could not be negotiated.";
@@ -305,11 +299,10 @@ class Loop : public txmpp::Thread, XmppPumpNotify,
             break;
           default:
             TLOG(ERROR) << "Unknown shutdown error: " << code;
-            restart = false;
             break;
         }
 
-        Post(this, restart ? MSG_RESTART : MSG_SHUTDOWN);
+        Post(this, MSG_RESTART);
       }
     }
 
