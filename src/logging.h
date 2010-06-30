@@ -52,9 +52,16 @@ class Logging {
 
     ~Logging();
 
-    inline static Logging* Instance() {
-      if (instance_ == 0)
-        instance_ = new Logging;
+    inline static Logging* New() {
+      return new Logging;
+    }
+
+    inline static Logging* Instance(Logging* instance = NULL) {
+      if (instance != NULL) {
+        instance_ = instance;
+      } else if (instance_ == NULL) {
+        instance_ = New();
+      }
       return instance_;
     }
 
@@ -62,6 +69,9 @@ class Logging {
     bool File(const std::string& path, Level level);
 
     void Log(Level level, const std::string& message);
+
+    inline Level debug_level() { return debug_level_; }
+    inline Level file_level() { return file_level_; }
 
     static std::string LevelToString(Level level);
     static Level StringToLevel(std::string level, Level default_level);

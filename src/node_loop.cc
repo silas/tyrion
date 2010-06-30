@@ -26,6 +26,7 @@
  */
 
 #include "node_loop.h"
+#include "node_utils.h"
 
 namespace tyrion {
 
@@ -38,6 +39,15 @@ NodeLoop* NodeLoop::Instance() {
   if (!instance_)
     instance_ = new NodeLoop;
   return instance_;
+}
+
+void NodeLoop::DoReload() {
+  if (NodeReload()) {
+    TLOG(INFO) << "Reloading...";
+    Restart();
+  } else {
+    TLOG(WARNING) << "Unable to reload.";
+  }
 }
 
 void NodeLoop::DoRequest(ServiceData* service) {

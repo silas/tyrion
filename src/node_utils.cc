@@ -45,6 +45,92 @@ void NodeExit(int code) {
   exit(code);
 }
 
+bool NodeReload() {
+  std::string config_path = NodeSettings::Instance()->path();
+
+  NodeSettings* settings = NodeSettings::New();
+
+  if (!settings->Setup(config_path)) {
+    TLOG(ERROR) << "Unable to open configuration file.";
+    delete settings;
+    return false;
+  }
+
+  if (!settings->Validate()) {
+    TLOG(ERROR) << "Invalid configuration file.";
+    delete settings;
+    return false;
+  }
+
+  std::string acl_path = NodeSettings::Instance()->Get(STR_GENERAL, STR_ACL_PATH);
+
+  NodeAcls* acls = NodeAcls::New();
+
+  if (!acls->Setup(acl_path)) {
+    TLOG(ERROR) << "Unable to open acl file.";
+    delete settings;
+    delete acls;
+    return false;
+  }
+
+  Logging* logging = Logging::New();
+
+  Logging::Level log_level = Logging::StringToLevel(
+      settings->Get(STR_GENERAL, STR_LOG_LEVEL), Logging::INFO);
+  std::string log_path = settings->Get(STR_GENERAL, STR_LOG_PATH);
+  if (!logging->File(log_path, log_level)) {
+    TLOG(ERROR) << "Unable to open log file.";
+    delete settings;
+    delete acls;
+    delete logging;
+    return false;
+  }
+
+  NodeSettings* old_settings =  NodeSettings::Instance();
+  NodeAcls* old_acls =  NodeAcls::Instance();
+  Logging* old_logging =  Logging::Instance();
+
+  logging->Debug(old_logging->debug_level());
+
+  NodeSettings::Instance(settings);
+  NodeAcls::Instance(acls);
+  Logging::Instance(logging);
+
+  delete old_settings;
+  delete old_acls;
+  delete old_logging;
+
+  return true;
+}
+
+bool NodeReloadLogging() {
+  Logging* logging = Logging::New();
+
+  Logging::Level log_level = Logging::StringToLevel(
+      NodeSettings::Instance()->Get(STR_GENERAL, STR_LOG_LEVEL),
+      Logging::INFO);
+  std::string log_path = NodeSettings::Instance()->Get(STR_GENERAL,
+                                                       STR_LOG_PATH);
+  if (!logging->File(log_path, log_level)) {
+    TLOG(ERROR) << "Unable to open log file.";
+    TLOG(ERROR) << "Unable to reload logging.";
+    delete logging;
+    return false;
+  }
+
+  Logging* old_logging =  Logging::Instance();
+
+  logging->Debug(old_logging->debug_level());
+
+  Logging::Instance(logging);
+
+  delete old_logging;
+
+  TLOG(INFO) << "Logging reloaded.";
+
+  return true;
+}
+
 void NodeSetup(int argc, char* argv[]) {
 
   const char *config = NULL;
