@@ -52,6 +52,7 @@ bool NodeReload() {
 
   if (!settings->Setup(config_path)) {
     TLOG(ERROR) << "Unable to open configuration file.";
+    delete settings;
     return false;
   }
 
