@@ -2,3 +2,5 @@ TODO
 ====
 
 * Reduce code duplication in node_utils.cc
+* Figure out if the singleton-like approach to Loop, Settings and Logging is
+  an appropriate design
