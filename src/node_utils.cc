@@ -197,4 +197,4 @@ void NodeSetup(int argc, char* argv[]) {
   }
 }
 
-};  // namespace tyrion
+}  // namespace tyrion

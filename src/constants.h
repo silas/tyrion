@@ -60,6 +60,6 @@ extern const int XMPP_PORT;
 extern const int PROCESS_TIMEOUT;
 extern const int MAX_RECONNECT_TIMEOUT;
 
-};  // namespace tyrion
+}  // namespace tyrion
 
 #endif  // _TYRION_CONSTANTS_H_

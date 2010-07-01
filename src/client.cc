@@ -77,8 +77,11 @@ int main(int argc, char* argv[]) {
     sigwait(&set, &sig);
 
     if (sig == SIGHUP || sig == SIGINT || sig == SIGTERM) {
-      if (loop->state() == tyrion::ClientLoop::ERROR) code = 1;
-      loop->Disconnect();
+      if (loop->state() == tyrion::ClientLoop::ERROR) {
+        code = 1;
+      } else if (loop->state() == tyrion::ClientLoop::RUNNING) {
+        loop->Disconnect();
+      }
       loop->Quit();
       loop->Stop();
       break;

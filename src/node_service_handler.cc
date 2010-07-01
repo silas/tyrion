@@ -119,4 +119,4 @@ void NodeServiceHandler::Run() {
   tyrion::NodeLoop::Instance()->Response(service_);
 }
 
-} // namespace tyrion
+}  // namespace tyrion

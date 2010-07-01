@@ -47,4 +47,4 @@ int Envelope::Retry() {
   return retry_;
 }
 
-};  // namespace tyrion
+}  // namespace tyrion

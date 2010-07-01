@@ -37,6 +37,6 @@ bool NodeReload();
 bool NodeReloadLogging();
 void NodeSetup(int argc, char* argv[]);
 
-};  // namespace tyrion
+}  // namespace tyrion
 
 #endif  // _TYRION_NODE_UTILS_H_

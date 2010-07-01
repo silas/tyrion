@@ -77,6 +77,6 @@ class ClientRequest {
     std::string input_;
 };
 
-};  // namespace tyrion
+}  // namespace tyrion
 
 #endif  // _TYRION_CLIENT_REQUEST_H_

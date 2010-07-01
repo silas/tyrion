@@ -100,4 +100,4 @@ const txmpp::XmlElement* ClientEnvelope::Request() {
   return iq;
 }
 
-};  // namespace tyrion
+}  // namespace tyrion

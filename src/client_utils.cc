@@ -150,4 +150,4 @@ void ClientSetup(int argc, char* argv[], ClientRequest* request) {
   }
 }
 
-};  // namespace tyrion
+}  // namespace tyrion

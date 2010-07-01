@@ -36,6 +36,6 @@ namespace tyrion {
 void ClientExit(int code);
 void ClientSetup(int argc, char* argv[], ClientRequest* request);
 
-};  // namespace tyrion
+}  // namespace tyrion
 
 #endif  // _TYRION_CLIENT_UTILS_H_
