@@ -104,4 +104,4 @@ void ClientRequest::Split(const std::string &text, char delimiter) {
   }
 }
 
-};  // namespace tyrion
+}  // namespace tyrion

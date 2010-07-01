@@ -141,7 +141,7 @@ env = Environment()
 #
 
 defines = ['POSIX']
-flags = '-Wall'
+flags = '-Wall -pedantic'
 frameworks = []
 libraries = ['txmpp']
 link = ''

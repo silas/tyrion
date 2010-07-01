@@ -237,4 +237,4 @@ bool Process::set_group(std::string name) {
   return false;
 }
 
-} // namespace tyrion
+}  // namespace tyrion

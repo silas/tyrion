@@ -104,4 +104,4 @@ std::string NodeEnvelope::Path() {
       + "/" + type_;
 }
 
-};  // namespace tyrion
+}  // namespace tyrion

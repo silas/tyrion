@@ -58,4 +58,4 @@ const int XMPP_PORT = 5222;
 const int PROCESS_TIMEOUT = 300; // secoonds
 const int MAX_RECONNECT_TIMEOUT = 256; // seconds
 
-};  // namespace tyrion
+}  // namespace tyrion
