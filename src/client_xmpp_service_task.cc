@@ -40,15 +40,16 @@ ClientXmppServiceTask::ClientXmppServiceTask(txmpp::TaskParent *parent,
                                              ClientEnvelope* envelope)
     : txmpp::XmppTask(parent, txmpp::XmppEngine::HL_SINGLE) {
   envelope_ = envelope;
-  set_task_id(GetClient()->NextId());
-  envelope_->set_id(task_id());
+  envelope_->set_id(GetClient()->NextId());
 }
 
 ClientXmppServiceTask::~ClientXmppServiceTask() {
 }
 
 int ClientXmppServiceTask::ProcessStart() {
-  SendStanza(envelope_->Request());
+  txmpp::XmlElement* message = envelope_->Request();
+  SendStanza(message);
+  delete message;
   return STATE_RESPONSE;
 }
 
@@ -65,8 +66,7 @@ int ClientXmppServiceTask::ProcessResponse() {
 }
 
 bool ClientXmppServiceTask::HandleStanza(const txmpp::XmlElement *stanza) {
-
-  if (MatchResponseIq(stanza, envelope_->jid(), task_id())) {
+  if (MatchResponseIq(stanza, envelope_->jid(), envelope_->id())) {
     QueueStanza(stanza);
     return true;
   }

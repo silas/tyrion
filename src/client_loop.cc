@@ -66,16 +66,29 @@ void ClientLoop::DoRequest(ServiceData* service) {
 }
 
 void ClientLoop::DoResponse(ServiceData* service) {
-  int code = service->data()->code();
-  std::string jid = service->data()->jid().Str();
-  std::string output = service->data()->output();
-  std::string error = service->data()->error();
+  ClientEnvelope* envelope = service->data();
 
-  std::cerr << "<== " << jid << " (" << code << ") ==> " << std::endl;
-  if (!output.empty()) std::cout << output;
-  if (!error.empty()) std::cerr << error;
+  if (!envelope->output().empty())
+    std::cout << envelope->jid().Str() << " (" << envelope->code() << "): "
+              << envelope->output();
 
-  delete service->data();
+  if (!envelope->error().empty())
+    std::cerr << envelope->jid().Str() << " (" << envelope->code() << "): "
+              << envelope->error();
+
+  if (envelope->output().empty() && envelope->error().empty()) {
+    if (envelope->code() == 0) {
+      std::cout << envelope->jid().Str() << " (" << envelope->code() << ")"
+                << std::endl;
+    } else {
+      std::cerr << envelope->jid().Str() << " (" << envelope->code() << ")"
+                << std::endl;
+    }
+  }
+
+  // TODO(silas): figure out why txmpp::Jid refcount is deleting the envelope
+  // Jid and corrupting the envelope object
+  //delete envelope;
   delete service;
 
   if (--track <= 0) Disconnect();

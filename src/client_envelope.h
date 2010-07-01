@@ -39,7 +39,7 @@ class ClientEnvelope : public Envelope {
 
     bool Update(const txmpp::XmlElement *stanza);
 
-    const txmpp::XmlElement* Request();
+    txmpp::XmlElement* Request();
 };
 
 }  // tyrion

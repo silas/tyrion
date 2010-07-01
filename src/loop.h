@@ -45,6 +45,16 @@
 
 namespace tyrion {
 
+template <class T>
+class MessageDataType : public txmpp::MessageData {
+ public:
+  explicit MessageDataType(T* data) : data_(data) {}
+  const T* data() const { return data_; }
+  T* data() { return data_; }
+ private:
+  T* data_;
+};
+
 template <class E, class S, class P>
 class Loop : public txmpp::Thread, XmppPumpNotify,
              public txmpp::MessageHandler,
@@ -67,7 +77,7 @@ class Loop : public txmpp::Thread, XmppPumpNotify,
       STOPPED,
       ERROR
     };
-    typedef txmpp::TypedMessageData<E*> ServiceData;
+    typedef MessageDataType<E> ServiceData;
 
     ~Loop() { if (pump_ != NULL) delete pump_; }
 

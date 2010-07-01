@@ -81,7 +81,7 @@ bool ClientEnvelope::Update(const txmpp::XmlElement *stanza) {
   return true;
 }
 
-const txmpp::XmlElement* ClientEnvelope::Request() {
+txmpp::XmlElement* ClientEnvelope::Request() {
   txmpp::XmlElement* iq = new txmpp::XmlElement(txmpp::QN_IQ);
   iq->SetAttr(txmpp::QN_TO, jid_.Str());
   iq->SetAttr(txmpp::QN_ID, id_);
