@@ -197,7 +197,6 @@ if system == 'linux':
     defines += ['LINUX']
     soname = 'lib%s.so.%s' % (name, version)
     link += ' -Wl,-soname,%s' % soname
-    src += posix_src
 elif system == 'darwin':
     defines += ['OSX']
     soname = 'lib%s.dylib.%s' % (name, version)
