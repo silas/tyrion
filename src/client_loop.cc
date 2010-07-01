@@ -66,17 +66,18 @@ void ClientLoop::DoRequest(ServiceData* service) {
 }
 
 void ClientLoop::DoResponse(ServiceData* service) {
-    int code = service->data()->code();
-    std::string jid = service->data()->jid().Str();
-    std::string output = service->data()->output();
-    std::string error = service->data()->error();
+  int code = service->data()->code();
+  std::string jid = service->data()->jid().Str();
+  std::string output = service->data()->output();
+  std::string error = service->data()->error();
 
-    std::cerr << "<== " << jid << " (" << code << ") ==> " << std::endl;
-    if (!output.empty()) std::cout << output;
-    if (!error.empty()) std::cerr << error;
+  std::cerr << "<== " << jid << " (" << code << ") ==> " << std::endl;
+  if (!output.empty()) std::cout << output;
+  if (!error.empty()) std::cerr << error;
 
-    delete service->data();
-    delete service;
+  delete service->data();
+  delete service;
+
   if (--track <= 0) Disconnect();
 }
 

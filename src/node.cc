@@ -67,8 +67,11 @@ int main(int argc, char* argv[]) {
     } else if (sig == SIGUSR1) {
       tyrion::NodeReloadLogging();
     } else if (sig == SIGINT || sig == SIGTERM) {
-      if (loop->state() == tyrion::NodeLoop::ERROR) code = 1;
-      loop->Disconnect();
+      if (loop->state() == tyrion::NodeLoop::ERROR) {
+        code = 1;
+      } else if (loop->state() == tyrion::NodeLoop::RUNNING) {
+        loop->Disconnect();
+      }
       loop->Quit();
       loop->Stop();
       break;

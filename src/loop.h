@@ -173,7 +173,7 @@ class Loop : public txmpp::Thread, XmppPumpNotify,
 
     virtual void DoDisconnect() {
       TLOG(INFO) << "Disconnecting...";
-      state_ = NONE;
+      state_ = STOPPED;
       if (pump_ == NULL) return;
       pump_->DoDisconnect();
     }
