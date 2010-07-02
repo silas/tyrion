@@ -32,10 +32,11 @@
 
 namespace tyrion {
 
-Envelope::Envelope() {
-  code_ = 0;
-  timeout_ = PROCESS_TIMEOUT;
-  retry_ = 0;
+Envelope::Envelope() :
+  jid_(txmpp::STR_EMPTY),
+  code_(0),
+  timeout_(PROCESS_TIMEOUT),
+  retry_(0) {
 }
 
 int Envelope::Retry() {
