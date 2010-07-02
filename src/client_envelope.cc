@@ -47,9 +47,6 @@ bool ClientEnvelope::Update(const txmpp::XmlElement *stanza) {
 
   if (!stanza->HasAttr(txmpp::QN_ID)) return false;
 
-  jid_ = txmpp::Jid(stanza->Attr(txmpp::QN_FROM));
-  id_ = stanza->Attr(txmpp::QN_ID);
-
   const txmpp::XmlElement *service = stanza->FirstWithNamespace(NS_SERVICE);
 
   if (service == NULL ||
