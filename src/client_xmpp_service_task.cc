@@ -44,6 +44,7 @@ ClientXmppServiceTask::ClientXmppServiceTask(txmpp::TaskParent *parent,
 }
 
 ClientXmppServiceTask::~ClientXmppServiceTask() {
+  delete envelope_;
 }
 
 int ClientXmppServiceTask::ProcessStart() {
@@ -66,12 +67,32 @@ int ClientXmppServiceTask::ProcessResponse() {
 }
 
 bool ClientXmppServiceTask::HandleStanza(const txmpp::XmlElement *stanza) {
-  if (MatchResponseIq(stanza, envelope_->jid(), envelope_->id())) {
+  if (IsValid(stanza)) {
     QueueStanza(stanza);
     return true;
   }
 
   return false;
+}
+
+bool ClientXmppServiceTask::IsValid(const txmpp::XmlElement *stanza) {
+  if (stanza->Name() != txmpp::QN_IQ ||
+      !stanza->HasAttr(txmpp::QN_FROM) ||
+      !stanza->HasAttr(txmpp::QN_TYPE)) return false;
+
+  if (stanza->Attr(txmpp::QN_TYPE) != "result" &&
+      stanza->Attr(txmpp::QN_TYPE) != "error") return false;
+
+  if (!stanza->HasAttr(txmpp::QN_ID)) return false;
+
+  const txmpp::XmlElement *service = stanza->FirstWithNamespace(NS_SERVICE);
+
+  if (service == NULL ||
+      service->Name() != QN_SERVICE ||
+      !service->HasAttr(txmpp::QN_CODE) ||
+      !service->HasAttr(txmpp::QN_TYPE)) return false;
+
+  return MatchResponseIq(stanza, envelope_->jid(), envelope_->id());
 }
 
 }  // namespace tyrion

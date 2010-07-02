@@ -72,7 +72,7 @@ ClientEnvelope* ClientRequest::CreateClientEnvelope(
     const std::string& jid) {
   ClientEnvelope* envelope = new ClientEnvelope();
 
-  envelope->set_jid(txmpp::Jid(jid));
+  envelope->set_jid(jid);
   envelope->set_type(service_);
   if (!timeout_.empty()) {
     int number;

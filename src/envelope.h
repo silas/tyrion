@@ -44,6 +44,7 @@ class Envelope {
 
     inline txmpp::Jid& jid() { return jid_; }
     inline void set_jid(const txmpp::Jid& jid) { jid_ = jid; }
+    inline void set_jid(const std::string& jid) { jid_ = txmpp::Jid(jid); }
 
     inline std::string id() { return id_; }
     inline void set_id(const std::string& id) { id_ = id; }

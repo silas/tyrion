@@ -86,9 +86,6 @@ void ClientLoop::DoResponse(ServiceData* service) {
     }
   }
 
-  // TODO(silas): figure out why txmpp::Jid refcount is deleting the envelope
-  // Jid and corrupting the envelope object
-  //delete envelope;
   delete service;
 
   if (--track <= 0) Disconnect();
