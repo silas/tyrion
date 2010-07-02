@@ -102,21 +102,6 @@ def Link(src, dst):
     print 'Linking %s to %s' % (src, dst)
     os.symlink(src, dst)
 
-_push_pop = []
-
-def Pushd(path):
-    _push_pop.insert(0, os.getcwd())
-    print 'Pushd to %s' % path
-    os.chdir(path)
-
-def Popd():
-    if len(_push_pop) > 0:
-        os.chdir(_push_pop[0])
-        print 'Popd to %s' % _push_pop[0]
-        del _push_pop[0]
-    else:
-        print 'Popd stack empty'
-
 def Remove(path):
     for p in glob.glob(path):
         print 'Deleting %s' % p
@@ -285,19 +270,16 @@ if GetOption('install'):
     # Install library
     CreateDirectory(libdir)
     Remove(os.path.join(libdir, 'libtyrion.*'))
-    Copy(tyrion_library, os.path.join(libdir, soname))
-    Pushd(libdir)
-    for x in range(1, 4):
-        lname = '.'.join(soname.split('.')[:-x])
-        Link(soname, lname)
-    Popd()
+    Copy(tyrion_library, os.path.join(libdir, tyrion_library))
 
     # Install client
     CreateDirectory(bindir)
-    Remove(os.path.join(bindir, tyrion_client))
-    Copy(tyrion_client, bindir)
+    tyrion_client_path = os.path.join(bindir, tyrion_client)
+    Remove(tyrion_client_path)
+    Copy(tyrion_client, tyrion_client_path)
 
     # Install node
     CreateDirectory(sbindir)
-    Remove(os.path.join(sbindir, tyrion_node))
-    Copy(tyrion_node, sbindir)
+    tyrion_node_path = os.path.join(sbindir, tyrion_node)
+    Remove(tyrion_node_path)
+    Copy(tyrion_node, tyrion_node_path)
