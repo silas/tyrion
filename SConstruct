@@ -75,6 +75,12 @@ AddOption(
     action='store_true',
 )
 
+AddOption(
+    '--with-devel',
+    dest='devel',
+    action='store_true',
+)
+
 #
 # Helper functions
 #
@@ -207,7 +213,7 @@ if 'POSIX' in defines:
     flags += ' -pthread'
     libraries += ['pthread']
 
-if os.environ.get('NO_OPTIMIZATION') != '1':
+if not GetOption('devel'):
     flags += ' -O2'
 
 if GetOption('flags'):
