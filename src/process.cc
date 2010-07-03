@@ -32,7 +32,7 @@
 #include "utils.h"
 
 #define PROCESS_BUFFER 1024
-#define PROCESS_BUFFER_SLEEP 10000
+#define PROCESS_BUFFER_SLEEP 1
 #define PROCESS_ISSUE_COMMAND "false"
 
 namespace tyrion {
@@ -123,17 +123,28 @@ void Process::Run() {
 }
 
 std::string Process::Read(ProcessType type) {
-  char input[PROCESS_BUFFER];
-  int rc = read(outfd[type][0], input, PROCESS_BUFFER-1);
+  fd_set rfds;
+  struct timeval tv;
+  int retval;
 
-  // TODO(silas): use select
-  if (rc == 0) {
-    outfdeof[type] = true;
-  } else if (rc == -1) {
-    usleep(PROCESS_BUFFER_SLEEP);
-  } else {
-    input[rc] = 0;
-    return std::string(input);
+  tv.tv_sec = PROCESS_BUFFER_SLEEP;
+  tv.tv_usec = 0;
+
+  FD_ZERO(&rfds);
+  FD_SET(outfd[type][0], &rfds);
+
+  retval = select(outfd[type][0] + 1, &rfds, NULL, NULL, &tv);
+
+  if (retval) {
+    char input[PROCESS_BUFFER];
+    int rc = read(outfd[type][0], input, PROCESS_BUFFER-1);
+
+    if (rc == 0) {
+      outfdeof[type] = true;
+    } else {
+      input[rc] = 0;
+      return std::string(input);
+    }
   }
 
   return "";
