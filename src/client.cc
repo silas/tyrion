@@ -89,5 +89,5 @@ int main(int argc, char* argv[]) {
   }
 
   delete loop;
-  tyrion::ClientExit(0);
+  tyrion::ClientExit(code);
 }

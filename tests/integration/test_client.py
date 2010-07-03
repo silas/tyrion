@@ -15,7 +15,7 @@ class TestClient(Base, shared.ServiceTests, unittest.TestCase):
         if destination is None:
             destination = self.config.get('general', 'destination')
         command = os.path.join(self.path, 'tyrion')
-        command += ' -c %s' % os.path.join(self.path, 'client.conf')
+        command += ' -c %s' % os.path.join(self.path, 'config', 'client.conf')
         command += ' -j %s' % destination
         command += ' -s %s' % service
         command += ' -t %s' % timeout
@@ -30,9 +30,9 @@ class TestClient(Base, shared.ServiceTests, unittest.TestCase):
             stdin=input,
         )
         if error is not None:
-            self.assertEqual(command.stderr.rstrip(), error)
+            self.assertEqual(command.error.rstrip(), error)
         if output is not None:
-            self.assertEqual(command.stdout.rstrip(), output)
+            self.assertEqual(command.output.rstrip(), output)
         if code is not None:
             self.assertEqual(command.code, code)
         if callable(callback):

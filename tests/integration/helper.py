@@ -24,6 +24,10 @@ class Response(object):
 class Execute(object):
 
     def __init__(self, command, stdin=''):
+        self.code = '-1'
+        self.error = ''
+        self.output = ''
+
         reference = subprocess.Popen(
             command,
             stdin=subprocess.PIPE,
@@ -32,8 +36,29 @@ class Execute(object):
             shell=True,
             close_fds=True
         )
+
         self.stdout, self.stderr = reference.communicate(input=stdin)
-        self.code = str(reference.returncode)
+        self.return_code = str(reference.returncode)
+
+        self.parse()
+
+    def parse(self):
+        self.code = self.parse_code(self.stdout, self.code)
+        self.code = self.parse_code(self.stderr, self.code)
+        self.output = self.parse_text(self.stdout)
+        self.error = self.parse_text(self.error)
+
+    def parse_code(self, text, default):
+        if int(default) < 0 and ' (' in text and '):' in text:
+            return text.split(' (', 1)[1].split('):', 1)[0]
+        else:
+            return default
+
+    def parse_text(self, text, default=''):
+        if '):' in text:
+            return text.split('): ', 1)[1]
+        else:
+            return default
 
 class log(object):
 

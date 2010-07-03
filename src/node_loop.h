@@ -51,6 +51,7 @@ class NodeLoop : public BaseLoop {
     void DoResponse(ServiceData* service);
 
     static NodeLoop* instance_;
+    int track_;
 };
 
 }  // namespace tyrion

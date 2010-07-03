@@ -31,6 +31,7 @@
 namespace tyrion {
 
 NodeLoop::NodeLoop() : BaseLoop() {
+  track_ = 0;
 }
 
 NodeLoop* NodeLoop::instance_ = NULL;
@@ -51,9 +52,16 @@ void NodeLoop::DoReload() {
 }
 
 void NodeLoop::DoRequest(ServiceData* service) {
-  NodeServiceHandler *sh = new NodeServiceHandler(service->data());
-  CreateThread(NodeLoop::DoRequestInThread, (void *)sh);
-  delete service;
+  if (track_ <= 10) {
+    track_++;
+    service->data()->set_retry(0);
+    NodeServiceHandler *sh = new NodeServiceHandler(service->data());
+    CreateThread(NodeLoop::DoRequestInThread, (void *)sh);
+    delete service;
+  } else {
+    int retry = service->data()->Retry();
+    PostDelayed(retry * 2000, this, MSG_REQUEST, service);
+  }
 }
 
 void *NodeLoop::DoRequestInThread(void *arg) {
@@ -67,6 +75,7 @@ void NodeLoop::DoResponse(ServiceData* service) {
   if (state_ == RUNNING && pump_ != NULL &&
       pump_->client() != NULL &&
       pump_->client()->GetState() == txmpp::XmppEngine::STATE_OPEN) {
+    track_--;
     const txmpp::XmlElement* iq = service->data()->Response();
     pump_->SendStanza(iq);
     delete iq;
