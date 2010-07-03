@@ -73,6 +73,9 @@ class Envelope {
     inline int code() { return code_; }
     inline void set_code(int code) { code_ = code; }
 
+    inline int retry() { return retry_; }
+    inline void set_retry(int retry) { retry_ = retry; }
+
   protected:
     txmpp::Jid jid_;
     std::string id_;
