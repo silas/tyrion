@@ -60,7 +60,7 @@ void NodeLoop::DoRequest(ServiceData* service) {
     delete service;
   } else {
     int retry = service->data()->Retry();
-    PostDelayed(retry * 1000, this, MSG_REQUEST, service);
+    PostDelayed(retry * 2000, this, MSG_REQUEST, service);
   }
 }
 
