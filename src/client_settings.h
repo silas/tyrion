@@ -51,9 +51,9 @@ class ClientSettings : public Settings<ClientSettings> {
                     << "is required (node@domain/resource).";
         return false;
       }
-      if (jid.resource().empty()) {
+      if (!jid.resource().empty()) {
         TLOG(ERROR) << "The resource portion of the 'jid' in the 'xmpp' "
-                    << "section is required (node@domain/resource).";
+                    << "section must not exist (node@domain/resource).";
         return false;
       }
 
