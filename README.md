@@ -6,12 +6,12 @@ Tyrion
 ### Requirements
 
 * [txmpp](http://github.com/silas/txmpp)
-* [scons](http://www.scons.org/) (build)
+* [SCons](http://www.scons.org/) (build)
 
 ### Test Requirements
 
-* [gtest](http://code.google.com/p/googletest/) (unit)
-* [twisted](http://twistedmatrix.com/) (integration)
+* [Google Test](http://code.google.com/p/googletest/) (unit)
+* [Twisted](http://twistedmatrix.com/) (integration)
 
 ### License
 
