@@ -5,7 +5,7 @@ Tyrion
 
 ### Requirements
 
-* [txmpp](http://github.com/silas/txmpp)
+* [txmpp](http://github.com/tidg/txmpp)
 * [SCons](http://www.scons.org/) (build)
 
 ### Test Requirements
