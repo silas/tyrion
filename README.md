@@ -1,7 +1,7 @@
 Tyrion
 ======
 
-[Tyrion](http://www.tyrion.org) is a framework for systems automation.
+[Tyrion](http://www.tidg.org/tyrion) is a framework for systems automation.
 
 ### Requirements
 
