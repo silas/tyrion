@@ -8,6 +8,7 @@
 #include <csignal>
 #include <pthread.h>
 #include "node_loop.h"
+#include "node_service_handler.h"
 #include "node_settings.h"
 #include "node_utils.h"
 #ifdef _DEBUG
@@ -34,8 +35,12 @@ int main(int argc, char* argv[]) {
   tyrion::Logging::Instance()->Debug(tyrion::Logging::INFO);
   tyrion::NodeSetup(argc, argv);
 
+  tyrion::NodeServiceHandler* service_handler =
+      new tyrion::NodeServiceHandler();
+
   tyrion::NodeLoop* loop = tyrion::NodeLoop::Instance();
   loop->set_pthread(pthread_self());
+  loop->set_service_handler(service_handler);
   loop->Start();
   loop->Login();
 
@@ -58,6 +63,7 @@ int main(int argc, char* argv[]) {
     }
   }
 
+  delete service_handler;
   delete loop;
   tyrion::NodeExit(code);
 }

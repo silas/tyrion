@@ -35,8 +35,7 @@ void NodeLoop::DoRequest(ServiceData* service) {
   if (track_ <= 10) {
     track_++;
     service->data()->set_retry(0);
-    //NodeServiceHandler *sh = new NodeServiceHandler(service->data());
-    //CreateThread(NodeLoop::DoRequestInThread, (void *)sh);
+    service_handler_->Request(service->data());
     delete service;
   } else {
     int retry = service->data()->Retry();

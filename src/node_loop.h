@@ -10,6 +10,7 @@
 
 #include "loop.h"
 #include "node_envelope.h"
+#include "node_service_handler.h"
 #include "node_settings.h"
 #include "node_xmpp_pump.h"
 
@@ -21,6 +22,11 @@ class NodeLoop : public BaseLoop {
   public:
     static NodeLoop* Instance();
 
+    inline NodeServiceHandler* service_handler() { return service_handler_; }
+    inline void set_service_handler(NodeServiceHandler* service_handler) {
+      service_handler_ = service_handler;
+    };
+
   protected:
     NodeLoop();
 
@@ -30,6 +36,7 @@ class NodeLoop : public BaseLoop {
 
     static NodeLoop* instance_;
     int track_;
+    NodeServiceHandler* service_handler_;
 };
 
 }  // namespace tyrion

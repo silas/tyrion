@@ -26,23 +26,25 @@ namespace tyrion {
 class NodeServiceHandler : public txmpp::MessageHandler, public txmpp::TaskRunner, public txmpp::MessageQueue {
   public:
     enum Message {
-      MSG_NEW = 1,
+      MSG_REQUEST = 1,
       MSG_POLL,
-      MSG_DONE
+      MSG_RESPONSE
     };
     typedef MessageDataType<NodeEnvelope> ServiceData;
     typedef std::vector<NodeEnvelope*> ServiceList;
 
     NodeServiceHandler();
 
+    void Request(NodeEnvelope* envelope);
+
     void WakeTasks();
     void OnMessage(txmpp::Message *pmsg);
     int64 CurrentTime();
 
   private:
-    void DoNew(ServiceData* data);
+    void DoRequest(ServiceData* data);
+    void DoResponse(ServiceData* data);
     void DoPoll();
-    void DoDone(ServiceData* data);
     fd_set rfds_;
     int highest_fd_;
     ServiceList list_;

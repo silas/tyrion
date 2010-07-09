@@ -8,6 +8,7 @@
 #include "node_service_handler.h"
 
 #include <txmpp/logging.h>
+#include "node_loop.h"
 
 #define PROCESS_BUFFER 1024
 
@@ -18,11 +19,15 @@ NodeServiceHandler::NodeServiceHandler() {
   highest_fd_ = 0;
 }
 
+void NodeServiceHandler::Request(NodeEnvelope* envelope) {
+  Post(this, MSG_RESPONSE, new ServiceData(envelope));
+}
+
 void NodeServiceHandler::WakeTasks() {
   txmpp::Thread::Current()->Post(this);
 }
 
-void NodeServiceHandler::DoNew(ServiceData* service) {
+void NodeServiceHandler::DoRequest(ServiceData* service) {
   NodeEnvelope* envelope = service->data();
 
   FD_SET(envelope->process()->outfd[NodeProcess::Stdout][0], &rfds_);
@@ -31,7 +36,7 @@ void NodeServiceHandler::DoNew(ServiceData* service) {
   list_.push_back(envelope);
 }
 
-void NodeServiceHandler::DoDone(ServiceData* service) {
+void NodeServiceHandler::DoResponse(ServiceData* service) {
   NodeEnvelope* envelope = service->data();
 
   FD_CLR(envelope->process()->outfd[NodeProcess::Stdout][0], &rfds_);
@@ -60,7 +65,7 @@ void NodeServiceHandler::DoDone(ServiceData* service) {
 
   envelope->set_code(envelope->process()->Close());
 
-  // send finished process
+  NodeLoop::Instance()->Response(envelope);
 }
 
 void NodeServiceHandler::DoPoll() {
@@ -123,9 +128,13 @@ void NodeServiceHandler::DoPoll() {
 
 void NodeServiceHandler::OnMessage(txmpp::Message *pmsg) {
   switch (pmsg->message_id) {
-    case MSG_NEW:
+    case MSG_REQUEST:
       assert(pmsg->pdata);
-      DoNew(reinterpret_cast<ServiceData*>(pmsg->pdata));
+      DoRequest(reinterpret_cast<ServiceData*>(pmsg->pdata));
+      break;
+    case MSG_RESPONSE:
+      assert(pmsg->pdata);
+      DoResponse(reinterpret_cast<ServiceData*>(pmsg->pdata));
       break;
     case MSG_POLL:
       DoPoll();
