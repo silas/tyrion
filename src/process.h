@@ -29,26 +29,33 @@ class Process {
     Process(std::string command, bool system = false, int timeout = 30);
     ~Process();
 
-    void Run();
-    std::string Read(ProcessType type = Stdout);
-    std::string ReadAll(ProcessType type = Stdout);
-    void Write(std::string text);
+    void Init();
+    void Write(std::string text, bool eof = true);
+    void Update(std::string text, ProcessType type);
 
-    bool Empty(ProcessType type = Stdout);
+    bool Done();
     bool TimedOut();
-    void Eof();
-    int Close();
+    void Close();
+
+    std::string output() { return output_; }
+    void set_output(std::string& output) { output_ = output; }
+
+    std::string error() { return error_; }
+    void set_error(std::string& error) { error_ = error; }
 
     void set_timeout(int timeout) { timeout_ = timeout; }
     bool set_user(std::string user, bool set_group = true);
     bool set_group(std::string group);
 
-  private:
     // pipes
     int infd[2];
     int outfd[2][2];
     bool outfdeof[2];
     int statefd[2];
+
+  private:
+    std::string output_;
+    std::string error_;
     // pid
     pid_t pid_;
     // options

@@ -26,9 +26,6 @@ Process::Process(std::string command, bool system, int timeout) {
   pipe(outfd[0]);
   pipe(outfd[1]);
 
-  fcntl(outfd[0][0], F_SETFL, O_NONBLOCK);
-  fcntl(outfd[1][0], F_SETFL, O_NONBLOCK);
-
   outfdeof[0] = false;
   outfdeof[1] = false;
 
@@ -44,7 +41,7 @@ Process::~Process() {
   close(outfd[1][0]);
 }
 
-void Process::Run() {
+void Process::Init() {
   pid_ = fork();
 
   time(&start_time);
@@ -102,58 +99,24 @@ void Process::Run() {
   }
 }
 
-std::string Process::Read(ProcessType type) {
-  fd_set rfds;
-  struct timeval tv;
-  int retval;
-
-  tv.tv_sec = PROCESS_BUFFER_SLEEP;
-  tv.tv_usec = 0;
-
-  FD_ZERO(&rfds);
-  FD_SET(outfd[type][0], &rfds);
-
-  retval = select(outfd[type][0] + 1, &rfds, NULL, NULL, &tv);
-
-  if (retval) {
-    char input[PROCESS_BUFFER];
-    int rc = read(outfd[type][0], input, PROCESS_BUFFER-1);
-
-    if (rc == 0) {
-      outfdeof[type] = true;
-    } else {
-      input[rc] = 0;
-      return std::string(input);
-    }
-  }
-
-  return "";
-}
-
-std::string Process::ReadAll(ProcessType type) {
-  std::string data;
-  std::string buffer;
-
-  while(!Empty(type)) {
-    buffer = Read(type);
-
-    if (!buffer.empty())
-      data += buffer;
-
-    if (TimedOut())
-      break;
-  }
-
-  return data;
-}
-
-void Process::Write(std::string text) {
+void Process::Write(std::string text, bool eof) {
   if (!text.empty())
     write(infd[1], text.c_str(), text.length());
+
+  if (eof)
+    close(infd[1]);
 }
 
-bool Process::Empty(ProcessType type) {
-  return outfdeof[type];
+void Process::Update(std::string text, ProcessType type) {
+  if (type == Stdout) {
+    output_ += text;
+  } else {
+    error_ += text;
+  }
+}
+
+bool Process::Done() {
+  return (outfdeof[Stdout] && outfdeof[Stderr]) || TimedOut();
 }
 
 bool Process::TimedOut() {
@@ -167,11 +130,7 @@ bool Process::TimedOut() {
   return timed_out_;
 }
 
-void Process::Eof() {
-  close(infd[1]);
-}
-
-int Process::Close() {
+void Process::Close() {
   int state = -1;
   int rc = 0;
 
@@ -183,7 +142,8 @@ int Process::Close() {
   }
 
   if (rc > 0) {
-    return WEXITSTATUS(state);
+    code_ = WEXITSTATUS(state);
+    return;
   } else {
     kill(pid_, SIGTERM);
   }
@@ -194,12 +154,13 @@ int Process::Close() {
   }
 
   if (rc > 0) {
-    return 15;
+    code_ = 15;
+    return;
   } else {
     kill(pid_, SIGKILL);
   }
 
-  return 137;
+  code_ = 137;
 }
 
 bool Process::set_user(std::string name, bool set_group) {
