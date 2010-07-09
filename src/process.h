@@ -17,6 +17,8 @@
 #include <unistd.h>
 #include <iostream>
 
+#include "constants.h"
+
 namespace tyrion {
 
 class Process {

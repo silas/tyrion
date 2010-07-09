@@ -16,47 +16,47 @@ ProcessManager::ProcessManager() {
   highest_fd_ = 0;
 }
 
-ProcessManager::~ProcessManager() {
-}
-
 void ProcessManager::WakeTasks() {
   txmpp::Thread::Current()->Post(this);
 }
 
-void ProcessManager::DoNew(ProcessData* process_data) {
-  Process* process = process_data->data();
+void ProcessManager::DoNew(ServiceData* service) {
+  NodeEnvelope* envelope = service->data();
 
-  FD_SET(process->outfd[Process::Stdout][0], &rfds_);
-  FD_SET(process->outfd[Process::Stderr][0], &rfds_);
+  FD_SET(envelope->process()->outfd[Process::Stdout][0], &rfds_);
+  FD_SET(envelope->process()->outfd[Process::Stderr][0], &rfds_);
 
-  list_.push_back(process);
+  list_.push_back(envelope);
 }
 
-void ProcessManager::DoDone(ProcessData* process_data) {
-  Process* process = process_data->data();
+void ProcessManager::DoDone(ServiceData* service) {
+  NodeEnvelope* envelope = service->data();
 
-  FD_CLR(process->outfd[Process::Stdout][0], &rfds_);
-  FD_CLR(process->outfd[Process::Stderr][0], &rfds_);
+  FD_CLR(envelope->process()->outfd[Process::Stdout][0], &rfds_);
+  FD_CLR(envelope->process()->outfd[Process::Stderr][0], &rfds_);
 
-  ProcessList::iterator remove;
+  size_t remove = 0;
   int highest_fd = 0;
 
-  for(ProcessList::iterator it = list_->begin(); it != list_->end(); ++it) {
-    if (*it == process) {
-      remove = it;
+  NodeEnvelope* e;
+  for(size_t x = 0; x < list_.size(); x++) {
+    e = list_[x];
+    if (e == envelope) {
+      remove = x;
     } else {
       // Get highest fd that are not the two we're removing
-      if (*it->outfd[Process::Stdout][0] => highest_fd)
-        highest_fd = *it->outfd[Process::Stdout][0];
-      if (*it->outfd[Process::Stderr][0] => highest_fd)
-        highest_fd = *it->outfd[Process::Stderr][0];
+      if (e->process()->outfd[Process::Stdout][0] >= highest_fd)
+        highest_fd = e->process()->outfd[Process::Stdout][0];
+      if (e->process()->outfd[Process::Stderr][0] >= highest_fd)
+        highest_fd = e->process()->outfd[Process::Stderr][0];
     }
   }
 
   highest_fd_ = highest_fd;
-  list_.erase(remove);
+  if (remove > 0)
+    list_.erase(list_.begin() + remove);
 
-  process->Close();
+  envelope->process()->Close();
 
   // send finished process
 }
@@ -70,8 +70,8 @@ void ProcessManager::DoPoll() {
   tv.tv_usec = 0;
 
   fd_set rfds;
-  FD_ZERO(&fdset);
-  FD_COPY(rfds_, rfds);
+  FD_ZERO(&rfds);
+  FD_COPY(&rfds_, &rfds);
 
   int sr = select(highest_fd_ + 1, &rfds, NULL, NULL, &tv);
 
@@ -87,25 +87,27 @@ void ProcessManager::DoPoll() {
     return;
   }
 
-  for (ProcessList::iterator it = list_->begin(); it != list_->end(); ++it) {
+  NodeEnvelope* e;
+  for(size_t x = 0; x < list_.size(); x++) {
+    e = list_[x];
     // check both stdout and stderr
     for (int i = Process::Stdout; i <= Process::Stderr; i++) {
       // check if ready for reading
-      if (FD_ISSET(*it->outfd[i][0], &rfds)) {
-        char input[PROCESS_BUFFER];
-        int rc = read(*it->outfd[i][0], input, PROCESS_BUFFER-1);
+      if (FD_ISSET(e->process()->outfd[i][0], &rfds)) {
+        char input[1024];
+        int rc = read(e->process()->outfd[i][0], input, 1023);
 
         if (rc == 0) {
           // got eof for this fd
-          *it->outfdeof[i] = true;
+          e->process()->outfdeof[i] = true;
         } else {
           // update output/error in process
           input[rc] = 0;
-          *it->Update(input, i);
+          e->process()->Update(input, (Process::ProcessType)i);
         }
       }
     }
-    if (*it->Done()) {
+    if (e->process()->Done()) {
       // send done message
     }
   }
@@ -117,7 +119,7 @@ void ProcessManager::OnMessage(txmpp::Message *pmsg) {
   switch (pmsg->message_id) {
     case MSG_NEW:
       assert(pmsg->pdata);
-      DoNew(reinterpret_cast<ProcessData*>(pmsg->pdata));
+      DoNew(reinterpret_cast<ServiceData*>(pmsg->pdata));
       break;
     case MSG_POLL:
       DoPoll();

@@ -10,7 +10,6 @@
 
 #include "loop.h"
 #include "node_envelope.h"
-#include "node_service_handler.h"
 #include "node_settings.h"
 #include "node_xmpp_pump.h"
 
@@ -27,7 +26,6 @@ class NodeLoop : public BaseLoop {
 
     void DoReload();
     void DoRequest(ServiceData* service);
-    static void *DoRequestInThread(void *arg);
     void DoResponse(ServiceData* service);
 
     static NodeLoop* instance_;

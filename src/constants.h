@@ -37,8 +37,11 @@ extern const std::string STR_SERVICE_PATH;
 extern const std::string STR_XMPP;
 
 extern const int XMPP_PORT;
-extern const int PROCESS_TIMEOUT;
 extern const int MAX_RECONNECT_TIMEOUT;
+
+extern const int PROCESS_TIMEOUT;
+extern const int PROCESS_BUFFER_SLEEP;
+extern const std::string PROCESS_ISSUE_COMMAND;
 
 }  // namespace tyrion
 

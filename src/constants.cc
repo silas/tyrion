@@ -35,7 +35,10 @@ const std::string STR_SERVICE_PATH = "service_path";
 const std::string STR_XMPP = "xmpp";
 
 const int XMPP_PORT = 5222;
-const int PROCESS_TIMEOUT = 300; // secoonds
 const int MAX_RECONNECT_TIMEOUT = 256; // seconds
+
+const int PROCESS_TIMEOUT = 300; // secoonds
+const int PROCESS_BUFFER_SLEEP = 1; // seconds
+const std::string PROCESS_ISSUE_COMMAND = "false";
 
 }  // namespace tyrion

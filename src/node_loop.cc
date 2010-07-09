@@ -35,20 +35,13 @@ void NodeLoop::DoRequest(ServiceData* service) {
   if (track_ <= 10) {
     track_++;
     service->data()->set_retry(0);
-    NodeServiceHandler *sh = new NodeServiceHandler(service->data());
-    CreateThread(NodeLoop::DoRequestInThread, (void *)sh);
+    //NodeServiceHandler *sh = new NodeServiceHandler(service->data());
+    //CreateThread(NodeLoop::DoRequestInThread, (void *)sh);
     delete service;
   } else {
     int retry = service->data()->Retry();
     PostDelayed(retry * 2000, this, MSG_REQUEST, service);
   }
-}
-
-void *NodeLoop::DoRequestInThread(void *arg) {
-  NodeServiceHandler *handler=(NodeServiceHandler*)arg;
-  handler->Run();
-  delete handler;
-  pthread_exit(NULL);
 }
 
 void NodeLoop::DoResponse(ServiceData* service) {

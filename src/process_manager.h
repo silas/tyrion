@@ -9,24 +9,29 @@
 #define _PROCESS_MANAGER_H_
 
 #include <sys/select.h>
+#include <vector>
+
 #include <txmpp/messagequeue.h>
 #include <txmpp/taskrunner.h>
 #include <txmpp/thread.h>
 #include <txmpp/time.h>
 
+#include "constants.h"
 #include "loop.h"
+#include "process.h"
+#include "node_envelope.h"
 
 namespace tyrion {
 
-class ProcessManager : public txmpp::MessageHandler, public txmpp::TaskRunner {
+class ProcessManager : public txmpp::MessageHandler, public txmpp::TaskRunner, public txmpp::MessageQueue {
   public:
     enum Message {
       MSG_NEW = 1,
       MSG_POLL,
-      MSG_DONE,
+      MSG_DONE
     };
-    typedef MessageDataType<Int> ProcessData;
-    typedef std::vector<Process*> ProcessList;
+    typedef MessageDataType<NodeEnvelope> ServiceData;
+    typedef std::vector<NodeEnvelope*> ServiceList;
 
     ProcessManager();
 
@@ -37,10 +42,10 @@ class ProcessManager : public txmpp::MessageHandler, public txmpp::TaskRunner {
   private:
     void DoNew(ServiceData* data);
     void DoPoll();
-    void DoDone();
+    void DoDone(ServiceData* data);
     fd_set rfds_;
     int highest_fd_;
-    ProcessList list_;
+    ServiceList list_;
 };
 
 }  // namespace tyrion

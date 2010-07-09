@@ -11,10 +11,6 @@
 #include <sys/wait.h>
 #include "utils.h"
 
-#define PROCESS_BUFFER 1024
-#define PROCESS_BUFFER_SLEEP 1
-#define PROCESS_ISSUE_COMMAND "false"
-
 namespace tyrion {
 
 Process::Process(std::string command, bool system, int timeout) {
@@ -83,7 +79,7 @@ void Process::Init() {
     }
 
     if (issue) {
-      execlp(PROCESS_ISSUE_COMMAND, PROCESS_ISSUE_COMMAND, NULL);
+      execlp(PROCESS_ISSUE_COMMAND.c_str(), PROCESS_ISSUE_COMMAND.c_str(), NULL);
     } else if (system_) {
       int code = system(command_.c_str());
       exit(WEXITSTATUS(code));
