@@ -5,7 +5,7 @@
  * This file is subject to the New BSD License (see the LICENSE file).
  */
 
-#include "process.h"
+#include "node_process.h"
 
 #include <cstdlib>
 #include <sys/wait.h>
@@ -13,7 +13,7 @@
 
 namespace tyrion {
 
-Process::Process(std::string command, bool system, int timeout) {
+NodeProcess::NodeProcess(std::string command, bool system, int timeout) {
   command_ = command;
   system_ = system;
   timed_out_ = false;
@@ -31,13 +31,13 @@ Process::Process(std::string command, bool system, int timeout) {
   gid_ = getgid();
 }
 
-Process::~Process() {
+NodeProcess::~NodeProcess() {
   close(infd[1]);
   close(outfd[0][0]);
   close(outfd[1][0]);
 }
 
-void Process::Init() {
+void NodeProcess::Init() {
   pid_ = fork();
 
   time(&start_time);
@@ -95,7 +95,7 @@ void Process::Init() {
   }
 }
 
-void Process::Write(std::string text, bool eof) {
+void NodeProcess::Write(std::string text, bool eof) {
   if (!text.empty())
     write(infd[1], text.c_str(), text.length());
 
@@ -103,7 +103,7 @@ void Process::Write(std::string text, bool eof) {
     close(infd[1]);
 }
 
-void Process::Update(std::string text, ProcessType type) {
+void NodeProcess::Update(std::string text, Type type) {
   if (type == Stdout) {
     output_ += text;
   } else {
@@ -111,11 +111,11 @@ void Process::Update(std::string text, ProcessType type) {
   }
 }
 
-bool Process::Done() {
+bool NodeProcess::Done() {
   return (outfdeof[Stdout] && outfdeof[Stderr]) || TimedOut();
 }
 
-bool Process::TimedOut() {
+bool NodeProcess::TimedOut() {
   if (timed_out_)
     return true;
 
@@ -126,7 +126,7 @@ bool Process::TimedOut() {
   return timed_out_;
 }
 
-void Process::Close() {
+void NodeProcess::Close() {
   int state = -1;
   int rc = 0;
 
@@ -159,7 +159,7 @@ void Process::Close() {
   code_ = 137;
 }
 
-bool Process::set_user(std::string name, bool set_group) {
+bool NodeProcess::set_user(std::string name, bool set_group) {
   struct passwd* pw = getpwnam(name.c_str());
 
   if (pw) {
@@ -174,7 +174,7 @@ bool Process::set_user(std::string name, bool set_group) {
   return false;
 }
 
-bool Process::set_group(std::string name) {
+bool NodeProcess::set_group(std::string name) {
   struct group* gr = getgrnam(name.c_str());
 
   if (gr) {

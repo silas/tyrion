@@ -5,35 +5,35 @@
  * This file is subject to the New BSD License (see the LICENSE file).
  */
 
-#include "process_manager.h"
+#include "node_service_handler.h"
 
 #include <txmpp/logging.h>
 
 namespace tyrion {
 
-ProcessManager::ProcessManager() {
+NodeServiceHandler::NodeServiceHandler() {
   FD_ZERO(&rfds_);
   highest_fd_ = 0;
 }
 
-void ProcessManager::WakeTasks() {
+void NodeServiceHandler::WakeTasks() {
   txmpp::Thread::Current()->Post(this);
 }
 
-void ProcessManager::DoNew(ServiceData* service) {
+void NodeServiceHandler::DoNew(ServiceData* service) {
   NodeEnvelope* envelope = service->data();
 
-  FD_SET(envelope->process()->outfd[Process::Stdout][0], &rfds_);
-  FD_SET(envelope->process()->outfd[Process::Stderr][0], &rfds_);
+  FD_SET(envelope->process()->outfd[NodeProcess::Stdout][0], &rfds_);
+  FD_SET(envelope->process()->outfd[NodeProcess::Stderr][0], &rfds_);
 
   list_.push_back(envelope);
 }
 
-void ProcessManager::DoDone(ServiceData* service) {
+void NodeServiceHandler::DoDone(ServiceData* service) {
   NodeEnvelope* envelope = service->data();
 
-  FD_CLR(envelope->process()->outfd[Process::Stdout][0], &rfds_);
-  FD_CLR(envelope->process()->outfd[Process::Stderr][0], &rfds_);
+  FD_CLR(envelope->process()->outfd[NodeProcess::Stdout][0], &rfds_);
+  FD_CLR(envelope->process()->outfd[NodeProcess::Stderr][0], &rfds_);
 
   size_t remove = 0;
   int highest_fd = 0;
@@ -45,10 +45,10 @@ void ProcessManager::DoDone(ServiceData* service) {
       remove = x;
     } else {
       // Get highest fd that are not the two we're removing
-      if (e->process()->outfd[Process::Stdout][0] >= highest_fd)
-        highest_fd = e->process()->outfd[Process::Stdout][0];
-      if (e->process()->outfd[Process::Stderr][0] >= highest_fd)
-        highest_fd = e->process()->outfd[Process::Stderr][0];
+      if (e->process()->outfd[NodeProcess::Stdout][0] >= highest_fd)
+        highest_fd = e->process()->outfd[NodeProcess::Stdout][0];
+      if (e->process()->outfd[NodeProcess::Stderr][0] >= highest_fd)
+        highest_fd = e->process()->outfd[NodeProcess::Stderr][0];
     }
   }
 
@@ -61,7 +61,7 @@ void ProcessManager::DoDone(ServiceData* service) {
   // send finished process
 }
 
-void ProcessManager::DoPoll() {
+void NodeServiceHandler::DoPoll() {
   if (list_.empty())
     return;
 
@@ -91,7 +91,7 @@ void ProcessManager::DoPoll() {
   for(size_t x = 0; x < list_.size(); x++) {
     e = list_[x];
     // check both stdout and stderr
-    for (int i = Process::Stdout; i <= Process::Stderr; i++) {
+    for (int i = NodeProcess::Stdout; i <= NodeProcess::Stderr; i++) {
       // check if ready for reading
       if (FD_ISSET(e->process()->outfd[i][0], &rfds)) {
         char input[1024];
@@ -103,7 +103,7 @@ void ProcessManager::DoPoll() {
         } else {
           // update output/error in process
           input[rc] = 0;
-          e->process()->Update(input, (Process::ProcessType)i);
+          e->process()->Update(input, (NodeProcess::Type)i);
         }
       }
     }
@@ -115,7 +115,7 @@ void ProcessManager::DoPoll() {
   PostDelayed(500, this, MSG_POLL);
 }
 
-void ProcessManager::OnMessage(txmpp::Message *pmsg) {
+void NodeServiceHandler::OnMessage(txmpp::Message *pmsg) {
   switch (pmsg->message_id) {
     case MSG_NEW:
       assert(pmsg->pdata);
@@ -129,7 +129,7 @@ void ProcessManager::OnMessage(txmpp::Message *pmsg) {
   }
 }
 
-int64 ProcessManager::CurrentTime() {
+int64 NodeServiceHandler::CurrentTime() {
   return (int64)txmpp::Time();
 }
 

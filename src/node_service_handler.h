@@ -18,12 +18,12 @@
 
 #include "constants.h"
 #include "loop.h"
-#include "process.h"
 #include "node_envelope.h"
+#include "node_process.h"
 
 namespace tyrion {
 
-class ProcessManager : public txmpp::MessageHandler, public txmpp::TaskRunner, public txmpp::MessageQueue {
+class NodeServiceHandler : public txmpp::MessageHandler, public txmpp::TaskRunner, public txmpp::MessageQueue {
   public:
     enum Message {
       MSG_NEW = 1,
@@ -33,7 +33,7 @@ class ProcessManager : public txmpp::MessageHandler, public txmpp::TaskRunner, p
     typedef MessageDataType<NodeEnvelope> ServiceData;
     typedef std::vector<NodeEnvelope*> ServiceList;
 
-    ProcessManager();
+    NodeServiceHandler();
 
     void WakeTasks();
     void OnMessage(txmpp::Message *pmsg);

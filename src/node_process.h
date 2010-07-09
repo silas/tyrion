@@ -21,19 +21,19 @@
 
 namespace tyrion {
 
-class Process {
+class NodeProcess {
   public:
-    enum ProcessType {
+    enum Type {
       Stdout,
       Stderr
     };
 
-    Process(std::string command, bool system = false, int timeout = 30);
-    ~Process();
+    NodeProcess(std::string command, bool system = false, int timeout = 30);
+    ~NodeProcess();
 
     void Init();
     void Write(std::string text, bool eof = true);
-    void Update(std::string text, ProcessType type);
+    void Update(std::string text, Type type);
 
     bool Done();
     bool TimedOut();

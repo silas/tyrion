@@ -9,7 +9,7 @@
 #define _TYRION_NODE_ENVELOPE_H_
 
 #include "envelope.h"
-#include "process.h"
+#include "node_process.h"
 
 namespace tyrion {
 
@@ -23,13 +23,13 @@ class NodeEnvelope : public Envelope {
     bool Check();
     std::string Path();
 
-    Process* process() { return process_; }
-    void set_process(Process* process) { process_ = process; }
+    NodeProcess* process() { return process_; }
+    void set_process(NodeProcess* process) { process_ = process; }
 
     const txmpp::XmlElement* Response();
 
   private:
-    Process* process_;
+    NodeProcess* process_;
 };
 
 }  // tyrion
