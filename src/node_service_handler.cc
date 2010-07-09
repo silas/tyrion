@@ -9,6 +9,8 @@
 
 #include <txmpp/logging.h>
 
+#define PROCESS_BUFFER 1024
+
 namespace tyrion {
 
 NodeServiceHandler::NodeServiceHandler() {
@@ -56,7 +58,7 @@ void NodeServiceHandler::DoDone(ServiceData* service) {
   if (remove > 0)
     list_.erase(list_.begin() + remove);
 
-  envelope->process()->Close();
+  envelope->set_code(envelope->process()->Close());
 
   // send finished process
 }
@@ -94,8 +96,8 @@ void NodeServiceHandler::DoPoll() {
     for (int i = NodeProcess::Stdout; i <= NodeProcess::Stderr; i++) {
       // check if ready for reading
       if (FD_ISSET(e->process()->outfd[i][0], &rfds)) {
-        char input[1024];
-        int rc = read(e->process()->outfd[i][0], input, 1023);
+        char input[PROCESS_BUFFER];
+        int rc = read(e->process()->outfd[i][0], input, PROCESS_BUFFER-1);
 
         if (rc == 0) {
           // got eof for this fd
@@ -103,7 +105,11 @@ void NodeServiceHandler::DoPoll() {
         } else {
           // update output/error in process
           input[rc] = 0;
-          e->process()->Update(input, (NodeProcess::Type)i);
+          if (NodeProcess::Stdout == i) {
+            e->set_output(e->output() + input);
+          } else {
+            e->set_error(e->error() + input);
+          }
         }
       }
     }

@@ -37,13 +37,7 @@ class NodeProcess {
 
     bool Done();
     bool TimedOut();
-    void Close();
-
-    std::string output() { return output_; }
-    void set_output(std::string& output) { output_ = output; }
-
-    std::string error() { return error_; }
-    void set_error(std::string& error) { error_ = error; }
+    int Close();
 
     void set_timeout(int timeout) { timeout_ = timeout; }
     bool set_user(std::string user, bool set_group = true);
@@ -56,8 +50,6 @@ class NodeProcess {
     int statefd[2];
 
   private:
-    std::string output_;
-    std::string error_;
     // pid
     pid_t pid_;
     // options
@@ -67,8 +59,6 @@ class NodeProcess {
     bool system_;
     // info
     time_t start_time;
-    int code_;
-    bool stdouteof;
     bool timed_out_;
     int timeout_;
 };

@@ -103,14 +103,6 @@ void NodeProcess::Write(std::string text, bool eof) {
     close(infd[1]);
 }
 
-void NodeProcess::Update(std::string text, Type type) {
-  if (type == Stdout) {
-    output_ += text;
-  } else {
-    error_ += text;
-  }
-}
-
 bool NodeProcess::Done() {
   return (outfdeof[Stdout] && outfdeof[Stderr]) || TimedOut();
 }
@@ -126,7 +118,7 @@ bool NodeProcess::TimedOut() {
   return timed_out_;
 }
 
-void NodeProcess::Close() {
+int NodeProcess::Close() {
   int state = -1;
   int rc = 0;
 
@@ -138,8 +130,7 @@ void NodeProcess::Close() {
   }
 
   if (rc > 0) {
-    code_ = WEXITSTATUS(state);
-    return;
+    return WEXITSTATUS(state);
   } else {
     kill(pid_, SIGTERM);
   }
@@ -150,13 +141,12 @@ void NodeProcess::Close() {
   }
 
   if (rc > 0) {
-    code_ = 15;
-    return;
+    return 15;
   } else {
     kill(pid_, SIGKILL);
   }
 
-  code_ = 137;
+  return 137;
 }
 
 bool NodeProcess::set_user(std::string name, bool set_group) {
