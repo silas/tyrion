@@ -1,6 +1,8 @@
 TODO
 ====
 
+* Remove singleton usage for everything except Logging
 * Reduce code duplication in node_utils.cc
-* Figure out if the singleton-like approach to Loop, Settings and Logging is
-  an appropriate design
+* Safely handle reloads where xmpp is invalid (ex: incorrect jid, password or
+  server)
+* Fix all valgrind issues
