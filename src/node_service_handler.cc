@@ -10,6 +10,10 @@
 #include <txmpp/logging.h>
 #include "node_loop.h"
 
+#ifndef FD_COPY
+#define FD_COPY(f, t) memcpy(t, f, sizeof(*(f)))
+#endif
+
 namespace tyrion {
 
 NodeServiceHandler::NodeServiceHandler() {
