@@ -59,9 +59,11 @@ class NodeServiceHandler : public txmpp::MessageHandler,
     void DoRequest(ServiceData* data);
     void DoResponse(ServiceData* data);
     void DoPoll();
+    bool Poll(int timeout = 0);
     fd_set rfds_;
     int highest_fd_;
     ServiceList list_;
+    int polling_;
 };
 
 }  // namespace tyrion

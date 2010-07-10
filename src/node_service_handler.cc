@@ -17,6 +17,7 @@ namespace tyrion {
 NodeServiceHandler::NodeServiceHandler() {
   FD_ZERO(&rfds_);
   highest_fd_ = 0;
+  polling_ = 0;
 }
 
 void NodeServiceHandler::Request(NodeEnvelope* envelope) {
@@ -102,7 +103,7 @@ void NodeServiceHandler::DoRequest(ServiceData* service) {
 
     list_.push_back(service);
 
-    Post(this, MSG_POLL);
+    Poll();
   } else {
     Post(this, MSG_RESPONSE, service);
   }
@@ -135,8 +136,8 @@ void NodeServiceHandler::DoResponse(ServiceData* service) {
   if (remove != list_.end()) {
     envelope->set_code(process->Close());
 
-    FD_CLR(p->outfd[NodeProcess::Stdout][0], &rfds_);
-    FD_CLR(p->outfd[NodeProcess::Stderr][0], &rfds_);
+    FD_CLR(process->outfd[NodeProcess::Stdout][0], &rfds_);
+    FD_CLR(process->outfd[NodeProcess::Stderr][0], &rfds_);
 
     list_.erase(remove);
   }
@@ -148,6 +149,7 @@ void NodeServiceHandler::DoResponse(ServiceData* service) {
 }
 
 void NodeServiceHandler::DoPoll() {
+  polling_--;
   if (list_.empty())
     return;
 
@@ -194,7 +196,16 @@ void NodeServiceHandler::DoPoll() {
     }
   }
 
-  PostDelayed(500, this, MSG_POLL);
+  Poll(500);
+}
+
+bool NodeServiceHandler::Poll(int timeout) {
+  if (polling_ > 0) {
+    return false;
+  }
+  polling_++;
+  PostDelayed(timeout, this, MSG_POLL);
+  return true;
 }
 
 void NodeServiceHandler::OnMessage(txmpp::Message *pmsg) {
