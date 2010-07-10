@@ -86,12 +86,18 @@ void NodeServiceHandler::DoRequest(ServiceData* service) {
     issue = true;
   }
 
+  FD_SET(envelope->process()->outfd[NodeProcess::Stdout][0], &rfds_);
+  FD_SET(envelope->process()->outfd[NodeProcess::Stderr][0], &rfds_);
+
   if (!issue) {
     envelope->process()->Run();
     envelope->process()->Write(envelope->input());
 
-    FD_SET(envelope->process()->outfd[NodeProcess::Stdout][0], &rfds_);
-    FD_SET(envelope->process()->outfd[NodeProcess::Stderr][0], &rfds_);
+    if (envelope->process()->outfd[NodeProcess::Stdout][0] > highest_fd_)
+      highest_fd_ = envelope->process()->outfd[NodeProcess::Stdout][0];
+
+    if (envelope->process()->outfd[NodeProcess::Stderr][0] > highest_fd_)
+      highest_fd_ = envelope->process()->outfd[NodeProcess::Stderr][0];
 
     list_.push_back(envelope);
 
@@ -122,18 +128,18 @@ void NodeServiceHandler::DoResponse(ServiceData* service) {
         highest_fd = e->process()->outfd[NodeProcess::Stderr][0];
     }
   }
-
   highest_fd_ = highest_fd;
-  if (remove > 0) {
-    FD_CLR(envelope->process()->outfd[NodeProcess::Stdout][0], &rfds_);
-    FD_CLR(envelope->process()->outfd[NodeProcess::Stderr][0], &rfds_);
 
+  FD_CLR(envelope->process()->outfd[NodeProcess::Stdout][0], &rfds_);
+  FD_CLR(envelope->process()->outfd[NodeProcess::Stderr][0], &rfds_);
+
+  if (remove >= 0) {
     envelope->set_code(envelope->process()->Close());
 
     list_.erase(list_.begin() + remove);
   }
 
-  delete envelope->process();
+  delete service;
 
   NodeLoop::Instance()->Response(envelope);
 }
@@ -152,44 +158,34 @@ void NodeServiceHandler::DoPoll() {
 
   int sr = select(highest_fd_ + 1, &rfds, NULL, NULL, &tv);
 
-  // select timeout
-  if (sr == 0) {
-    PostDelayed(500, this, MSG_POLL);
-    return;
-  }
-
-  // select error
-  if (sr < 0) {
-    PostDelayed(500, this, MSG_POLL);
-    return;
-  }
-
-  NodeEnvelope* e;
+  NodeEnvelope* e = NULL;
   for(size_t x = 0; x < list_.size(); x++) {
     e = list_[x];
-    // check both stdout and stderr
-    for (int i = NodeProcess::Stdout; i <= NodeProcess::Stderr; i++) {
-      // check if ready for reading
-      if (FD_ISSET(e->process()->outfd[i][0], &rfds)) {
-        char input[PROCESS_BUFFER];
-        int rc = read(e->process()->outfd[i][0], input, PROCESS_BUFFER-1);
+    if (sr > 0) {
+      // check both stdout and stderr
+      for (int i = NodeProcess::Stdout; i <= NodeProcess::Stderr; i++) {
+        // check if ready for reading
+        if (FD_ISSET(e->process()->outfd[i][0], &rfds)) {
+          char data[PROCESS_BUFFER];
+          int rc = read(e->process()->outfd[i][0], data, PROCESS_BUFFER-1);
 
-        if (rc == 0) {
-          // got eof for this fd
-          e->process()->outfdeof[i] = true;
-        } else {
-          // update output/error in process
-          input[rc] = 0;
-          if (NodeProcess::Stdout == i) {
-            e->set_output(e->output() + input);
+          if (rc == 0) {
+            // got eof for this fd
+            e->process()->outfdeof[i] = true;
           } else {
-            e->set_error(e->error() + input);
+            // update output/error in process
+            data[rc] = 0;
+            if (NodeProcess::Stdout == i) {
+              e->append_output(data);
+            } else {
+              e->append_error(data);
+            }
           }
         }
       }
     }
     if (e->process()->Done()) {
-      // send done message
+      Post(this, MSG_RESPONSE, new ServiceData(e));
     }
   }
 

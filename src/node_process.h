@@ -61,6 +61,7 @@ class NodeProcess {
     time_t start_time;
     bool timed_out_;
     int timeout_;
+    bool ran_;
 };
 
 }  // namespace tyrion

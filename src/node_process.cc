@@ -17,6 +17,7 @@ NodeProcess::NodeProcess(std::string command, bool system, int timeout) {
   command_ = command;
   system_ = system;
   timed_out_ = false;
+  ran_ = false;
 
   pipe(infd);
   pipe(outfd[0]);
@@ -32,12 +33,18 @@ NodeProcess::NodeProcess(std::string command, bool system, int timeout) {
 }
 
 NodeProcess::~NodeProcess() {
-  close(infd[1]);
-  close(outfd[0][0]);
-  close(outfd[1][0]);
+  if (ran_) {
+    close(infd[1]);
+    close(outfd[0][0]);
+    close(outfd[1][0]);
+  }
 }
 
 void NodeProcess::Run() {
+  if (ran_)
+    return;
+  ran_ = true;
+
   pid_ = fork();
 
   time(&start_time);

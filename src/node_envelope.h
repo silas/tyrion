@@ -15,8 +15,8 @@ namespace tyrion {
 
 class NodeEnvelope : public Envelope {
   public:
-    NodeEnvelope() : Envelope() {}
-    ~NodeEnvelope() {}
+    NodeEnvelope() : Envelope() { process_ = NULL; }
+    ~NodeEnvelope() { if (process_ != NULL) delete process_; }
 
     bool Update(const txmpp::XmlElement *stanza);
 
