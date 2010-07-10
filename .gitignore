@@ -10,7 +10,7 @@
 .*.dblite
 .*.swp
 .sconf*
-_trial_temp
+_trial_temp*
 test-*
 tyrion
 tyrion-node

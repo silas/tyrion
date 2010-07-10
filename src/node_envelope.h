@@ -9,27 +9,20 @@
 #define _TYRION_NODE_ENVELOPE_H_
 
 #include "envelope.h"
-#include "node_process.h"
 
 namespace tyrion {
 
 class NodeEnvelope : public Envelope {
   public:
-    NodeEnvelope() : Envelope() { process_ = NULL; }
-    ~NodeEnvelope() { if (process_ != NULL) delete process_; }
+    NodeEnvelope() : Envelope() {}
+    ~NodeEnvelope() {}
 
     bool Update(const txmpp::XmlElement *stanza);
 
     bool Check();
     std::string Path();
 
-    NodeProcess* process() { return process_; }
-    void set_process(NodeProcess* process) { process_ = process; }
-
     const txmpp::XmlElement* Response();
-
-  private:
-    NodeProcess* process_;
 };
 
 }  // tyrion

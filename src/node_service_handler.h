@@ -23,6 +23,18 @@
 
 namespace tyrion {
 
+class NodeServiceHandlerData : public txmpp::MessageData {
+ public:
+  NodeServiceHandlerData(NodeEnvelope* envelope, NodeProcess* process = NULL)
+      : envelope_(envelope), process_(process) {}
+  NodeEnvelope* envelope() { return envelope_; }
+  NodeProcess* process() { return process_; }
+  void set_process(NodeProcess* process) { process_ = process; }
+ private:
+  NodeEnvelope* envelope_;
+  NodeProcess* process_;
+};
+
 class NodeServiceHandler : public txmpp::MessageHandler,
                            public txmpp::TaskRunner,
                            public txmpp::Thread {
@@ -32,8 +44,8 @@ class NodeServiceHandler : public txmpp::MessageHandler,
       MSG_POLL,
       MSG_RESPONSE
     };
-    typedef MessageDataType<NodeEnvelope> ServiceData;
-    typedef std::vector<NodeEnvelope*> ServiceList;
+    typedef NodeServiceHandlerData ServiceData;
+    typedef std::vector<NodeServiceHandlerData*> ServiceList;
 
     NodeServiceHandler();
 

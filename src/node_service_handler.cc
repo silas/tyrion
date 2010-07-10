@@ -20,7 +20,7 @@ NodeServiceHandler::NodeServiceHandler() {
 }
 
 void NodeServiceHandler::Request(NodeEnvelope* envelope) {
-  Post(this, MSG_REQUEST, new ServiceData(envelope));
+  Post(this, MSG_REQUEST, new NodeServiceHandlerData(envelope));
 }
 
 void NodeServiceHandler::WakeTasks() {
@@ -28,9 +28,9 @@ void NodeServiceHandler::WakeTasks() {
 }
 
 void NodeServiceHandler::DoRequest(ServiceData* service) {
-  bool issue = false;
-  NodeEnvelope* envelope = service->data();
+  NodeEnvelope* envelope = service->envelope();
 
+  bool issue = false;
   std::string config = "service:" + envelope->type();
 
   std::string user = NodeSettings::Instance()->Get(config, "user");
@@ -72,73 +72,78 @@ void NodeServiceHandler::DoRequest(ServiceData* service) {
     timeout = envelope->timeout();
   }
 
-  envelope->set_process(new NodeProcess(envelope->Path(), false, timeout));
+  NodeProcess* process = new NodeProcess(envelope->Path(), false, timeout);
+  service->set_process(process);
 
-  if (!issue && !user.empty() && !envelope->process()->set_user(user)) {
+  if (!issue && !user.empty() && !process->set_user(user)) {
     envelope->append_error(
         CreateError("user.lookup", "Unable to find user '" + user + "'"));
     issue = true;
   }
 
-  if (!issue && !group.empty() && !envelope->process()->set_group(group)) {
+  if (!issue && !group.empty() && !process->set_group(group)) {
     envelope->append_error(
         CreateError("group.lookup", "Unable to find group '" + group + "'"));
     issue = true;
   }
 
-  FD_SET(envelope->process()->outfd[NodeProcess::Stdout][0], &rfds_);
-  FD_SET(envelope->process()->outfd[NodeProcess::Stderr][0], &rfds_);
-
   if (!issue) {
-    envelope->process()->Run();
-    envelope->process()->Write(envelope->input());
+    FD_SET(process->outfd[NodeProcess::Stdout][0], &rfds_);
+    FD_SET(process->outfd[NodeProcess::Stderr][0], &rfds_);
 
-    if (envelope->process()->outfd[NodeProcess::Stdout][0] > highest_fd_)
-      highest_fd_ = envelope->process()->outfd[NodeProcess::Stdout][0];
+    if (process->outfd[NodeProcess::Stdout][0] > highest_fd_)
+      highest_fd_ = process->outfd[NodeProcess::Stdout][0];
 
-    if (envelope->process()->outfd[NodeProcess::Stderr][0] > highest_fd_)
-      highest_fd_ = envelope->process()->outfd[NodeProcess::Stderr][0];
+    if (process->outfd[NodeProcess::Stderr][0] > highest_fd_)
+      highest_fd_ = process->outfd[NodeProcess::Stderr][0];
 
-    list_.push_back(envelope);
+    process->Run();
+    process->Write(envelope->input());
+
+    list_.push_back(service);
 
     Post(this, MSG_POLL);
-
-    delete service;
   } else {
     Post(this, MSG_RESPONSE, service);
   }
 }
 
 void NodeServiceHandler::DoResponse(ServiceData* service) {
-  NodeEnvelope* envelope = service->data();
+  NodeEnvelope* envelope = service->envelope();
+  NodeProcess* process = service->process();
 
   size_t remove = 0;
   int highest_fd = 0;
 
+  ServiceData* s;
   NodeEnvelope* e;
+  NodeProcess *p;
   for(size_t x = 0; x < list_.size(); x++) {
-    e = list_[x];
-    if (e == envelope) {
+    s = list_[x];
+    e = s->envelope();
+    p = s->process();
+    if (s == service) {
       remove = x;
     } else {
       // Get highest fd that are not the two we're removing
-      if (e->process()->outfd[NodeProcess::Stdout][0] >= highest_fd)
-        highest_fd = e->process()->outfd[NodeProcess::Stdout][0];
-      if (e->process()->outfd[NodeProcess::Stderr][0] >= highest_fd)
-        highest_fd = e->process()->outfd[NodeProcess::Stderr][0];
+      if (p->outfd[NodeProcess::Stdout][0] >= highest_fd)
+        highest_fd = p->outfd[NodeProcess::Stdout][0];
+      if (p->outfd[NodeProcess::Stderr][0] >= highest_fd)
+        highest_fd = p->outfd[NodeProcess::Stderr][0];
     }
   }
   highest_fd_ = highest_fd;
 
-  FD_CLR(envelope->process()->outfd[NodeProcess::Stdout][0], &rfds_);
-  FD_CLR(envelope->process()->outfd[NodeProcess::Stderr][0], &rfds_);
-
   if (remove >= 0) {
-    envelope->set_code(envelope->process()->Close());
+    envelope->set_code(process->Close());
+
+    FD_CLR(p->outfd[NodeProcess::Stdout][0], &rfds_);
+    FD_CLR(p->outfd[NodeProcess::Stderr][0], &rfds_);
 
     list_.erase(list_.begin() + remove);
   }
 
+  delete process;
   delete service;
 
   NodeLoop::Instance()->Response(envelope);
@@ -158,20 +163,24 @@ void NodeServiceHandler::DoPoll() {
 
   int sr = select(highest_fd_ + 1, &rfds, NULL, NULL, &tv);
 
-  NodeEnvelope* e = NULL;
+  ServiceData* s;
+  NodeEnvelope* e;
+  NodeProcess *p;
   for(size_t x = 0; x < list_.size(); x++) {
-    e = list_[x];
+    s = list_[x];
+    e = s->envelope();
+    p = s->process();
     if (sr > 0) {
       // check both stdout and stderr
       for (int i = NodeProcess::Stdout; i <= NodeProcess::Stderr; i++) {
         // check if ready for reading
-        if (FD_ISSET(e->process()->outfd[i][0], &rfds)) {
+        if (FD_ISSET(p->outfd[i][0], &rfds)) {
           char data[PROCESS_BUFFER];
-          int rc = read(e->process()->outfd[i][0], data, PROCESS_BUFFER-1);
+          int rc = read(p->outfd[i][0], data, PROCESS_BUFFER-1);
 
           if (rc == 0) {
             // got eof for this fd
-            e->process()->outfdeof[i] = true;
+            p->outfdeof[i] = true;
           } else {
             // update output/error in process
             data[rc] = 0;
@@ -184,8 +193,8 @@ void NodeServiceHandler::DoPoll() {
         }
       }
     }
-    if (e->process()->Done()) {
-      Post(this, MSG_RESPONSE, new ServiceData(e));
+    if (p->Done()) {
+      Post(this, MSG_RESPONSE, s);
     }
   }
 
