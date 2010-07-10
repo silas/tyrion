@@ -20,7 +20,7 @@ NodeServiceHandler::NodeServiceHandler() {
 }
 
 void NodeServiceHandler::Request(NodeEnvelope* envelope) {
-  Post(this, MSG_RESPONSE, new ServiceData(envelope));
+  Post(this, MSG_REQUEST, new ServiceData(envelope));
 }
 
 void NodeServiceHandler::WakeTasks() {
@@ -28,19 +28,83 @@ void NodeServiceHandler::WakeTasks() {
 }
 
 void NodeServiceHandler::DoRequest(ServiceData* service) {
+  bool issue = false;
   NodeEnvelope* envelope = service->data();
 
-  FD_SET(envelope->process()->outfd[NodeProcess::Stdout][0], &rfds_);
-  FD_SET(envelope->process()->outfd[NodeProcess::Stderr][0], &rfds_);
+  std::string config = "service:" + envelope->type();
 
-  list_.push_back(envelope);
+  std::string user = NodeSettings::Instance()->Get(config, "user");
+  bool user_lock = NodeSettings::Instance()->GetBool(config, "user_lock");
+
+  std::string group = NodeSettings::Instance()->Get(config, "group");
+  bool group_lock = NodeSettings::Instance()->GetBool(config, "group_lock");
+
+  int timeout = NodeSettings::Instance()->GetInt(config, "timeout");
+  bool timeout_lock = NodeSettings::Instance()->GetBool(config, "timeout_lock");
+
+  if (!issue && user_lock) {
+    if (user.empty()) {
+      envelope->append_error(
+          CreateError("user.lock", "Unable to lock user because none set."));
+      issue = true;
+    }
+  } else if (!issue && !envelope->user().empty()) {
+    user = envelope->user();
+  }
+
+  if (!issue && group_lock) {
+    if (group.empty()) {
+      envelope->append_error(
+          CreateError("group.lock", "Unable to lock group because none set."));
+      issue = true;
+    }
+  } else if (!issue && !envelope->group().empty())
+    group = envelope->group();
+
+  if (!issue && timeout_lock) {
+    if (!timeout > 0) {
+      envelope->append_error(
+          CreateError("timeout.lock",
+                      "Unable to lock timeout because none set."));
+      issue = true;
+    }
+  } else {
+    timeout = envelope->timeout();
+  }
+
+  envelope->set_process(new NodeProcess(envelope->Path(), false, timeout));
+
+  if (!issue && !user.empty() && !envelope->process()->set_user(user)) {
+    envelope->append_error(
+        CreateError("user.lookup", "Unable to find user '" + user + "'"));
+    issue = true;
+  }
+
+  if (!issue && !group.empty() && !envelope->process()->set_group(group)) {
+    envelope->append_error(
+        CreateError("group.lookup", "Unable to find group '" + group + "'"));
+    issue = true;
+  }
+
+  if (!issue) {
+    envelope->process()->Run();
+    envelope->process()->Write(envelope->input());
+
+    FD_SET(envelope->process()->outfd[NodeProcess::Stdout][0], &rfds_);
+    FD_SET(envelope->process()->outfd[NodeProcess::Stderr][0], &rfds_);
+
+    list_.push_back(envelope);
+
+    Post(this, MSG_POLL);
+
+    delete service;
+  } else {
+    Post(this, MSG_RESPONSE, service);
+  }
 }
 
 void NodeServiceHandler::DoResponse(ServiceData* service) {
   NodeEnvelope* envelope = service->data();
-
-  FD_CLR(envelope->process()->outfd[NodeProcess::Stdout][0], &rfds_);
-  FD_CLR(envelope->process()->outfd[NodeProcess::Stderr][0], &rfds_);
 
   size_t remove = 0;
   int highest_fd = 0;
@@ -60,10 +124,16 @@ void NodeServiceHandler::DoResponse(ServiceData* service) {
   }
 
   highest_fd_ = highest_fd;
-  if (remove > 0)
-    list_.erase(list_.begin() + remove);
+  if (remove > 0) {
+    FD_CLR(envelope->process()->outfd[NodeProcess::Stdout][0], &rfds_);
+    FD_CLR(envelope->process()->outfd[NodeProcess::Stderr][0], &rfds_);
 
-  envelope->set_code(envelope->process()->Close());
+    envelope->set_code(envelope->process()->Close());
+
+    list_.erase(list_.begin() + remove);
+  }
+
+  delete envelope->process();
 
   NodeLoop::Instance()->Response(envelope);
 }

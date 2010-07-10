@@ -31,7 +31,7 @@ class NodeProcess {
     NodeProcess(std::string command, bool system = false, int timeout = 30);
     ~NodeProcess();
 
-    void Init();
+    void Run();
     void Write(std::string text, bool eof = true);
     void Update(std::string text, Type type);
 

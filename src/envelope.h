@@ -37,9 +37,11 @@ class Envelope {
 
     inline std::string output() { return output_; }
     inline void set_output(const std::string& output) { output_ = output; }
+    inline void append_output(const std::string& output) { output_ += output; }
 
     inline std::string error() { return error_; }
     inline void set_error(const std::string& error) { error_ = error; }
+    inline void append_error(const std::string& error) { error_ += error; }
 
     inline std::string user() { return user_; }
     inline void set_user(const std::string& user) { user_ = user; }

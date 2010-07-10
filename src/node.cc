@@ -37,6 +37,7 @@ int main(int argc, char* argv[]) {
 
   tyrion::NodeServiceHandler* service_handler =
       new tyrion::NodeServiceHandler();
+  service_handler->Start();
 
   tyrion::NodeLoop* loop = tyrion::NodeLoop::Instance();
   loop->set_pthread(pthread_self());
@@ -59,6 +60,8 @@ int main(int argc, char* argv[]) {
       }
       loop->Quit();
       loop->Stop();
+      service_handler->Quit();
+      service_handler->Stop();
       break;
     }
   }

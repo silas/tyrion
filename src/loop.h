@@ -36,7 +36,8 @@ class MessageDataType : public txmpp::MessageData {
 };
 
 template <class E, class S, class P>
-class Loop : public txmpp::Thread, XmppPumpNotify,
+class Loop : public txmpp::Thread,
+             public XmppPumpNotify,
              public txmpp::MessageHandler,
              public txmpp::has_slots<> {
   public:

@@ -23,7 +23,9 @@
 
 namespace tyrion {
 
-class NodeServiceHandler : public txmpp::MessageHandler, public txmpp::TaskRunner, public txmpp::MessageQueue {
+class NodeServiceHandler : public txmpp::MessageHandler,
+                           public txmpp::TaskRunner,
+                           public txmpp::Thread {
   public:
     enum Message {
       MSG_REQUEST = 1,

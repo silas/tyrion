@@ -37,7 +37,7 @@ NodeProcess::~NodeProcess() {
   close(outfd[1][0]);
 }
 
-void NodeProcess::Init() {
+void NodeProcess::Run() {
   pid_ = fork();
 
   time(&start_time);
