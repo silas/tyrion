@@ -19,19 +19,6 @@ std::string CreateError(std::string code, std::string message) {
       message : message) + "\n";
 }
 
-bool CreateThread(void *func(void*), void *arg) {
-  pthread_t handler;
-  pthread_attr_t attr;
-  pthread_attr_init(&attr);
-  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-
-  int rc = pthread_create(&handler, &attr, func, arg);
-
-  pthread_attr_destroy(&attr);
-
-  return rc == 0;
-}
-
 void Escape(std::string& text) {
   StringReplace(text, "\n", "\\n");
   StringReplace(text, "\r", "\\r");

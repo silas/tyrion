@@ -19,11 +19,6 @@ namespace tyrion {
 std::string CreateError(std::string code, std::string message = "");
 
 /**
- * Create a detached thread and return true if it was successfully created.
- */
-bool CreateThread(void *func(void*), void *arg);
-
-/**
  * Escape various hidden and whitespace characters.
  */
 void Escape(std::string& text);
