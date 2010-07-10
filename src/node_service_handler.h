@@ -45,7 +45,7 @@ class NodeServiceHandler : public txmpp::MessageHandler,
       MSG_RESPONSE
     };
     typedef NodeServiceHandlerData ServiceData;
-    typedef std::list<NodeServiceHandlerData*> ServiceList;
+    typedef std::list<ServiceData*> ServiceList;
 
     NodeServiceHandler();
 
