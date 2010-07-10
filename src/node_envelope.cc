@@ -80,8 +80,8 @@ const txmpp::XmlElement* NodeEnvelope::Response() {
 }
 
 std::string NodeEnvelope::Path() {
-  return NodeSettings::Instance()->Get(STR_GENERAL, STR_SERVICE_PATH)
-      + "/" + type_;
+  return NodeSettings::Instance()->Get(SETTING_GENERAL,
+      SETTING_SERVICE_PATH) + "/" + type_;
 }
 
 }  // namespace tyrion

@@ -86,7 +86,7 @@ void NodeProcess::Run() {
     }
 
     if (issue) {
-      execlp(PROCESS_ISSUE_COMMAND.c_str(), PROCESS_ISSUE_COMMAND.c_str(), NULL);
+      execlp(PROCESS_ISSUE_COMMAND, PROCESS_ISSUE_COMMAND, NULL);
     } else if (system_) {
       int code = system(command_.c_str());
       exit(WEXITSTATUS(code));

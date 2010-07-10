@@ -26,22 +26,24 @@ extern const txmpp::QName QN_CODE;
 extern const txmpp::QName QN_OUTPUT;
 extern const txmpp::QName QN_ERROR;
 
-extern const std::string STR_ACL_PATH;
-extern const std::string STR_GENERAL;
-extern const std::string STR_JID;
-extern const std::string STR_LOG_LEVEL;
-extern const std::string STR_LOG_PATH;
-extern const std::string STR_PASSWORD;
-extern const std::string STR_PORT;
-extern const std::string STR_SERVICE_PATH;
-extern const std::string STR_XMPP;
+#define SETTING_ACL_PATH "acl_path"
+#define SETTING_GENERAL "general"
+#define SETTING_JID "jid"
+#define SETTING_LOG_LEVEL "log_level"
+#define SETTING_LOG_PATH "log_path"
+#define SETTING_PASSWORD "password"
+#define SETTING_PORT "port"
+#define SETTING_SERVICE_PATH "service_path"
+#define SETTING_XMPP "xmpp"
 
-extern const int XMPP_PORT;
-extern const int MAX_RECONNECT_TIMEOUT;
+#define XMPP_PORT 5222
+#define MAX_RECONNECT_TIMEOUT 256
 
-extern const int PROCESS_TIMEOUT;
-extern const int PROCESS_BUFFER_SLEEP;
-extern const std::string PROCESS_ISSUE_COMMAND;
+#define PROCESS_TIMEOUT 300
+#define PROCESS_POLL_TIMEOUT 500
+#define PROCESS_BUFFER 1024
+#define PROCESS_BUFFER_SLEEP 1
+#define PROCESS_ISSUE_COMMAND "false"
 
 }  // namespace tyrion
 

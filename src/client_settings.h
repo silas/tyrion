@@ -17,10 +17,10 @@ namespace tyrion {
 class ClientSettings : public Settings<ClientSettings> {
   public:
     bool ValidateInstance(ClientSettings* s) {
-      if (!s->HasRequired(STR_XMPP, STR_JID)) return false;
-      if (!s->HasRequired(STR_XMPP, STR_PASSWORD)) return false;
+      if (!s->HasRequired(SETTING_XMPP, SETTING_JID)) return false;
+      if (!s->HasRequired(SETTING_XMPP, SETTING_PASSWORD)) return false;
 
-      txmpp::Jid jid(s->Get(STR_XMPP, STR_JID));
+      txmpp::Jid jid(s->Get(SETTING_XMPP, SETTING_JID));
       if (jid.node().empty()) {
         TLOG(ERROR) << "The node portion of the 'jid' in the 'xmpp' section is"
                     << " required (node@domain/resource).";

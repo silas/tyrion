@@ -19,14 +19,14 @@ class NodeAcls : public Settings<NodeAcls> {};
 class NodeSettings : public Settings<NodeSettings> {
   public:
     bool ValidateInstance(NodeSettings* s) {
-      if (!s->HasRequired(STR_GENERAL, STR_ACL_PATH)) return false;
-      if (!s->HasRequired(STR_GENERAL, STR_SERVICE_PATH)) return false;
-      if (!s->HasRequired(STR_GENERAL, STR_LOG_PATH)) return false;
+      if (!s->HasRequired(SETTING_GENERAL, SETTING_ACL_PATH)) return false;
+      if (!s->HasRequired(SETTING_GENERAL, SETTING_SERVICE_PATH)) return false;
+      if (!s->HasRequired(SETTING_GENERAL, SETTING_LOG_PATH)) return false;
 
-      if (!s->HasRequired(STR_XMPP, STR_JID)) return false;
-      if (!s->HasRequired(STR_XMPP, STR_PASSWORD)) return false;
+      if (!s->HasRequired(SETTING_XMPP, SETTING_JID)) return false;
+      if (!s->HasRequired(SETTING_XMPP, SETTING_PASSWORD)) return false;
 
-      txmpp::Jid jid(s->Get(STR_XMPP, STR_JID));
+      txmpp::Jid jid(s->Get(SETTING_XMPP, SETTING_JID));
       if (jid.node().empty()) {
         TLOG(ERROR) << "The node portion of the 'jid' in the 'xmpp' section is"
                     << " required (node@domain/resource).";

@@ -42,7 +42,7 @@ bool NodeReload() {
     return false;
   }
 
-  std::string acl_path = NodeSettings::Instance()->Get(STR_GENERAL, STR_ACL_PATH);
+  std::string acl_path = NodeSettings::Instance()->Get(SETTING_GENERAL, SETTING_ACL_PATH);
 
   NodeAcls* acls = NodeAcls::New();
 
@@ -56,8 +56,8 @@ bool NodeReload() {
   Logging* logging = Logging::New();
 
   Logging::Level log_level = Logging::StringToLevel(
-      settings->Get(STR_GENERAL, STR_LOG_LEVEL), Logging::INFO);
-  std::string log_path = settings->Get(STR_GENERAL, STR_LOG_PATH);
+      settings->Get(SETTING_GENERAL, SETTING_LOG_LEVEL), Logging::INFO);
+  std::string log_path = settings->Get(SETTING_GENERAL, SETTING_LOG_PATH);
   if (!logging->File(log_path, log_level)) {
     TLOG(ERROR) << "Unable to open log file.";
     delete settings;
@@ -87,10 +87,10 @@ bool NodeReloadLogging() {
   Logging* logging = Logging::New();
 
   Logging::Level log_level = Logging::StringToLevel(
-      NodeSettings::Instance()->Get(STR_GENERAL, STR_LOG_LEVEL),
+      NodeSettings::Instance()->Get(SETTING_GENERAL, SETTING_LOG_LEVEL),
       Logging::INFO);
-  std::string log_path = NodeSettings::Instance()->Get(STR_GENERAL,
-                                                       STR_LOG_PATH);
+  std::string log_path = NodeSettings::Instance()->Get(SETTING_GENERAL,
+                                                       SETTING_LOG_PATH);
   if (!logging->File(log_path, log_level)) {
     TLOG(ERROR) << "Unable to open log file.";
     TLOG(ERROR) << "Unable to reload logging.";
@@ -160,15 +160,18 @@ void NodeSetup(int argc, char* argv[]) {
     NodeExit(1);
   }
 
-  std::string acl_path = NodeSettings::Instance()->Get(STR_GENERAL, STR_ACL_PATH);
+  std::string acl_path = NodeSettings::Instance()->Get(
+      SETTING_GENERAL, SETTING_ACL_PATH);
   if (!NodeAcls::Instance()->Setup(acl_path)) {
     TLOG(ERROR) << "Unable to open acl file.";
     NodeExit(1);
   }
 
   Logging::Level log_level = Logging::StringToLevel(
-      NodeSettings::Instance()->Get(STR_GENERAL, STR_LOG_LEVEL), Logging::INFO);
-  std::string log_path = NodeSettings::Instance()->Get(STR_GENERAL, STR_LOG_PATH);
+      NodeSettings::Instance()->Get(SETTING_GENERAL, SETTING_LOG_LEVEL),
+      Logging::INFO);
+  std::string log_path = NodeSettings::Instance()->Get(SETTING_GENERAL,
+                                                       SETTING_LOG_PATH);
   if (!Logging::Instance()->File(log_path, log_level)) {
     TLOG(ERROR) << "Unable to open log file.";
     NodeExit(1);

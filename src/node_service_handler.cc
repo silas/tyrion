@@ -10,8 +10,6 @@
 #include <txmpp/logging.h>
 #include "node_loop.h"
 
-#define PROCESS_BUFFER 1024
-
 namespace tyrion {
 
 NodeServiceHandler::NodeServiceHandler() {
@@ -196,7 +194,7 @@ void NodeServiceHandler::DoPoll() {
     }
   }
 
-  Poll(500);
+  Poll(PROCESS_POLL_TIMEOUT);
 }
 
 bool NodeServiceHandler::Poll(int timeout) {

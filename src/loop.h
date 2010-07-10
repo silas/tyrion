@@ -104,10 +104,10 @@ class Loop : public txmpp::Thread,
     }
 
     virtual void DoLogin() {
-      txmpp::Jid jid(S::Instance()->Get(STR_XMPP, STR_JID));
+      txmpp::Jid jid(S::Instance()->Get(SETTING_XMPP, SETTING_JID));
 
       txmpp::InsecureCryptStringImpl password;
-      password.password() = S::Instance()->Get(STR_XMPP, STR_PASSWORD);
+      password.password() = S::Instance()->Get(SETTING_XMPP, SETTING_PASSWORD);
 
       txmpp::XmppClientSettings settings;
       settings.set_user(jid.node());
@@ -117,10 +117,10 @@ class Loop : public txmpp::Thread,
       settings.set_use_tls(true);
 
       settings.set_server(txmpp::SocketAddress(
-          S::Instance()->Has(STR_XMPP, "server") ?
-              S::Instance()->Get(STR_XMPP, "server") :
+          S::Instance()->Has(SETTING_XMPP, "server") ?
+              S::Instance()->Get(SETTING_XMPP, "server") :
               jid.domain(),
-          S::Instance()->GetInt(STR_XMPP, STR_PORT, XMPP_PORT)
+          S::Instance()->GetInt(SETTING_XMPP, SETTING_PORT, XMPP_PORT)
       ));
 
       if (pump_ == NULL) pump_ = new P(this);
