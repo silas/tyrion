@@ -5,17 +5,15 @@
  * This file is subject to the New BSD License (see the LICENSE file).
  */
 
-#ifndef _PROCESS_MANAGER_H_
-#define _PROCESS_MANAGER_H_
+#ifndef _PROCESS_SERVICE_HANDLER_H_
+#define _PROCESS_SERVICE_HANDLER_H_
 
 #include <sys/select.h>
 #include <list>
-
 #include <txmpp/messagequeue.h>
 #include <txmpp/taskrunner.h>
 #include <txmpp/thread.h>
 #include <txmpp/time.h>
-
 #include "constants.h"
 #include "loop.h"
 #include "node_envelope.h"
@@ -68,4 +66,4 @@ class NodeServiceHandler : public txmpp::MessageHandler,
 
 }  // namespace tyrion
 
-#endif  // _PROCESS_MANAGER_H_
+#endif  // _PROCESS_SERVICE_HANDLER_H_
