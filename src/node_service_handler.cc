@@ -112,18 +112,16 @@ void NodeServiceHandler::DoResponse(ServiceData* service) {
   NodeEnvelope* envelope = service->envelope();
   NodeProcess* process = service->process();
 
-  size_t remove = 0;
+  ServiceList::iterator remove = list_.end();
   int highest_fd = 0;
 
-  ServiceData* s;
-  NodeEnvelope* e;
-  NodeProcess *p;
-  for(size_t x = 0; x < list_.size(); x++) {
-    s = list_[x];
-    e = s->envelope();
-    p = s->process();
-    if (s == service) {
-      remove = x;
+  NodeEnvelope* e = NULL;
+  NodeProcess* p = NULL;
+  for (ServiceList::iterator it = list_.begin(); it != list_.end(); it++) {
+    e = (*it)->envelope();
+    p = (*it)->process();
+    if (*it == service) {
+      remove = it;
     } else {
       // Get highest fd that are not the two we're removing
       if (p->outfd[NodeProcess::Stdout][0] >= highest_fd)
@@ -134,13 +132,13 @@ void NodeServiceHandler::DoResponse(ServiceData* service) {
   }
   highest_fd_ = highest_fd;
 
-  if (remove >= 0) {
+  if (remove != list_.end()) {
     envelope->set_code(process->Close());
 
     FD_CLR(p->outfd[NodeProcess::Stdout][0], &rfds_);
     FD_CLR(p->outfd[NodeProcess::Stderr][0], &rfds_);
 
-    list_.erase(list_.begin() + remove);
+    list_.erase(remove);
   }
 
   delete process;
@@ -163,13 +161,11 @@ void NodeServiceHandler::DoPoll() {
 
   int sr = select(highest_fd_ + 1, &rfds, NULL, NULL, &tv);
 
-  ServiceData* s;
   NodeEnvelope* e;
   NodeProcess *p;
-  for(size_t x = 0; x < list_.size(); x++) {
-    s = list_[x];
-    e = s->envelope();
-    p = s->process();
+  for (ServiceList::iterator it = list_.begin(); it != list_.end(); it++) {
+    e = (*it)->envelope();
+    p = (*it)->process();
     if (sr > 0) {
       // check both stdout and stderr
       for (int i = NodeProcess::Stdout; i <= NodeProcess::Stderr; i++) {
@@ -194,7 +190,7 @@ void NodeServiceHandler::DoPoll() {
       }
     }
     if (p->Done()) {
-      Post(this, MSG_RESPONSE, s);
+      Post(this, MSG_RESPONSE, *it);
     }
   }
 

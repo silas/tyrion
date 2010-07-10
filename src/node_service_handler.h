@@ -9,7 +9,7 @@
 #define _PROCESS_MANAGER_H_
 
 #include <sys/select.h>
-#include <vector>
+#include <list>
 
 #include <txmpp/messagequeue.h>
 #include <txmpp/taskrunner.h>
@@ -45,7 +45,7 @@ class NodeServiceHandler : public txmpp::MessageHandler,
       MSG_RESPONSE
     };
     typedef NodeServiceHandlerData ServiceData;
-    typedef std::vector<NodeServiceHandlerData*> ServiceList;
+    typedef std::list<NodeServiceHandlerData*> ServiceList;
 
     NodeServiceHandler();
 
