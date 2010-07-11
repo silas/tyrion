@@ -8,6 +8,8 @@
 #ifndef _TYRION_UTILS_H_
 #define _TYRION_UTILS_H_
 
+#define OPTION(str) strcmp(option, str) == 0
+
 #include <string>
 
 namespace tyrion {

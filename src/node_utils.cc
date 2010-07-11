@@ -12,8 +12,7 @@
 #include <iostream>
 #include <string>
 #include "node_settings.h"
-
-#define OPTION(str) strcmp(option, str) == 0
+#include "utils.h"
 
 namespace tyrion {
 
