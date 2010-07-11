@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
   tyrion::Logging::Instance()->Debug(tyrion::Logging::WARNING);
   tyrion::ClientSetup(argc, argv, &request);
 
-  tyrion::ClientLoop* loop = tyrion::ClientLoop::Instance();
+  tyrion::ClientLoop* loop = new tyrion::ClientLoop();
   loop->set_pthread(pthread_self());
   loop->Start();
   loop->Login();

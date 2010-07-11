@@ -16,9 +16,11 @@
 
 namespace tyrion {
 
-ClientXmppServiceTask::ClientXmppServiceTask(txmpp::TaskParent *parent,
+ClientXmppServiceTask::ClientXmppServiceTask(ClientLoop *loop,
+                                             txmpp::TaskParent *parent,
                                              ClientEnvelope* envelope)
     : txmpp::XmppTask(parent, txmpp::XmppEngine::HL_SINGLE) {
+  loop_ = loop;
   envelope_ = envelope;
   envelope_->set_id(GetClient()->NextId());
 }
@@ -41,7 +43,7 @@ int ClientXmppServiceTask::ProcessResponse() {
     return STATE_BLOCKED;
 
   envelope_->Update(stanza);
-  tyrion::ClientLoop::Instance()->Response(envelope_);
+  loop_->Response(envelope_);
 
   return STATE_RESPONSE;
 }

@@ -16,14 +16,6 @@ ClientLoop::ClientLoop() : BaseLoop() {
   track = 0;
 }
 
-ClientLoop* ClientLoop::instance_ = NULL;
-
-ClientLoop* ClientLoop::Instance() {
-  if (!instance_)
-    instance_ = new ClientLoop;
-  return instance_;
-}
-
 void ClientLoop::DoRestart(bool delay) {
   DoShutdown();
 }
@@ -32,8 +24,8 @@ void ClientLoop::DoRequest(ServiceData* service) {
   if (state_ == RUNNING && pump_ != NULL &&
       pump_->client() != NULL) {
     track++;
-    ClientXmppServiceTask *task_service =
-        new ClientXmppServiceTask(pump_->client(), service->data());  // owned by XmppClient
+    ClientXmppServiceTask *task_service = new ClientXmppServiceTask(
+        this, pump_->client(), service->data());
     task_service->Start();
     delete service;
   } else {

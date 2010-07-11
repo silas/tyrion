@@ -19,16 +19,13 @@ typedef Loop<ClientEnvelope, ClientSettings, ClientXmppPump> BaseLoop;
 
 class ClientLoop : public BaseLoop {
   public:
-    static ClientLoop* Instance();
+    ClientLoop();
 
   protected:
-    ClientLoop();
     void DoRestart(bool delay = true);
-
     void DoRequest(ServiceData* service);
     void DoResponse(ServiceData* service);
 
-    static ClientLoop* instance_;
     int track;
 };
 

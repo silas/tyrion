@@ -11,13 +11,14 @@
 #include <txmpp/taskparent.h>
 #include <txmpp/xmpptask.h>
 #include "client_envelope.h"
+#include "client_loop.h"
 
 namespace tyrion {
 
 class ClientXmppServiceTask : public txmpp::XmppTask {
   public:
-    explicit ClientXmppServiceTask(txmpp::TaskParent *parent,
-                                   ClientEnvelope* envelope);
+    ClientXmppServiceTask(ClientLoop* loop, txmpp::TaskParent *parent,
+                          ClientEnvelope* envelope);
     virtual ~ClientXmppServiceTask();
     virtual int ProcessStart();
     virtual int ProcessResponse();
@@ -25,6 +26,7 @@ class ClientXmppServiceTask : public txmpp::XmppTask {
     bool IsValid(const txmpp::XmlElement *stanza);
 
   private:
+    ClientLoop* loop_;
     ClientEnvelope* envelope_;
 };
 
