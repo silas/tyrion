@@ -19,9 +19,8 @@ namespace tyrion {
 ClientXmppServiceTask::ClientXmppServiceTask(ClientLoop *loop,
                                              txmpp::TaskParent *parent,
                                              ClientEnvelope* envelope)
-    : txmpp::XmppTask(parent, txmpp::XmppEngine::HL_SINGLE) {
-  loop_ = loop;
-  envelope_ = envelope;
+    : txmpp::XmppTask(parent, txmpp::XmppEngine::HL_SINGLE),
+      loop_(loop), envelope_(envelope) {
   envelope_->set_id(GetClient()->NextId());
 }
 

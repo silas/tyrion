@@ -12,19 +12,14 @@
 
 namespace tyrion {
 
-ClientLoop::ClientLoop() : BaseLoop() {
+ClientLoop::ClientLoop() : Loop() {
   track = 0;
 }
 
-void ClientLoop::DoRestart(bool delay) {
-  DoShutdown();
-}
-
 void ClientLoop::DoRequest(ServiceData* service) {
-  if (state_ == RUNNING && pump_ != NULL &&
-      pump_->client() != NULL) {
+  if (state_ == RUNNING && pump_ != NULL && pump_->client() != NULL) {
     track++;
-    ClientXmppServiceTask *task_service = new ClientXmppServiceTask(
+    ClientXmppServiceTask* task_service = new ClientXmppServiceTask(
         this, pump_->client(), service->data());
     task_service->Start();
     delete service;
@@ -61,6 +56,31 @@ void ClientLoop::DoResponse(ServiceData* service) {
   delete service;
 
   if (--track <= 0) Disconnect();
+}
+
+bool ClientLoop::OnMessage(txmpp::Message* message) {
+  if (Node::OnMessage(message))
+    return true;
+
+  bool handled = true;
+
+  switch (message->message_id) {
+    case MSG_REQUEST:
+      assert(pmsg->pdata);
+      DoRequest(reinterpret_cast<ServiceData*>(message->pdata));
+      break;
+    case MSG_RESPONSE:
+      assert(pmsg->pdata);
+      DoResponse(reinterpret_cast<ServiceData*>(message->pdata));
+      break;
+    case MSG_SOCKET_CLOSED:
+      DoShutdown();
+      break;
+    default:
+      handled = false;
+  }
+
+  return handled;
 }
 
 }  // namespace tyrion

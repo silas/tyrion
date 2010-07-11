@@ -15,18 +15,23 @@
 
 namespace tyrion {
 
-typedef Loop<ClientEnvelope, ClientSettings, ClientXmppPump> BaseLoop;
-
-class ClientLoop : public BaseLoop {
+class ClientLoop : public Loop {
   public:
+    static const short MSG_REQUEST = 10;
+    static const short MSG_RESPONSE = 11;
+    typedef MessageDataType<ClientEnvelope> ServiceData;
+
     ClientLoop();
 
   protected:
-    void DoRestart(bool delay = true);
     void DoRequest(ServiceData* service);
     void DoResponse(ServiceData* service);
 
-    int track;
+    void OnMessage(txmpp::Message* message);
+
+    int track_;
+    ClientSettings* settings_;
+    ClientXmppPump* pump_;
 };
 
 }  // namespace tyrion

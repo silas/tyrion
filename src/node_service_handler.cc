@@ -8,7 +8,8 @@
 #include "node_service_handler.h"
 
 #include <txmpp/logging.h>
-#include "node_loop.h"
+#include "node_settings.h"
+#include "utils.h"
 
 #ifndef FD_COPY
 #define FD_COPY(f, t) memcpy(t, f, sizeof(*(f)))
@@ -20,6 +21,7 @@ NodeServiceHandler::NodeServiceHandler() {
   FD_ZERO(&rfds_);
   highest_fd_ = 0;
   polling_ = 0;
+  loop_ = NULL;
 }
 
 void NodeServiceHandler::Request(NodeEnvelope* envelope) {
@@ -147,7 +149,7 @@ void NodeServiceHandler::DoResponse(ServiceData* service) {
   delete process;
   delete service;
 
-  NodeLoop::Instance()->Response(envelope);
+  loop_->Response(envelope);
 }
 
 void NodeServiceHandler::DoPoll() {

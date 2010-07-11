@@ -5,8 +5,8 @@
  * This file is subject to the New BSD License (see the LICENSE file).
  */
 
-#ifndef _PROCESS_SERVICE_HANDLER_H_
-#define _PROCESS_SERVICE_HANDLER_H_
+#ifndef _NODE_SERVICE_HANDLER_H_
+#define _NODE_SERVICE_HANDLER_H_
 
 #include <sys/select.h>
 #include <list>
@@ -15,8 +15,8 @@
 #include <txmpp/thread.h>
 #include <txmpp/time.h>
 #include "constants.h"
-#include "loop.h"
 #include "node_envelope.h"
+#include "node_loop.h"
 #include "node_process.h"
 
 namespace tyrion {
@@ -53,6 +53,9 @@ class NodeServiceHandler : public txmpp::MessageHandler,
     void OnMessage(txmpp::Message *pmsg);
     int64 CurrentTime();
 
+    inline NodeLoop* loop() { return loop_; }
+    inline void set_loop(NodeLoop* loop) { loop_ = loop; }
+
   private:
     void DoRequest(ServiceData* data);
     void DoResponse(ServiceData* data);
@@ -62,8 +65,9 @@ class NodeServiceHandler : public txmpp::MessageHandler,
     int highest_fd_;
     ServiceList list_;
     int polling_;
+    NodeLoop* loop_;
 };
 
 }  // namespace tyrion
 
-#endif  // _PROCESS_SERVICE_HANDLER_H_
+#endif  // _NODE_SERVICE_HANDLER_H_

@@ -20,7 +20,7 @@ void NodeXmppPump::DoOpen() {
 
   // Service iq handler
   NodeXmppServiceTask *task_service =
-      new NodeXmppServiceTask(client_);  // owned by XmppClient
+      new NodeXmppServiceTask(loop_, client_);  // owned by XmppClient
   task_service->Start();
 }
 

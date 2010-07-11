@@ -17,9 +17,9 @@
 
 namespace tyrion {
 
-NodeXmppServiceTask::NodeXmppServiceTask(txmpp::TaskParent *parent)
-    : txmpp::XmppTask(parent, txmpp::XmppEngine::HL_TYPE) {
-}
+NodeXmppServiceTask::NodeXmppServiceTask(NodeLoop* loop,
+                                         txmpp::TaskParent *parent)
+    : txmpp::XmppTask(parent, txmpp::XmppEngine::HL_TYPE), loop_(loop) {}
 
 NodeXmppServiceTask::~NodeXmppServiceTask() {
 }
@@ -37,7 +37,7 @@ int NodeXmppServiceTask::ProcessResponse() {
 
   NodeEnvelope *envelope = new NodeEnvelope();
   envelope->Update(stanza);
-  tyrion::NodeLoop::Instance()->Request(envelope);
+  loop_->Request(envelope);
 
   return STATE_RESPONSE;
 }

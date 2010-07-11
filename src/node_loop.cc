@@ -6,20 +6,21 @@
  */
 
 #include "node_loop.h"
+#include "node_service_handler.h"
 #include "node_utils.h"
 
 namespace tyrion {
 
-NodeLoop::NodeLoop() : BaseLoop() {
+NodeLoop::NodeLoop(NodeServiceHandler* service_handler) : BaseLoop() {
   track_ = 0;
 }
 
-NodeLoop* NodeLoop::instance_ = NULL;
+void Loop::Restart() {
+  Post(this, MSG_RESTART);
+}
 
-NodeLoop* NodeLoop::Instance() {
-  if (!instance_)
-    instance_ = new NodeLoop;
-  return instance_;
+void Loop::Reload() {
+  Post(this, MSG_RELOAD);
 }
 
 void NodeLoop::DoReload() {
@@ -28,6 +29,26 @@ void NodeLoop::DoReload() {
     Restart();
   } else {
     TLOG(WARNING) << "Unable to reload.";
+  }
+}
+
+void Loop::DoRestart(bool delay = true) {
+  if (state_ == RESTARTING)
+    return;
+  state_ = RESTARTING;
+  // TODO(silas): figure out proper method to unwind TaskRunner so
+  // InternalRunTasks never segfaults
+  if (pump_ != NULL) {
+    delete pump_;
+    pump_ = NULL;
+  }
+  if (delay) {
+    TLOG(INFO) << "Reconnecting in " << retry_ << " seconds...";
+    PostDelayed(retry_ * 1000, this, MSG_LOGIN);
+    if (retry_ < MAX_RECONNECT_TIMEOUT) retry_ *= 2;
+  } else {
+    TLOG(INFO) << "Reconnecting...";
+    Post(this, MSG_LOGIN);
   }
 }
 

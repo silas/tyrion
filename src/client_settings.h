@@ -8,38 +8,14 @@
 #ifndef _TYRION_CLIENT_SETTINGS_H_
 #define _TYRION_CLIENT_SETTINGS_H_
 
-#include <txmpp/jid.h>
-#include "constants.h"
 #include "settings.h"
 
 namespace tyrion {
 
 class ClientSettings : public Settings<ClientSettings> {
   public:
-    bool ValidateInstance(ClientSettings* s) {
-      if (!s->HasRequired(SETTING_XMPP, SETTING_JID)) return false;
-      if (!s->HasRequired(SETTING_XMPP, SETTING_PASSWORD)) return false;
-
-      txmpp::Jid jid(s->Get(SETTING_XMPP, SETTING_JID));
-      if (jid.node().empty()) {
-        TLOG(ERROR) << "The node portion of the 'jid' in the 'xmpp' section is"
-                    << " required (node@domain/resource).";
-        return false;
-      }
-      if (jid.domain().empty()) {
-        TLOG(ERROR) << "The domain portion of the 'jid' in the 'xmpp' section "
-                    << "is required (node@domain/resource).";
-        return false;
-      }
-      if (!jid.resource().empty()) {
-        TLOG(ERROR) << "The resource portion of the 'jid' in the 'xmpp' "
-                    << "section must not exist (node@domain/resource).";
-        return false;
-      }
-
-      return true;
-    }
-
+    ClientSettings(const std::string& path) : Settings(path) {}
+    bool Validate();
 };
 
 }  // namespace tyrion
