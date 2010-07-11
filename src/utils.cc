@@ -32,7 +32,7 @@ std::string RealPath(const std::string& path) {
 }
 
 void StringReplace(std::string& text, const std::string& search,
-             const std::string& replace) {
+                   const std::string& replace) {
   std::string::size_type pos = text.find(search);
 
   while (pos != std::string::npos) {
