@@ -33,6 +33,7 @@ extern const txmpp::QName QN_ERROR;
 #define SETTING_LOG_PATH "log_path"
 #define SETTING_PASSWORD "password"
 #define SETTING_PORT "port"
+#define SETTING_SERVER "server"
 #define SETTING_SERVICE_PATH "service_path"
 #define SETTING_XMPP "xmpp"
 

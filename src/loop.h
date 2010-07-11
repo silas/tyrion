@@ -117,8 +117,8 @@ class Loop : public txmpp::Thread,
       settings.set_use_tls(true);
 
       settings.set_server(txmpp::SocketAddress(
-          S::Instance()->Has(SETTING_XMPP, "server") ?
-              S::Instance()->Get(SETTING_XMPP, "server") :
+          S::Instance()->Has(SETTING_XMPP, SETTING_SERVER) ?
+              S::Instance()->Get(SETTING_XMPP, SETTING_SERVER) :
               jid.domain(),
           S::Instance()->GetInt(SETTING_XMPP, SETTING_PORT, XMPP_PORT)
       ));
