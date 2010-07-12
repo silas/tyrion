@@ -16,7 +16,7 @@ namespace tyrion {
 class XmppPresenceTask : public txmpp::XmppTask {
   public:
     explicit XmppPresenceTask(txmpp::TaskParent *parent);
-    virtual ~XmppPresenceTask();
+    virtual ~XmppPresenceTask() {}
     virtual int ProcessStart();
     virtual int ProcessResponse();
     bool HandleStanza(const txmpp::XmlElement *stanza);

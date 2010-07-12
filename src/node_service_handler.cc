@@ -38,14 +38,14 @@ void NodeServiceHandler::DoRequest(ServiceData* service) {
   bool issue = false;
   std::string config = "service:" + envelope->type();
 
-  std::string user = NodeSettings::Instance()->Get(config, "user");
-  bool user_lock = NodeSettings::Instance()->GetBool(config, "user_lock");
+  std::string user = loop_->settings()->Get(config, "user");
+  bool user_lock = loop_->settings()->GetBool(config, "user_lock");
 
-  std::string group = NodeSettings::Instance()->Get(config, "group");
-  bool group_lock = NodeSettings::Instance()->GetBool(config, "group_lock");
+  std::string group = loop_->settings()->Get(config, "group");
+  bool group_lock = loop_->settings()->GetBool(config, "group_lock");
 
-  int timeout = NodeSettings::Instance()->GetInt(config, "timeout");
-  bool timeout_lock = NodeSettings::Instance()->GetBool(config, "timeout_lock");
+  int timeout = loop_->settings()->GetInt(config, "timeout");
+  bool timeout_lock = loop_->settings()->GetBool(config, "timeout_lock");
 
   if (!issue && user_lock) {
     if (user.empty()) {

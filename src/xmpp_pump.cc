@@ -10,13 +10,14 @@
 #include <txmpp/logging.h>
 #include <txmpp/prexmppauthimpl.h>
 #include "logging.h"
+#include "loop.h"
 #include "xmpp_presence_task.h"
 
 namespace tyrion {
 
-XmppPump::XmppPump(XmppPumpNotify * notify) {
+XmppPump::XmppPump(Loop* loop) {
   state_ = txmpp::XmppEngine::STATE_NONE;
-  notify_ = notify;
+  loop_ = loop;
   client_ = new txmpp::XmppClient(this);  // deleted by TaskRunner
 }
 
@@ -63,7 +64,7 @@ void XmppPump::OnStateChange(txmpp::XmppEngine::State state) {
 
   state_ = state;
 
-  notify_->OnStateChange(state, code);
+  loop_->OnStateChange(state, code);
 }
 
 void XmppPump::WakeTasks() {
@@ -74,7 +75,7 @@ int64 XmppPump::CurrentTime() {
   return (int64)txmpp::Time();
 }
 
-void XmppPump::OnMessage(txmpp::Message *pmsg) {
+void XmppPump::OnMessage(txmpp::Message *message) {
   RunTasks();
 }
 

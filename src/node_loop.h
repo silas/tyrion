@@ -21,12 +21,23 @@ class NodeLoop : public Loop {
   public:
     static const short MSG_REQUEST = 10;
     static const short MSG_RESPONSE = 11;
+    static const short MSG_RESTART = 12;
+    static const short MSG_RELOAD = 13;
     typedef MessageDataType<NodeEnvelope> ServiceData;
 
-    NodeLoop(NodeServiceHandler* service_handler);
+    NodeLoop(pthread_t pthread, NodeServiceHandler* service_handler);
+
+    void Reload();
+    void Restart();
+    void Request(NodeEnvelope* envelope);
+    void Response(NodeEnvelope* envelope);
+
+    inline NodeSettings* settings() { return settings_; }
+    inline NodeAcls* acls() { return acls_; }
 
   protected:
     void DoReload();
+    void DoRestart(bool delay = true);
     void DoRequest(ServiceData* service);
     void DoResponse(ServiceData* service);
 
@@ -34,6 +45,7 @@ class NodeLoop : public Loop {
 
     int track_;
     NodeSettings* settings_;
+    NodeAcls* acls_;
     NodeXmppPump* pump_;
     NodeServiceHandler* service_handler_;
 };

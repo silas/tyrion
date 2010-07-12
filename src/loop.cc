@@ -32,7 +32,7 @@ void Loop::DoLogin() {
   txmpp::Jid jid(settings_->Get(SETTING_XMPP, SETTING_JID));
 
   txmpp::InsecureCryptStringImpl password;
-  password.password() = S::Instance()->Get(SETTING_XMPP, SETTING_PASSWORD);
+  password.password() = settings_->Get(SETTING_XMPP, SETTING_PASSWORD);
 
   txmpp::XmppClientSettings xmpp_settings;
   xmpp_settings.set_user(jid.node());
@@ -78,9 +78,7 @@ void Loop::DoShutdown() {
   pthread_kill(pthread_, SIGINT);
 }
 
-bool Loop::OnMessage(txmpp::Message* message) {
-  bool handled = true;
-
+void Loop::OnMessage(txmpp::Message* message) {
   switch (message->message_id) {
     case MSG_LOGIN:
       DoLogin();
@@ -94,11 +92,7 @@ bool Loop::OnMessage(txmpp::Message* message) {
     case MSG_SHUTDOWN:
       DoShutdown();
       break;
-    default:
-      handled = false;
   }
-
-  return handled;
 }
 
 void Loop::OnSocketClose(int code) {
@@ -130,10 +124,10 @@ void Loop::OnSocketClose(int code) {
       break;
   }
 
-  Post(this, MSG_SOCKET_CLOSED);
+  Post(this, MSG_CLOSED);
 }
 
-void Loop::OnStateChange(txmpp::XmppEngine::State state, int code = 0) {
+void Loop::OnStateChange(txmpp::XmppEngine::State state, int code) {
   if (state == txmpp::XmppEngine::STATE_OPEN) {
     Post(this, MSG_OPEN);
   } else if (state == txmpp::XmppEngine::STATE_CLOSED) {
@@ -180,7 +174,7 @@ void Loop::OnStateChange(txmpp::XmppEngine::State state, int code = 0) {
         break;
     }
 
-    Post(this, MSG_RESTART);
+    Post(this, MSG_CLOSED);
   }
 }
 

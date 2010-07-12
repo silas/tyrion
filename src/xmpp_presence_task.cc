@@ -19,9 +19,6 @@ XmppPresenceTask::XmppPresenceTask(txmpp::TaskParent *parent)
     : txmpp::XmppTask(parent, txmpp::XmppEngine::HL_TYPE) {
 }
 
-XmppPresenceTask::~XmppPresenceTask() {
-}
-
 int XmppPresenceTask::ProcessStart() {
   txmpp::scoped_ptr<txmpp::XmlElement> presence(
       new txmpp::XmlElement(txmpp::QN_PRESENCE));

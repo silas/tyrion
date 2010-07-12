@@ -14,12 +14,12 @@ namespace tyrion {
 
 class NodeAcls : public Settings {
   public:
-    NodeAcls(const std::string& path) : Settings(path) {}
+    NodeAcls(const std::string& path);
 };
 
 class NodeSettings : public Settings {
   public:
-    NodeSettings(const std::string& path) : Settings(path) {}
+    NodeSettings(const std::string& path);
     bool Validate();
 };
 

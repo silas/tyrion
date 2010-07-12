@@ -7,9 +7,13 @@
 
 #include "client_xmpp_pump.h"
 
+#include "client_loop.h"
 #include "xmpp_presence_task.h"
 
 namespace tyrion {
+
+ClientXmppPump::ClientXmppPump(ClientLoop* loop) : XmppPump(loop) {
+}
 
 void ClientXmppPump::DoOpen() {
   // Presence handler

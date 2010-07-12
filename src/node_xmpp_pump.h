@@ -16,7 +16,7 @@ class NodeLoop;
 
 class NodeXmppPump : public XmppPump {
   public:
-    NodeXmppPump(XmppPumpNotify* notify) : XmppPump(notify) {}
+    NodeXmppPump(NodeLoop* loop);
 
     void DoOpen();
   private:

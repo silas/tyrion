@@ -19,9 +19,7 @@ namespace tyrion {
 
 NodeXmppServiceTask::NodeXmppServiceTask(NodeLoop* loop,
                                          txmpp::TaskParent *parent)
-    : txmpp::XmppTask(parent, txmpp::XmppEngine::HL_TYPE), loop_(loop) {}
-
-NodeXmppServiceTask::~NodeXmppServiceTask() {
+    : txmpp::XmppTask(parent, txmpp::XmppEngine::HL_TYPE), loop_(loop) {
 }
 
 int NodeXmppServiceTask::ProcessStart() {
@@ -35,7 +33,7 @@ int NodeXmppServiceTask::ProcessResponse() {
   if (stanza == NULL)
     return STATE_BLOCKED;
 
-  NodeEnvelope *envelope = new NodeEnvelope();
+  NodeEnvelope *envelope = new NodeEnvelope(loop_);
   envelope->Update(stanza);
   loop_->Request(envelope);
 
@@ -44,7 +42,7 @@ int NodeXmppServiceTask::ProcessResponse() {
 
 bool NodeXmppServiceTask::HandleStanza(const txmpp::XmlElement *stanza) {
 
-  NodeEnvelope envelope;
+  NodeEnvelope envelope(loop_);
 
   if (envelope.Update(stanza) && envelope.Check()) {
     QueueStanza(stanza);

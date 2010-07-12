@@ -9,6 +9,15 @@
 
 #include <txmpp/jid.h>
 #include "constants.h"
+#include "logging.h"
+
+namespace tyrion {
+
+NodeAcls::NodeAcls(const std::string& path) : Settings(path) {
+}
+
+NodeSettings::NodeSettings(const std::string& path) : Settings(path) {
+}
 
 bool NodeSettings::Validate() {
   if (!HasRequired(SETTING_GENERAL, SETTING_ACL_PATH)) return false;
@@ -37,3 +46,5 @@ bool NodeSettings::Validate() {
 
   return true;
 }
+
+}  // namespace tyrion

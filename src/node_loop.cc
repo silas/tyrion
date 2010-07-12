@@ -11,16 +11,25 @@
 
 namespace tyrion {
 
-NodeLoop::NodeLoop(NodeServiceHandler* service_handler) : BaseLoop() {
+NodeLoop::NodeLoop(pthread_t pthread, NodeServiceHandler* service_handler) : Loop(pthread) {
   track_ = 0;
+  service_handler_ = service_handler;
 }
 
-void Loop::Restart() {
+void NodeLoop::Restart() {
   Post(this, MSG_RESTART);
 }
 
-void Loop::Reload() {
+void NodeLoop::Reload() {
   Post(this, MSG_RELOAD);
+}
+
+void NodeLoop::Request(NodeEnvelope* envelope) {
+  Post(this, MSG_REQUEST, new ServiceData(envelope));
+}
+
+void NodeLoop::Response(NodeEnvelope* envelope) {
+  Post(this, MSG_RESPONSE, new ServiceData(envelope));
 }
 
 void NodeLoop::DoReload() {
@@ -32,7 +41,7 @@ void NodeLoop::DoReload() {
   }
 }
 
-void Loop::DoRestart(bool delay = true) {
+void NodeLoop::DoRestart(bool delay) {
   if (state_ == RESTARTING)
     return;
   state_ = RESTARTING;
@@ -79,6 +88,27 @@ void NodeLoop::DoResponse(ServiceData* service) {
     TLOG(WARNING) << "Retrying service response in " << retry << " seconds ("
                   << service->data()->id() << ")";
     PostDelayed(retry * 1000, this, MSG_RESPONSE, service);
+  }
+}
+
+void NodeLoop::OnMessage(txmpp::Message* message) {
+  NodeLoop::OnMessage(message);
+
+  switch (message->message_id) {
+    case MSG_REQUEST:
+      assert(message->pdata);
+      DoRequest(reinterpret_cast<ServiceData*>(message->pdata));
+      break;
+    case MSG_RESPONSE:
+      assert(message->pdata);
+      DoResponse(reinterpret_cast<ServiceData*>(message->pdata));
+      break;
+    case MSG_RELOAD:
+      DoReload();
+      break;
+    case MSG_RESTART:
+      DoRestart();
+      break;
   }
 }
 

@@ -12,11 +12,15 @@
 
 namespace tyrion {
 
+class ClientLoop;
+
 class ClientXmppPump : public XmppPump {
   public:
-    ClientXmppPump(XmppPumpNotify* notify) : XmppPump(notify) {}
+    ClientXmppPump(ClientLoop* loop);
 
     void DoOpen();
+  private:
+    ClientLoop* loop_;
 };
 
 }  // namespace tyrion

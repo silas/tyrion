@@ -15,7 +15,7 @@ namespace tyrion {
 
 class Settings {
   public:
-    Settings(const std::string* path);
+    Settings(const std::string& path);
     ~Settings();
 
     bool HasError();

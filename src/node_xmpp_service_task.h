@@ -10,19 +10,20 @@
 
 #include <txmpp/taskparent.h>
 #include <txmpp/xmpptask.h>
-#include "node_loop.h"
 
 namespace tyrion {
+
+class NodeLoop;
 
 class NodeXmppServiceTask : public txmpp::XmppTask {
   public:
     explicit NodeXmppServiceTask(NodeLoop* loop, txmpp::TaskParent *parent);
-    virtual ~NodeXmppServiceTask();
+    virtual ~NodeXmppServiceTask() {}
     virtual int ProcessStart();
     virtual int ProcessResponse();
     bool HandleStanza(const txmpp::XmlElement *stanza);
   private:
-    NodeLoop* loop;
+    NodeLoop* loop_;
 };
 
 }  // namespace tyrion

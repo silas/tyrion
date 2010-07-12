@@ -53,7 +53,6 @@ class NodeServiceHandler : public txmpp::MessageHandler,
     void OnMessage(txmpp::Message *pmsg);
     int64 CurrentTime();
 
-    inline NodeLoop* loop() { return loop_; }
     inline void set_loop(NodeLoop* loop) { loop_ = loop; }
 
   private:

@@ -11,6 +11,8 @@
 #include <cstring>
 #include <iostream>
 #include <string>
+#include "constants.h"
+#include "logging.h"
 #include "node_settings.h"
 #include "utils.h"
 
@@ -19,12 +21,11 @@ namespace tyrion {
 void NodeExit(int code) {
   TLOG(DEBUG) << "Exiting...";
   delete Logging::Instance();
-  delete NodeSettings::Instance();
-  delete NodeAcls::Instance();
   exit(code);
 }
 
 bool NodeReload() {
+/*
   std::string config_path = NodeSettings::Instance()->path();
 
   NodeSettings* settings = NodeSettings::New();
@@ -78,11 +79,13 @@ bool NodeReload() {
   delete old_settings;
   delete old_acls;
   delete old_logging;
+*/
 
   return true;
 }
 
 bool NodeReloadLogging() {
+/*
   Logging* logging = Logging::New();
 
   Logging::Level log_level = Logging::StringToLevel(
@@ -106,6 +109,7 @@ bool NodeReloadLogging() {
   delete old_logging;
 
   TLOG(INFO) << "Logging reloaded.";
+*/
 
   return true;
 }
@@ -149,28 +153,29 @@ void NodeSetup(int argc, char* argv[]) {
     NodeExit(1);
   }
 
-  if (!NodeSettings::Instance()->Setup(config)) {
+  NodeSettings* settings = new NodeSettings(config);
+
+  if (!settings->HasError()) {
     TLOG(ERROR) << "Unable to open configuration file.";
     NodeExit(1);
   }
 
-  if (!NodeSettings::Instance()->Validate()) {
+  if (!settings->Validate()) {
     TLOG(ERROR) << "Invalid configuration file.";
     NodeExit(1);
   }
 
-  std::string acl_path = NodeSettings::Instance()->Get(
-      SETTING_GENERAL, SETTING_ACL_PATH);
-  if (!NodeAcls::Instance()->Setup(acl_path)) {
+  NodeAcls* acls = new NodeAcls(
+      settings->Get(SETTING_GENERAL, SETTING_ACL_PATH));
+
+  if (!acls->HasError()) {
     TLOG(ERROR) << "Unable to open acl file.";
     NodeExit(1);
   }
 
   Logging::Level log_level = Logging::StringToLevel(
-      NodeSettings::Instance()->Get(SETTING_GENERAL, SETTING_LOG_LEVEL),
-      Logging::INFO);
-  std::string log_path = NodeSettings::Instance()->Get(SETTING_GENERAL,
-                                                       SETTING_LOG_PATH);
+      settings->Get(SETTING_GENERAL, SETTING_LOG_LEVEL), Logging::INFO);
+  std::string log_path = settings->Get(SETTING_GENERAL, SETTING_LOG_PATH);
   if (!Logging::Instance()->File(log_path, log_level)) {
     TLOG(ERROR) << "Unable to open log file.";
     NodeExit(1);

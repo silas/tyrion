@@ -12,9 +12,11 @@
 
 namespace tyrion {
 
+class NodeLoop;
+
 class NodeEnvelope : public Envelope {
   public:
-    NodeEnvelope() : Envelope() {}
+    NodeEnvelope(NodeLoop* loop);
     ~NodeEnvelope() {}
 
     bool Update(const txmpp::XmlElement *stanza);
@@ -23,6 +25,8 @@ class NodeEnvelope : public Envelope {
     std::string Path();
 
     const txmpp::XmlElement* Response();
+  private:
+    NodeLoop* loop_;
 };
 
 }  // tyrion

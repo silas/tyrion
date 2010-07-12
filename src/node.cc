@@ -38,8 +38,10 @@ int main(int argc, char* argv[]) {
   tyrion::NodeServiceHandler* service_handler =
       new tyrion::NodeServiceHandler();
 
-  tyrion::NodeLoop* loop = new tyrion::NodeLoop(service_handler);
-  loop->set_pthread(pthread_self());
+  tyrion::NodeLoop* loop = new tyrion::NodeLoop(pthread_self(),
+                                                service_handler);
+  service_handler->set_loop(loop);
+
   loop->Start();
   loop->Login();
 

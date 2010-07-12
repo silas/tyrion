@@ -12,7 +12,7 @@
 
 namespace tyrion {
 
-Settings::Settings(const std::string* path) {
+Settings::Settings(const std::string& path) {
   path_ = path;
   config_ = new Config(path_);
 }
@@ -34,17 +34,17 @@ bool Settings::Has(const std::string& section, const std::string& name) {
 }
 
 std::string Settings::Get(const std::string& section, const std::string& name,
-                        const std::string& default_ = "") {
+                          const std::string& default_) {
   return config_->Get(section, name, default_);
 }
 
 bool Settings::GetBool(const std::string& section, const std::string& name,
-                      bool default_ = false) {
+                      bool default_) {
   return config_->Get(section, name, default_ ? "true" : "false") == "true";
 }
 
 long Settings::GetInt(const std::string& section, const std::string& name,
-                     long default_ = 0) {
+                     long default_) {
   return config_->GetInt(section, name, default_);
 }
 

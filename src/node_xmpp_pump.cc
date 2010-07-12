@@ -7,10 +7,14 @@
 
 #include "node_xmpp_pump.h"
 
+#include "node_loop.h"
 #include "node_xmpp_service_task.h"
 #include "xmpp_presence_task.h"
 
 namespace tyrion {
+
+NodeXmppPump::NodeXmppPump(NodeLoop* loop) : XmppPump(loop) {
+}
 
 void NodeXmppPump::DoOpen() {
   // Presence handler

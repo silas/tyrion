@@ -20,6 +20,7 @@
 #include "constants.h"
 #include "envelope.h"
 #include "logging.h"
+#include "settings.h"
 #include "utils.h"
 #include "xmpp_pump.h"
 
@@ -36,7 +37,6 @@ class MessageDataType : public txmpp::MessageData {
 };
 
 class Loop : public txmpp::Thread,
-             public XmppPumpNotify,
              public txmpp::MessageHandler,
              public txmpp::has_slots<> {
   public:
@@ -44,7 +44,7 @@ class Loop : public txmpp::Thread,
     static const short MSG_OPEN = 2;
     static const short MSG_DISCONNECT = 3;
     static const short MSG_SHUTDOWN = 4;
-    static const short MSG_SOCKET_CLOSED = 5;
+    static const short MSG_CLOSED = 5;
     enum State {
       NONE = 0,
       RUNNING,
@@ -53,15 +53,14 @@ class Loop : public txmpp::Thread,
       ERROR
     };
 
-    Loop(pthread_t& pthread);
+    Loop(pthread_t pthread);
     virtual ~Loop();
 
     void Login();
     void Disconnect();
 
-    void ProcessMessages(int cms) {
-      txmpp::Thread::ProcessMessages(cms);
-    }
+    void ProcessMessages(int cms);
+    void OnStateChange(txmpp::XmppEngine::State state, int code = 0);
 
     inline txmpp::XmppClient* client() { return pump_->client(); }
     inline State state() { return state_; }
@@ -69,13 +68,11 @@ class Loop : public txmpp::Thread,
   protected:
     virtual void DoLogin();
     virtual void DoOpen();
-    virtual void DoRestart(bool delay = true);
     virtual void DoDisconnect();
     virtual void DoShutdown();
     virtual void OnMessage(txmpp::Message* message);
 
     void OnSocketClose(int code);
-    void OnStateChange(txmpp::XmppEngine::State state, int code = 0);
 
     virtual void SetupPump() {}
 

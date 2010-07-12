@@ -21,7 +21,12 @@ class ClientLoop : public Loop {
     static const short MSG_RESPONSE = 11;
     typedef MessageDataType<ClientEnvelope> ServiceData;
 
-    ClientLoop();
+    ClientLoop(pthread_t pthread);
+
+    void Request(ClientEnvelope* envelope);
+    void Response(ClientEnvelope* envelope);
+
+    inline ClientSettings* settings() { return settings_; }
 
   protected:
     void DoRequest(ServiceData* service);

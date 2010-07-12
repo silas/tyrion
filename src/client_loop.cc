@@ -12,13 +12,21 @@
 
 namespace tyrion {
 
-ClientLoop::ClientLoop() : Loop() {
-  track = 0;
+ClientLoop::ClientLoop(pthread_t pthread) : Loop(pthread) {
+  track_ = 0;
+}
+
+void ClientLoop::Request(ClientEnvelope* envelope) {
+  Post(this, MSG_REQUEST, new ServiceData(envelope));
+}
+
+void ClientLoop::Response(ClientEnvelope* envelope) {
+  Post(this, MSG_RESPONSE, new ServiceData(envelope));
 }
 
 void ClientLoop::DoRequest(ServiceData* service) {
   if (state_ == RUNNING && pump_ != NULL && pump_->client() != NULL) {
-    track++;
+    track_++;
     ClientXmppServiceTask* task_service = new ClientXmppServiceTask(
         this, pump_->client(), service->data());
     task_service->Start();
@@ -55,32 +63,25 @@ void ClientLoop::DoResponse(ServiceData* service) {
 
   delete service;
 
-  if (--track <= 0) Disconnect();
+  if (--track_ <= 0) Disconnect();
 }
 
-bool ClientLoop::OnMessage(txmpp::Message* message) {
-  if (Node::OnMessage(message))
-    return true;
-
-  bool handled = true;
+void ClientLoop::OnMessage(txmpp::Message* message) {
+  ClientLoop::OnMessage(message);
 
   switch (message->message_id) {
     case MSG_REQUEST:
-      assert(pmsg->pdata);
+      assert(message->pdata);
       DoRequest(reinterpret_cast<ServiceData*>(message->pdata));
       break;
     case MSG_RESPONSE:
-      assert(pmsg->pdata);
+      assert(message->pdata);
       DoResponse(reinterpret_cast<ServiceData*>(message->pdata));
       break;
-    case MSG_SOCKET_CLOSED:
+    case MSG_CLOSED:
       DoShutdown();
       break;
-    default:
-      handled = false;
   }
-
-  return handled;
 }
 
 }  // namespace tyrion

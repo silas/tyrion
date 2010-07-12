@@ -9,10 +9,14 @@
 
 #include <sstream>
 #include <txmpp/constants.h>
+#include "node_loop.h"
 #include "node_settings.h"
 #include "utils.h"
 
 namespace tyrion {
+
+NodeEnvelope::NodeEnvelope(NodeLoop* loop) : Envelope(), loop_(loop) {
+}
 
 bool NodeEnvelope::Update(const txmpp::XmlElement *stanza) {
   if (stanza->Name() != txmpp::QN_IQ ||
@@ -53,8 +57,7 @@ bool NodeEnvelope::Update(const txmpp::XmlElement *stanza) {
 }
 
 bool NodeEnvelope::Check() {
-  return NodeAcls::Instance()->GetBool(type_, jid_.BareJid().Str()) &&
-      RealPath(Path()) != "";
+  return loop_->acls()->GetBool(type_, jid_.BareJid().Str()) && RealPath(Path()) != "";
 }
 
 const txmpp::XmlElement* NodeEnvelope::Response() {
@@ -80,8 +83,7 @@ const txmpp::XmlElement* NodeEnvelope::Response() {
 }
 
 std::string NodeEnvelope::Path() {
-  return NodeSettings::Instance()->Get(SETTING_GENERAL,
-      SETTING_SERVICE_PATH) + "/" + type_;
+  return loop_->settings()->Get(SETTING_GENERAL, SETTING_SERVICE_PATH) + "/" + type_;
 }
 
 }  // namespace tyrion

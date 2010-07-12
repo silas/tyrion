@@ -9,6 +9,7 @@
 
 #include <txmpp/jid.h>
 #include "constants.h"
+#include "logging.h"
 
 namespace tyrion {
 

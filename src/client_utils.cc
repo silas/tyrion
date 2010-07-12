@@ -12,6 +12,7 @@
 #include <iostream>
 #include <string>
 #include "client_settings.h"
+#include "logging.h"
 #include "utils.h"
 
 namespace tyrion {
@@ -19,7 +20,6 @@ namespace tyrion {
 void ClientExit(int code) {
   TLOG(DEBUG) << "Exiting...";
   delete Logging::Instance();
-  delete ClientSettings::Instance();
   exit(code);
 }
 
@@ -113,12 +113,14 @@ void ClientSetup(int argc, char* argv[], ClientRequest* request) {
     ClientExit(1);
   }
 
-  if (!ClientSettings::Instance()->Setup(config)) {
+  ClientSettings* settings = new ClientSettings(config);
+
+  if (!settings->HasError()) {
     TLOG(ERROR) << "Unable to open configuration file.";
     ClientExit(1);
   }
 
-  if (!ClientSettings::Instance()->Validate()) {
+  if (!settings->Validate()) {
     TLOG(ERROR) << "Invalid configuration file.";
     ClientExit(1);
   }

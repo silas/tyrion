@@ -5,6 +5,7 @@
  * This file is subject to the New BSD License (see the LICENSE file).
  */
 
+#include "client_loop.h"
 #include "client_request.h"
 #include "client_settings.h"
 #include "logging.h"
@@ -12,17 +13,15 @@
 #include <sstream>
 
 #define PROFILE(var, str) if (var.empty()) \
-  var = settings->Get("profile:" + profile_, str)
+  var = loop_->settings()->Get("profile:" + profile_, str)
 
 namespace tyrion {
 
 bool ClientRequest::Setup() {
-  ClientSettings* settings = ClientSettings::Instance();
-
   bool valid = true;
 
   if (!profile_.empty()) {
-    if (jid_.empty()) set_jid(settings->Get("profile:" + profile_, "jid"));
+    if (jid_.empty()) set_jid(loop_->settings()->Get("profile:" + profile_, "jid"));
     PROFILE(timeout_, "timeout");
     PROFILE(service_, "service");
     PROFILE(user_, "user");

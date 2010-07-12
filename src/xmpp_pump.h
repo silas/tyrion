@@ -18,16 +18,11 @@
 
 namespace tyrion {
 
-class XmppPumpNotify {
-  public:
-    virtual ~XmppPumpNotify() {}
-    virtual void OnStateChange(txmpp::XmppEngine::State state,
-                               int code = 0) = 0;
-};
+class Loop;
 
 class XmppPump : public txmpp::MessageHandler, public txmpp::TaskRunner {
   public:
-    XmppPump(XmppPumpNotify* notify);
+    XmppPump(Loop* loop);
 
     txmpp::XmppReturnStatus SendStanza(const txmpp::XmlElement *stanza);
     int64 CurrentTime();
@@ -40,14 +35,14 @@ class XmppPump : public txmpp::MessageHandler, public txmpp::TaskRunner {
     void WakeTasks();
 
     void OnStateChange(txmpp::XmppEngine::State state);
-    void OnMessage(txmpp::Message *pmsg);
+    void OnMessage(txmpp::Message *message);
 
     inline txmpp::XmppClient *client() { return client_; }
 
   protected:
     txmpp::XmppClient *client_;
     txmpp::XmppEngine::State state_;
-    XmppPumpNotify *notify_;
+    Loop *loop_;
 };
 
 }  // namespace tyrion
