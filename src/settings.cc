@@ -22,7 +22,7 @@ Settings::~Settings() {
 }
 
 bool Settings::HasError() {
-  return config_->ParseError() >= 0;
+  return config_->ParseError() != 0;
 }
 
 bool Settings::Validate() {

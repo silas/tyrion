@@ -33,19 +33,15 @@ int main(int argc, char* argv[]) {
   pthread_sigmask(SIG_BLOCK, &set, NULL);
 
   tyrion::Logging::Instance()->Debug(tyrion::Logging::INFO);
-  tyrion::NodeSetup(argc, argv);
 
-  tyrion::NodeServiceHandler* service_handler =
-      new tyrion::NodeServiceHandler();
+  tyrion::NodeServiceHandler* service_handler = new tyrion::NodeServiceHandler();
 
-  tyrion::NodeLoop* loop = new tyrion::NodeLoop(pthread_self(),
-                                                service_handler);
-  service_handler->set_loop(loop);
+  tyrion::NodeLoop* loop = tyrion::NodeSetup(argc, argv);
+  loop->set_service_handler(service_handler);
 
   loop->Start();
   loop->Login();
-
-  service_handler->Start();
+  loop->service_handler()->Start();
 
   while (true) {
     sigwait(&set, &sig);
@@ -62,13 +58,12 @@ int main(int argc, char* argv[]) {
       }
       loop->Quit();
       loop->Stop();
-      service_handler->Quit();
-      service_handler->Stop();
+      loop->service_handler()->Quit();
+      loop->service_handler()->Stop();
       break;
     }
   }
 
-  delete service_handler;
   delete loop;
   tyrion::NodeExit(code);
 }

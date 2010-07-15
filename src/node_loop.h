@@ -10,12 +10,11 @@
 
 #include "loop.h"
 #include "node_envelope.h"
+#include "node_service_handler.h"
 #include "node_settings.h"
 #include "node_xmpp_pump.h"
 
 namespace tyrion {
-
-class NodeServiceHandler;
 
 class NodeLoop : public Loop {
   public:
@@ -25,7 +24,8 @@ class NodeLoop : public Loop {
     static const short MSG_RELOAD = 13;
     typedef MessageDataType<NodeEnvelope> ServiceData;
 
-    NodeLoop(pthread_t pthread, NodeServiceHandler* service_handler);
+    NodeLoop(pthread_t pthread);
+    ~NodeLoop();
 
     void Reload();
     void Restart();
@@ -33,7 +33,19 @@ class NodeLoop : public Loop {
     void Response(NodeEnvelope* envelope);
 
     inline NodeSettings* settings() { return settings_; }
+    inline void set_settings(NodeSettings* settings) {
+      Loop::set_settings(settings);
+      settings_ = settings;
+    }
+
     inline NodeAcls* acls() { return acls_; }
+    inline void set_acls(NodeAcls* acls) { acls_ = acls; }
+
+    inline NodeServiceHandler* service_handler() { return service_handler_; }
+    inline void set_service_handler(NodeServiceHandler* service_handler) {
+      service_handler_ = service_handler;
+      service_handler_->set_loop(this);
+    }
 
   protected:
     void DoReload();
@@ -42,6 +54,8 @@ class NodeLoop : public Loop {
     void DoResponse(ServiceData* service);
 
     void OnMessage(txmpp::Message* message);
+
+    void SetupPump();
 
     int track_;
     NodeSettings* settings_;

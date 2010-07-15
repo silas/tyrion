@@ -13,6 +13,7 @@
 #include <string>
 #include "constants.h"
 #include "logging.h"
+#include "node_loop.h"
 #include "node_settings.h"
 #include "utils.h"
 
@@ -114,7 +115,8 @@ bool NodeReloadLogging() {
   return true;
 }
 
-void NodeSetup(int argc, char* argv[]) {
+NodeLoop* NodeSetup(int argc, char* argv[]) {
+  NodeLoop* loop = new NodeLoop(pthread_self());
 
   const char *config = NULL;
   bool debug = false;
@@ -155,7 +157,7 @@ void NodeSetup(int argc, char* argv[]) {
 
   NodeSettings* settings = new NodeSettings(config);
 
-  if (!settings->HasError()) {
+  if (settings->HasError()) {
     TLOG(ERROR) << "Unable to open configuration file.";
     NodeExit(1);
   }
@@ -168,8 +170,13 @@ void NodeSetup(int argc, char* argv[]) {
   NodeAcls* acls = new NodeAcls(
       settings->Get(SETTING_GENERAL, SETTING_ACL_PATH));
 
-  if (!acls->HasError()) {
+  if (acls->HasError()) {
     TLOG(ERROR) << "Unable to open acl file.";
+    NodeExit(1);
+  }
+
+  if (!acls->Validate()) {
+    TLOG(ERROR) << "Invalid acl file.";
     NodeExit(1);
   }
 
@@ -182,6 +189,11 @@ void NodeSetup(int argc, char* argv[]) {
   } else if (!debug) {
     Logging::Instance()->Debug(Logging::NONE);
   }
+
+  loop->set_settings(settings);
+  loop->set_acls(acls);
+
+  return loop;
 }
 
 }  // namespace tyrion

@@ -12,10 +12,12 @@
 
 namespace tyrion {
 
+class NodeLoop;
+
 void NodeExit(int code);
 bool NodeReload();
 bool NodeReloadLogging();
-void NodeSetup(int argc, char* argv[]);
+NodeLoop* NodeSetup(int argc, char* argv[]);
 
 }  // namespace tyrion
 

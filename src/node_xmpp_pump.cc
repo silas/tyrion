@@ -13,7 +13,7 @@
 
 namespace tyrion {
 
-NodeXmppPump::NodeXmppPump(NodeLoop* loop) : XmppPump(loop) {
+NodeXmppPump::NodeXmppPump(NodeLoop* loop) : XmppPump(loop), loop_(loop) {
 }
 
 void NodeXmppPump::DoOpen() {

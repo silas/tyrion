@@ -16,7 +16,6 @@
 #include <txmpp/time.h>
 #include "constants.h"
 #include "node_envelope.h"
-#include "node_loop.h"
 #include "node_process.h"
 
 namespace tyrion {
@@ -53,6 +52,7 @@ class NodeServiceHandler : public txmpp::MessageHandler,
     void OnMessage(txmpp::Message *pmsg);
     int64 CurrentTime();
 
+    inline NodeLoop* loop() { return loop_; }
     inline void set_loop(NodeLoop* loop) { loop_ = loop; }
 
   private:

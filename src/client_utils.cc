@@ -26,7 +26,6 @@ void ClientExit(int code) {
 }
 
 void ClientSetup(int argc, char* argv[], ClientLoop* loop, ClientRequest* request) {
-
   const char *config = NULL;
   bool debug = false;
 
@@ -117,7 +116,7 @@ void ClientSetup(int argc, char* argv[], ClientLoop* loop, ClientRequest* reques
 
   ClientSettings* settings = new ClientSettings(config);
 
-  if (!settings->HasError()) {
+  if (settings->HasError()) {
     TLOG(ERROR) << "Unable to open configuration file.";
     ClientExit(1);
   }

@@ -6,14 +6,24 @@
  */
 
 #include "node_loop.h"
-#include "node_service_handler.h"
 #include "node_utils.h"
 
 namespace tyrion {
 
-NodeLoop::NodeLoop(pthread_t pthread, NodeServiceHandler* service_handler) : Loop(pthread) {
+NodeLoop::NodeLoop(pthread_t pthread) : Loop(pthread) {
+  pump_ = NULL;
+  service_handler_ = NULL;
+  settings_ = NULL;
   track_ = 0;
-  service_handler_ = service_handler;
+}
+
+NodeLoop::~NodeLoop() {
+  if (service_handler_ != NULL)
+    delete service_handler_;
+  if (pump_ != NULL)
+    delete pump_;
+  if (settings_ != NULL)
+    delete settings_;
 }
 
 void NodeLoop::Restart() {
@@ -92,7 +102,7 @@ void NodeLoop::DoResponse(ServiceData* service) {
 }
 
 void NodeLoop::OnMessage(txmpp::Message* message) {
-  NodeLoop::OnMessage(message);
+  Loop::OnMessage(message);
 
   switch (message->message_id) {
     case MSG_REQUEST:
@@ -110,6 +120,11 @@ void NodeLoop::OnMessage(txmpp::Message* message) {
       DoRestart();
       break;
   }
+}
+
+void NodeLoop::SetupPump() {
+  pump_ = new NodeXmppPump(this);
+  Loop::pump_ = pump_;
 }
 
 }  // namespace tyrion
