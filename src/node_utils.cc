@@ -14,6 +14,7 @@
 #include "constants.h"
 #include "logging.h"
 #include "node_loop.h"
+#include "node_service_handler.h"
 #include "node_settings.h"
 #include "utils.h"
 
@@ -23,6 +24,56 @@ void NodeExit(int code) {
   TLOG(DEBUG) << "Exiting...";
   delete Logging::Instance();
   exit(code >= 0 ? code : 0);
+}
+
+NodeLoop* NodeReload(int argc, char* argv[], NodeLoop* old_loop, NodeServiceHandler* service_handler) {
+  old_loop->SetReconnect(false);
+
+  NodeLoop* new_loop = new NodeLoop(pthread_self());
+
+  int code = tyrion::NodeSetup(argc, argv, new_loop, true);
+
+  if (code != 0 ) {
+    delete new_loop;
+    TLOG(ERROR) << "Unable to reload node (invalid settings).";
+    return old_loop;
+  }
+
+  new_loop->Start();
+  new_loop->SetReconnect(false);
+  new_loop->Login();
+
+  for (int i = 0; i < 10; i++) {
+    if (new_loop->Ready() && !old_loop->Ready()) {
+      new_loop->set_service_handler(service_handler);
+      new_loop->SetReconnect(true);
+
+      old_loop->Quit();
+      old_loop->Stop();
+      delete old_loop;
+
+      TLOG(INFO) << "Node reloaded.";
+
+      return new_loop;
+    } else if (new_loop->state() == Loop::ERROR) {
+      break;
+    }
+    sleep(1);
+  }
+
+  new_loop->Quit();
+  new_loop->Stop();
+
+  delete new_loop;
+
+  old_loop->SetReconnect(true);
+
+  if (!old_loop->Ready())
+    old_loop->Login();
+
+  TLOG(ERROR) << "Unable to reload node (connection failed).";
+
+  return old_loop;
 }
 
 bool NodeSetupLogging(NodeSettings* settings, bool reload) {

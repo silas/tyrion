@@ -56,6 +56,8 @@ class Loop : public txmpp::Thread,
     Loop(pthread_t pthread);
     virtual ~Loop();
 
+    bool Ready();
+
     void Login();
     void Disconnect();
 

@@ -19,8 +19,6 @@ NodeLoop::NodeLoop(pthread_t pthread) : Loop(pthread) {
 }
 
 NodeLoop::~NodeLoop() {
-  if (service_handler_ != NULL)
-    delete service_handler_;
   if (pump_ != NULL)
     delete pump_;
   if (settings_ != NULL)
@@ -76,9 +74,7 @@ void NodeLoop::DoRequest(ServiceData* service) {
 }
 
 void NodeLoop::DoResponse(ServiceData* service) {
-  if (state_ == RUNNING && pump_ != NULL &&
-      pump_->client() != NULL &&
-      pump_->client()->GetState() == txmpp::XmppEngine::STATE_OPEN) {
+  if (Ready()) {
     track_--;
     const txmpp::XmlElement* iq = service->data()->Response();
     pump_->SendStanza(iq);
@@ -108,8 +104,6 @@ void NodeLoop::OnMessage(txmpp::Message* message) {
     case MSG_CLOSED:
       if (reconnect_) {
         DoRestart();
-      } else {
-        DoShutdown();
       }
       break;
     case MSG_RESTART:

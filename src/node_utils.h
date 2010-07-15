@@ -13,9 +13,11 @@
 namespace tyrion {
 
 class NodeLoop;
+class NodeServiceHandler;
 class NodeSettings;
 
 void NodeExit(int code);
+NodeLoop* NodeReload(int argc, char* argv[], NodeLoop* old_loop, NodeServiceHandler* service_handler);
 bool NodeSetupLogging(NodeSettings* settings, bool reload);
 int NodeSetup(int argc, char* argv[], NodeLoop* loop, bool reload);
 

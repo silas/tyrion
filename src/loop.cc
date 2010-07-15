@@ -178,6 +178,13 @@ void Loop::OnStateChange(txmpp::XmppEngine::State state, int code) {
   }
 }
 
+bool Loop::Ready() {
+  return (state_ == RUNNING &&
+      pump_ != NULL &&
+      pump_->client() != NULL &&
+      pump_->client()->GetState() == txmpp::XmppEngine::STATE_OPEN);
+}
+
 void Loop::ProcessMessages(int cms) {
   txmpp::Thread::ProcessMessages(cms);
 }
