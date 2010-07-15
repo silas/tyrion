@@ -16,6 +16,13 @@ ClientLoop::ClientLoop(pthread_t pthread) : Loop(pthread) {
   track_ = 0;
 }
 
+ClientLoop::~ClientLoop() {
+  if (pump_ != NULL)
+    delete pump_;
+  if (settings_ != NULL)
+    delete settings_;
+}
+
 void ClientLoop::Request(ClientEnvelope* envelope) {
   Post(this, MSG_REQUEST, new ServiceData(envelope));
 }

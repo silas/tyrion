@@ -22,6 +22,7 @@ class ClientLoop : public Loop {
     typedef MessageDataType<ClientEnvelope> ServiceData;
 
     ClientLoop(pthread_t pthread);
+    ~ClientLoop();
 
     void Request(ClientEnvelope* envelope);
     void Response(ClientEnvelope* envelope);

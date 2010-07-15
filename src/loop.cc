@@ -10,14 +10,14 @@
 namespace tyrion {
 
 Loop::Loop(pthread_t pthread) {
-  state_ = NONE;
-  retry_ = 1;
   pthread_ = pthread;
   pump_ = NULL;
+  retry_ = 1;
+  settings_ = NULL;
+  state_ = NONE;
 }
 
 Loop::~Loop() {
-  delete settings_;
 }
 
 void Loop::Login() {
