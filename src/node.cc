@@ -36,8 +36,14 @@ int main(int argc, char* argv[]) {
 
   tyrion::NodeServiceHandler* service_handler = new tyrion::NodeServiceHandler();
 
-  tyrion::NodeLoop* loop = tyrion::NodeSetup(argc, argv);
-  loop->set_service_handler(service_handler);
+  tyrion::NodeLoop* loop = new tyrion::NodeLoop(pthread_self());
+  code = tyrion::NodeSetup(argc, argv, loop, false);
+  if (code == 0) {
+    loop->set_service_handler(service_handler);
+  } else {
+    delete service_handler;
+    tyrion::NodeExit(code);
+  }
 
   loop->Start();
   loop->Login();
@@ -50,7 +56,11 @@ int main(int argc, char* argv[]) {
       loop->SetReconnect(false);
       // RELOAD
     } else if (sig == SIGUSR1) {
-      tyrion::NodeReloadLogging();
+      if (tyrion::NodeSetupLogging(loop->settings(), true)) {
+        TLOG(INFO) << "Logging reloaded.";
+      } else {
+        TLOG(INFO) << "Unable to reload logging.";
+      }
     } else if (sig == SIGINT || sig == SIGTERM) {
       if (loop->state() == tyrion::NodeLoop::ERROR) {
         code = 1;
