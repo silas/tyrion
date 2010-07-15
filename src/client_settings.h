@@ -14,7 +14,7 @@ namespace tyrion {
 
 class ClientSettings : public Settings {
   public:
-    ClientSettings(const std::string& path) : Settings(path) {}
+    ClientSettings(const std::string& path);
     bool Validate();
 };
 

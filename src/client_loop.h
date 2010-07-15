@@ -27,12 +27,18 @@ class ClientLoop : public Loop {
     void Response(ClientEnvelope* envelope);
 
     inline ClientSettings* settings() { return settings_; }
+    inline void set_settings(ClientSettings* settings) {
+      Loop::set_settings(settings);
+      settings_ = settings;
+    }
 
   protected:
     void DoRequest(ServiceData* service);
     void DoResponse(ServiceData* service);
 
     void OnMessage(txmpp::Message* message);
+
+    void SetupPump();
 
     int track_;
     ClientSettings* settings_;

@@ -10,21 +10,20 @@
 
 #include <string>
 #include <vector>
-#include "client_envelope.h"
-#include "client_settings.h"
 
 namespace tyrion {
 
-class ClientLoop;
+class ClientEnvelope;
+class ClientSettings;
 
 typedef std::vector<std::string> StringList;
 
 class ClientRequest {
   public:
-    ClientRequest(ClientLoop* loop) : loop_(loop) {}
+    ClientRequest() {}
     ~ClientRequest() {}
 
-    bool Setup();
+    bool Setup(ClientSettings* settings);
 
     ClientEnvelope* CreateClientEnvelope(const std::string& jid);
 
@@ -58,7 +57,6 @@ class ClientRequest {
     std::string user_;
     std::string group_;
     std::string input_;
-    ClientLoop* loop_;
 };
 
 }  // namespace tyrion

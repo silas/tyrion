@@ -65,6 +65,11 @@ class Loop : public txmpp::Thread,
     inline txmpp::XmppClient* client() { return pump_->client(); }
     inline State state() { return state_; }
 
+    inline Settings* settings() { return settings_; }
+    inline void set_settings(Settings* settings) {
+      settings_ = settings;
+    }
+
   protected:
     virtual void DoLogin();
     virtual void DoOpen();

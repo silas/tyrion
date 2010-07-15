@@ -9,12 +9,14 @@
 #define _TYRION_CLIENT_UTILS_H_
 
 #include <string>
-#include "client_request.h"
 
 namespace tyrion {
 
+class ClientLoop;
+class ClientRequest;
+
 void ClientExit(int code);
-void ClientSetup(int argc, char* argv[], ClientRequest* request);
+void ClientSetup(int argc, char* argv[], ClientLoop* loop, ClientRequest* request);
 
 }  // namespace tyrion
 

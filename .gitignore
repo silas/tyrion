@@ -9,6 +9,7 @@
 *.test
 .*.dblite
 .*.swp
+.gdb_history
 .sconf*
 _trial_temp*
 test-*

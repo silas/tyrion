@@ -13,6 +13,9 @@
 
 namespace tyrion {
 
+ClientSettings::ClientSettings(const std::string& path) : Settings(path) {
+}
+
 bool ClientSettings::Validate() {
   if (!HasRequired(SETTING_XMPP, SETTING_JID)) return false;
   if (!HasRequired(SETTING_XMPP, SETTING_PASSWORD)) return false;

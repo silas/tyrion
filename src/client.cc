@@ -31,11 +31,11 @@ int main(int argc, char* argv[]) {
   sigaddset(&set, SIGTERM);
   pthread_sigmask(SIG_BLOCK, &set, NULL);
 
-  tyrion::ClientLoop* loop = new tyrion::ClientLoop(pthread_self());
-  tyrion::ClientRequest request(loop);
-
   tyrion::Logging::Instance()->Debug(tyrion::Logging::WARNING);
-  tyrion::ClientSetup(argc, argv, &request);
+
+  tyrion::ClientLoop* loop = new tyrion::ClientLoop(pthread_self());
+  tyrion::ClientRequest request;
+  tyrion::ClientSetup(argc, argv, loop, &request);
 
   loop->Start();
   loop->Login();

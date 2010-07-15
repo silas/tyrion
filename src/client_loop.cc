@@ -67,7 +67,7 @@ void ClientLoop::DoResponse(ServiceData* service) {
 }
 
 void ClientLoop::OnMessage(txmpp::Message* message) {
-  ClientLoop::OnMessage(message);
+  Loop::OnMessage(message);
 
   switch (message->message_id) {
     case MSG_REQUEST:
@@ -82,6 +82,11 @@ void ClientLoop::OnMessage(txmpp::Message* message) {
       DoShutdown();
       break;
   }
+}
+
+void ClientLoop::SetupPump() {
+  pump_ = new ClientXmppPump(this);
+  Loop::pump_ = pump_;
 }
 
 }  // namespace tyrion

@@ -11,6 +11,8 @@
 #include <cstring>
 #include <iostream>
 #include <string>
+#include "client_loop.h"
+#include "client_request.h"
 #include "client_settings.h"
 #include "logging.h"
 #include "utils.h"
@@ -23,7 +25,7 @@ void ClientExit(int code) {
   exit(code);
 }
 
-void ClientSetup(int argc, char* argv[], ClientRequest* request) {
+void ClientSetup(int argc, char* argv[], ClientLoop* loop, ClientRequest* request) {
 
   const char *config = NULL;
   bool debug = false;
@@ -125,10 +127,12 @@ void ClientSetup(int argc, char* argv[], ClientRequest* request) {
     ClientExit(1);
   }
 
-  if (!request->Setup()) {
+  if (!request->Setup(settings)) {
     TLOG(ERROR) << "Invalid request.";
     ClientExit(1);
   }
+
+  loop->set_settings(settings);
 }
 
 }  // namespace tyrion
