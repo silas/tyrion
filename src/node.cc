@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
     sigwait(&set, &sig);
 
     if (sig == SIGHUP) {
-      loop->Reload();
+      // RELOAD
     } else if (sig == SIGUSR1) {
       tyrion::NodeReloadLogging();
     } else if (sig == SIGINT || sig == SIGTERM) {

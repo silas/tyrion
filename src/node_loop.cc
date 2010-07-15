@@ -30,10 +30,6 @@ void NodeLoop::Restart() {
   Post(this, MSG_RESTART);
 }
 
-void NodeLoop::Reload() {
-  Post(this, MSG_RELOAD);
-}
-
 void NodeLoop::Request(NodeEnvelope* envelope) {
   Post(this, MSG_REQUEST, new ServiceData(envelope));
 }
@@ -42,16 +38,7 @@ void NodeLoop::Response(NodeEnvelope* envelope) {
   Post(this, MSG_RESPONSE, new ServiceData(envelope));
 }
 
-void NodeLoop::DoReload() {
-  if (NodeReload()) {
-    TLOG(INFO) << "Reloading...";
-    Restart();
-  } else {
-    TLOG(WARNING) << "Unable to reload.";
-  }
-}
-
-void NodeLoop::DoRestart(bool delay) {
+void NodeLoop::DoRestart() {
   if (state_ == RESTARTING)
     return;
   state_ = RESTARTING;
@@ -61,14 +48,10 @@ void NodeLoop::DoRestart(bool delay) {
     delete pump_;
     pump_ = NULL;
   }
-  if (delay) {
-    TLOG(INFO) << "Reconnecting in " << retry_ << " seconds...";
-    PostDelayed(retry_ * 1000, this, MSG_LOGIN);
-    if (retry_ < MAX_RECONNECT_TIMEOUT) retry_ *= 2;
-  } else {
-    TLOG(INFO) << "Reconnecting...";
-    Post(this, MSG_LOGIN);
-  }
+  TLOG(INFO) << "Reconnecting in " << retry_ << " seconds...";
+  PostDelayed(retry_ * 1000, this, MSG_LOGIN);
+  if (retry_ < MAX_RECONNECT_TIMEOUT)
+    retry_ *= 2;
 }
 
 void NodeLoop::DoRequest(ServiceData* service) {
@@ -113,9 +96,7 @@ void NodeLoop::OnMessage(txmpp::Message* message) {
       assert(message->pdata);
       DoResponse(reinterpret_cast<ServiceData*>(message->pdata));
       break;
-    case MSG_RELOAD:
-      DoReload();
-      break;
+    case MSG_CLOSED:
     case MSG_RESTART:
       DoRestart();
       break;
