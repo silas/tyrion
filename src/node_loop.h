@@ -21,11 +21,14 @@ class NodeLoop : public Loop {
     static const short MSG_REQUEST = 10;
     static const short MSG_RESPONSE = 11;
     static const short MSG_RESTART = 12;
+    static const short MSG_SET_RECONNECT = 13;
     typedef MessageDataType<NodeEnvelope> ServiceData;
+    typedef txmpp::TypedMessageData<bool> ReconnectData;
 
     NodeLoop(pthread_t pthread);
     ~NodeLoop();
 
+    void SetReconnect(bool reconnect);
     void Restart();
     void Request(NodeEnvelope* envelope);
     void Response(NodeEnvelope* envelope);
@@ -46,6 +49,7 @@ class NodeLoop : public Loop {
     }
 
   protected:
+    void DoSetReconnect(ReconnectData* reconnect);
     void DoRestart();
     void DoRequest(ServiceData* service);
     void DoResponse(ServiceData* service);
@@ -59,6 +63,7 @@ class NodeLoop : public Loop {
     NodeAcls* acls_;
     NodeXmppPump* pump_;
     NodeServiceHandler* service_handler_;
+    bool reconnect_;
 };
 
 }  // namespace tyrion

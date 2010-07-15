@@ -12,6 +12,7 @@ namespace tyrion {
 
 NodeLoop::NodeLoop(pthread_t pthread) : Loop(pthread) {
   pump_ = NULL;
+  reconnect_ = true;
   service_handler_ = NULL;
   settings_ = NULL;
   track_ = 0;
@@ -26,6 +27,10 @@ NodeLoop::~NodeLoop() {
     delete settings_;
 }
 
+void NodeLoop::SetReconnect(bool reconnect) {
+  Post(this, MSG_SET_RECONNECT, new ReconnectData(reconnect));
+}
+
 void NodeLoop::Restart() {
   Post(this, MSG_RESTART);
 }
@@ -36,6 +41,10 @@ void NodeLoop::Request(NodeEnvelope* envelope) {
 
 void NodeLoop::Response(NodeEnvelope* envelope) {
   Post(this, MSG_RESPONSE, new ServiceData(envelope));
+}
+
+void NodeLoop::DoSetReconnect(ReconnectData* reconnect) {
+  reconnect_ = reconnect->data();
 }
 
 void NodeLoop::DoRestart() {
@@ -97,8 +106,18 @@ void NodeLoop::OnMessage(txmpp::Message* message) {
       DoResponse(reinterpret_cast<ServiceData*>(message->pdata));
       break;
     case MSG_CLOSED:
+      if (reconnect_) {
+        DoRestart();
+      } else {
+        DoShutdown();
+      }
+      break;
     case MSG_RESTART:
       DoRestart();
+      break;
+    case MSG_SET_RECONNECT:
+      assert(message->pdata);
+      DoSetReconnect(reinterpret_cast<ReconnectData*>(message->pdata));
       break;
   }
 }
