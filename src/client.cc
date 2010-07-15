@@ -7,13 +7,13 @@
 
 #include <csignal>
 #include <pthread.h>
+#ifdef _DEBUG
+#include <txmpp/logging.h>
+#endif
 #include "client_loop.h"
 #include "client_request.h"
 #include "client_settings.h"
 #include "client_utils.h"
-#ifdef _DEBUG
-#include <txmpp/logging.h>
-#endif
 
 int main(int argc, char* argv[]) {
 

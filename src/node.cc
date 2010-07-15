@@ -7,13 +7,13 @@
 
 #include <csignal>
 #include <pthread.h>
+#ifdef _DEBUG
+#include <txmpp/logging.h>
+#endif
 #include "node_loop.h"
 #include "node_service_handler.h"
 #include "node_settings.h"
 #include "node_utils.h"
-#ifdef _DEBUG
-#include <txmpp/logging.h>
-#endif
 
 int main(int argc, char* argv[]) {
 
