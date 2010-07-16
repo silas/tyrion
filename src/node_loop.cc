@@ -46,14 +46,13 @@ void NodeLoop::Response(NodeEnvelope* envelope) {
 
 void NodeLoop::DoSetReconnect(ReconnectData* reconnect) {
   reconnect_ = reconnect->data();
+  delete reconnect;
 }
 
 void NodeLoop::DoRestart() {
   if (state_ == RESTARTING)
     return;
   state_ = RESTARTING;
-  // TODO(silas): figure out proper method to unwind TaskRunner so
-  // InternalRunTasks never segfaults
   if (pump_ != NULL) {
     delete pump_;
     pump_ = NULL;

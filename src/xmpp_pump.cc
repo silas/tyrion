@@ -32,6 +32,7 @@ void XmppPump::DoLogin(const txmpp::XmppClientSettings & xcs,
 
     if (client_->Connect(xcs, "", socket, auth) != txmpp::XMPP_RETURN_OK) {
       TLOG(ERROR) << "Failed to connect.";
+      // TODO(silas): figure out if I should delete socket and auth
     }
 
     client_->Start();

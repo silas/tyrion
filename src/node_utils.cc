@@ -77,7 +77,12 @@ NodeLoop* NodeReload(int argc, char* argv[], NodeLoop* old_loop, NodeServiceHand
 }
 
 bool NodeSetupLogging(NodeSettings* settings, bool reload) {
-  Logging* logging = Logging::New();
+  Logging* logging = NULL;
+  if (reload) {
+    logging = Logging::New();
+  } else {
+    logging = Logging::Instance();
+  }
   Logging* old_logging = NULL;
 
   Logging::Level log_level = Logging::StringToLevel(
@@ -86,7 +91,8 @@ bool NodeSetupLogging(NodeSettings* settings, bool reload) {
 
   if (!logging->File(log_path, log_level)) {
     TLOG(ERROR) << "Unable to open log file.";
-    delete logging;
+    if (reload)
+      delete logging;
     return false;
   }
 

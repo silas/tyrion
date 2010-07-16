@@ -14,7 +14,7 @@ namespace tyrion {
 Logging* Logging::instance_ = NULL;
 
 Logging* Logging::New() {
-  return new Logging();
+  return new Logging;
 }
 
 Logging* Logging::Instance(Logging* instance) {
@@ -26,8 +26,12 @@ Logging* Logging::Instance(Logging* instance) {
   return instance_;
 }
 
-Logging::Logging() : file_(NULL), debug_level_(NONE), file_level_(NONE),
-                     lowest_level_(NONE), file_path_("")  {
+Logging::Logging() :
+    file_(NULL),
+    debug_level_(NONE),
+    file_level_(NONE),
+    lowest_level_(NONE),
+    file_path_("") {
 }
 
 Logging::~Logging() {
