@@ -133,6 +133,8 @@ int NodeSetup(int argc, char* argv[], NodeLoop* loop, bool reload) {
       std::cout << "Configuration options:" << std::endl;
       std::cout << "  -c, --config-file         configuration file"
                 << std::endl;
+      std::cout << std::endl;
+      std::cout << "Misc options:" << std::endl;
       std::cout << "  --debug                   debug information" << std::endl;
       return -1;
     } else {
