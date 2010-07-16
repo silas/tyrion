@@ -213,6 +213,9 @@ env.Append(CFLAGS=flags)
 env.Append(CXXFLAGS=flags)
 env.Append(FRAMEWORKS=frameworks)
 
+if GetOption('devel'):
+    env.Append(CXXFLAGS=' -Weffc++')
+
 SetupEnvironment(env)
 
 #

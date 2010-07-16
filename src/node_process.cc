@@ -13,12 +13,16 @@
 
 namespace tyrion {
 
-NodeProcess::NodeProcess(std::string command, bool system, int timeout) {
-  command_ = command;
-  system_ = system;
-  timed_out_ = false;
-  ran_ = false;
-
+NodeProcess::NodeProcess(std::string command, bool system, int timeout) :
+    pid_(0),
+    uid_(0),
+    gid_(0),
+    command_(command),
+    system_(system),
+    start_time_(NULL),
+    timed_out_(false),
+    timeout_(PROCESS_TIMEOUT),
+    ran_(false) {
   pipe(infd);
   pipe(outfd[0]);
   pipe(outfd[1]);
@@ -47,7 +51,7 @@ void NodeProcess::Run() {
 
   pid_ = fork();
 
-  time(&start_time);
+  time(&start_time_);
 
   if(pid_ == 0) {
     bool issue = false;
@@ -120,7 +124,7 @@ bool NodeProcess::TimedOut() {
 
   time_t current_time;
   time(&current_time);
-  timed_out_ = difftime(current_time, start_time) >= timeout_;
+  timed_out_ = difftime(current_time, start_time_) >= timeout_;
 
   return timed_out_;
 }

@@ -14,6 +14,13 @@ namespace tyrion {
 
 Envelope::Envelope() :
   jid_(txmpp::STR_EMPTY),
+  id_(txmpp::STR_EMPTY),
+  input_(txmpp::STR_EMPTY),
+  output_(txmpp::STR_EMPTY),
+  error_(txmpp::STR_EMPTY),
+  type_(txmpp::STR_EMPTY),
+  user_(txmpp::STR_EMPTY),
+  group_(txmpp::STR_EMPTY),
   code_(0),
   timeout_(PROCESS_TIMEOUT),
   retry_(0) {

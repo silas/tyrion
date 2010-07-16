@@ -15,6 +15,7 @@
 #include <txmpp/xmppclient.h>
 #include <txmpp/xmppengine.h>
 #include <txmpp/xmpptask.h>
+#include "basic.h"
 
 namespace tyrion {
 
@@ -43,6 +44,7 @@ class XmppPump : public txmpp::MessageHandler, public txmpp::TaskRunner {
     txmpp::XmppClient *client_;
     txmpp::XmppEngine::State state_;
     Loop *loop_;
+    DISALLOW_EVIL_CONSTRUCTORS(XmppPump);
 };
 
 }  // namespace tyrion

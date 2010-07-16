@@ -41,6 +41,7 @@ int main(int argc, char* argv[]) {
   if (code == 0) {
     loop->set_service_handler(service_handler);
   } else {
+    delete loop;
     delete service_handler;
     tyrion::NodeExit(code);
   }
@@ -74,6 +75,7 @@ int main(int argc, char* argv[]) {
     }
   }
 
+  delete service_handler;
   delete loop;
   tyrion::NodeExit(code);
 }

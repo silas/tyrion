@@ -9,6 +9,7 @@
 #define _TYRION_SETTINGS_H_
 
 #include <string>
+#include "basic.h"
 #include "config.h"
 
 namespace tyrion {
@@ -16,7 +17,7 @@ namespace tyrion {
 class Settings {
   public:
     Settings(const std::string& path);
-    ~Settings();
+    virtual ~Settings();
 
     bool HasError();
     virtual bool Validate();
@@ -35,6 +36,7 @@ class Settings {
   protected:
     Config *config_;
     std::string path_;
+    DISALLOW_EVIL_CONSTRUCTORS(Settings);
 };
 
 }  // namespace tyrion

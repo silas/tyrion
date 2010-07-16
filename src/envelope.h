@@ -11,6 +11,7 @@
 #include <string>
 #include <txmpp/jid.h>
 #include <txmpp/xmlelement.h>
+#include "basic.h"
 #include "constants.h"
 
 namespace tyrion {
@@ -70,6 +71,7 @@ class Envelope {
     int code_;
     int timeout_;
     int retry_;
+    DISALLOW_EVIL_CONSTRUCTORS(Envelope);
 };
 
 }  // tyrion

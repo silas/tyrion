@@ -58,7 +58,7 @@ class NodeProcess {
     std::string command_;
     bool system_;
     // info
-    time_t start_time;
+    time_t start_time_;
     bool timed_out_;
     int timeout_;
     bool ran_;

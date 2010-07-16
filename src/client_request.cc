@@ -17,6 +17,19 @@
 
 namespace tyrion {
 
+ClientRequest::ClientRequest() :
+    jid_(),
+    profile_(txmpp::STR_EMPTY),
+    timeout_(txmpp::STR_EMPTY),
+    service_(txmpp::STR_EMPTY),
+    user_(txmpp::STR_EMPTY),
+    group_(txmpp::STR_EMPTY),
+    input_(txmpp::STR_EMPTY) {
+}
+
+ClientRequest::~ClientRequest() {
+}
+
 bool ClientRequest::Setup(ClientSettings* settings) {
   bool valid = true;
 

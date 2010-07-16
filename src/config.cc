@@ -13,7 +13,7 @@
 
 namespace tyrion {
 
-Config::Config(const std::string& filename) {
+Config::Config(const std::string& filename) : error_(0), values_() {
   error_ = ini_parse(filename.c_str(), ValueHandler, this);
 }
 

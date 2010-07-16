@@ -12,10 +12,10 @@
 
 namespace tyrion {
 
-ClientLoop::ClientLoop(pthread_t pthread) : Loop(pthread) {
-  pump_ = NULL;
-  settings_ = NULL;
-  track_ = 0;
+ClientLoop::ClientLoop(pthread_t pthread) : Loop(pthread),
+    track_(0),
+    settings_(NULL),
+    pump_(NULL) {
 }
 
 ClientLoop::~ClientLoop() {

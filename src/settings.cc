@@ -12,8 +12,7 @@
 
 namespace tyrion {
 
-Settings::Settings(const std::string& path) {
-  path_ = path;
+Settings::Settings(const std::string& path) : config_(NULL), path_(path) {
   config_ = new Config(path_);
 }
 

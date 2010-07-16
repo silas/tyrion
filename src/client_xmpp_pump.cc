@@ -12,7 +12,7 @@
 
 namespace tyrion {
 
-ClientXmppPump::ClientXmppPump(ClientLoop* loop) : XmppPump(loop) {
+ClientXmppPump::ClientXmppPump(ClientLoop* loop) : XmppPump(loop), loop_(loop) {
 }
 
 void ClientXmppPump::DoOpen() {

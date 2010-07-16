@@ -8,6 +8,7 @@
 #ifndef _TYRION_NODE_ENVELOPE_H_
 #define _TYRION_NODE_ENVELOPE_H_
 
+#include "basic.h"
 #include "envelope.h"
 
 namespace tyrion {
@@ -27,6 +28,7 @@ class NodeEnvelope : public Envelope {
     const txmpp::XmlElement* Response();
   private:
     NodeLoop* loop_;
+    DISALLOW_EVIL_CONSTRUCTORS(NodeEnvelope);
 };
 
 }  // tyrion

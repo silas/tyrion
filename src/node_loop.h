@@ -8,6 +8,7 @@
 #ifndef _TYRION_NODE_LOOP_H_
 #define _TYRION_NODE_LOOP_H_
 
+#include "basic.h"
 #include "loop.h"
 #include "node_envelope.h"
 #include "node_service_handler.h"
@@ -64,6 +65,7 @@ class NodeLoop : public Loop {
     NodeXmppPump* pump_;
     NodeServiceHandler* service_handler_;
     bool reconnect_;
+    DISALLOW_EVIL_CONSTRUCTORS(NodeLoop);
 };
 
 }  // namespace tyrion

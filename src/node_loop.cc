@@ -10,12 +10,13 @@
 
 namespace tyrion {
 
-NodeLoop::NodeLoop(pthread_t pthread) : Loop(pthread) {
-  pump_ = NULL;
-  reconnect_ = true;
-  service_handler_ = NULL;
-  settings_ = NULL;
-  track_ = 0;
+NodeLoop::NodeLoop(pthread_t pthread) : Loop(pthread),
+    track_(0),
+    settings_(NULL),
+    acls_(NULL),
+    pump_(NULL),
+    service_handler_(NULL),
+    reconnect_(true) {
 }
 
 NodeLoop::~NodeLoop() {
@@ -23,6 +24,8 @@ NodeLoop::~NodeLoop() {
     delete pump_;
   if (settings_ != NULL)
     delete settings_;
+  if (acls_ != NULL)
+    delete acls_;
 }
 
 void NodeLoop::SetReconnect(bool reconnect) {

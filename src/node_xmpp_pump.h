@@ -8,6 +8,7 @@
 #ifndef _TYRION_NODE_XMPP_PUMP_H_
 #define _TYRION_NODE_XMPP_PUMP_H_
 
+#include "basic.h"
 #include "xmpp_pump.h"
 
 namespace tyrion {
@@ -21,6 +22,7 @@ class NodeXmppPump : public XmppPump {
     void DoOpen();
   private:
     NodeLoop* loop_;
+    DISALLOW_EVIL_CONSTRUCTORS(NodeXmppPump);
 };
 
 }  // namespace tyrion

@@ -10,6 +10,7 @@
 
 #include <txmpp/taskparent.h>
 #include <txmpp/xmpptask.h>
+#include "basic.h"
 #include "client_envelope.h"
 #include "client_loop.h"
 
@@ -28,6 +29,7 @@ class ClientXmppServiceTask : public txmpp::XmppTask {
   private:
     ClientLoop* loop_;
     ClientEnvelope* envelope_;
+    DISALLOW_EVIL_CONSTRUCTORS(ClientXmppServiceTask);
 };
 
 }  // namespace tyrion

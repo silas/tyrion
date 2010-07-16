@@ -10,6 +10,7 @@
 
 #include <map>
 #include <string>
+#include "basic.h"
 
 namespace tyrion {
 
@@ -32,6 +33,7 @@ class Config {
                                const std::string& name);
     static int ValueHandler(void* user, const char* section,
                             const char* name, const char* value);
+    DISALLOW_EVIL_CONSTRUCTORS(Config);
 };
 
 }  // namespace tyrion

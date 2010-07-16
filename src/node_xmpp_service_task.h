@@ -24,6 +24,7 @@ class NodeXmppServiceTask : public txmpp::XmppTask {
     bool HandleStanza(const txmpp::XmlElement *stanza);
   private:
     NodeLoop* loop_;
+    DISALLOW_EVIL_CONSTRUCTORS(NodeXmppServiceTask);
 };
 
 }  // namespace tyrion

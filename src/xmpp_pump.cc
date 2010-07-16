@@ -15,8 +15,10 @@
 
 namespace tyrion {
 
-XmppPump::XmppPump(Loop* loop) : loop_(loop) {
-  state_ = txmpp::XmppEngine::STATE_NONE;
+XmppPump::XmppPump(Loop* loop) :
+    client_(NULL),
+    state_(txmpp::XmppEngine::STATE_NONE),
+    loop_(loop) {
   client_ = new txmpp::XmppClient(this);  // deleted by TaskRunner
 }
 

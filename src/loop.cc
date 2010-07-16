@@ -9,12 +9,12 @@
 
 namespace tyrion {
 
-Loop::Loop(pthread_t pthread) {
-  pthread_ = pthread;
-  pump_ = NULL;
-  retry_ = 1;
-  settings_ = NULL;
-  state_ = NONE;
+Loop::Loop(pthread_t pthread) : 
+    pump_(NULL),
+    state_(NONE),
+    settings_(NULL),
+    pthread_(pthread),
+    retry_(1) {
 }
 
 Loop::~Loop() {

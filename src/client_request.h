@@ -10,6 +10,7 @@
 
 #include <string>
 #include <vector>
+#include "basic.h"
 
 namespace tyrion {
 
@@ -20,8 +21,8 @@ typedef std::vector<std::string> StringList;
 
 class ClientRequest {
   public:
-    ClientRequest() {}
-    ~ClientRequest() {}
+    ClientRequest();
+    ~ClientRequest();
 
     bool Setup(ClientSettings* settings);
 
@@ -57,6 +58,7 @@ class ClientRequest {
     std::string user_;
     std::string group_;
     std::string input_;
+    DISALLOW_EVIL_CONSTRUCTORS(ClientRequest);
 };
 
 }  // namespace tyrion

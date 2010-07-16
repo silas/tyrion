@@ -14,6 +14,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include "basic.h"
 
 #define TLOG(level) tyrion::LogItem(tyrion::Logging::level)
 
@@ -32,18 +33,8 @@ class Logging {
 
     ~Logging();
 
-    inline static Logging* New() {
-      return new Logging;
-    }
-
-    inline static Logging* Instance(Logging* instance = NULL) {
-      if (instance != NULL) {
-        instance_ = instance;
-      } else if (instance_ == NULL) {
-        instance_ = New();
-      }
-      return instance_;
-    }
+    static Logging* New();
+    static Logging* Instance(Logging* instance = NULL);
 
     bool Debug(Level level);
     bool File(const std::string& path, Level level);
@@ -58,23 +49,19 @@ class Logging {
 
   private:
     Logging();
-    Logging(const Logging&) {}
     static Logging* instance_;
+    FILE *file_;
     Level debug_level_;
     Level file_level_;
     Level lowest_level_;
     std::string file_path_;
-    FILE *file_;
+    DISALLOW_EVIL_CONSTRUCTORS(Logging);
 };
 
 class LogItem {
   public:
-    LogItem(Logging::Level level) {
-      level_ = level;
-    }
-    ~LogItem() {
-      Logging::Instance()->Log(level_, buffer_.str());
-    }
+    LogItem(Logging::Level level);
+    ~LogItem();
 
     template <typename T>
     LogItem & operator<<(T const & value) {
@@ -85,6 +72,7 @@ class LogItem {
   private:
     std::ostringstream buffer_;
     Logging::Level level_;
+    DISALLOW_EVIL_CONSTRUCTORS(LogItem);
 };
 
 }  // namespace tyrion

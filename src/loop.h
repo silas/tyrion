@@ -17,6 +17,7 @@
 #include <txmpp/xmppasyncsocketimpl.h>
 #include <txmpp/xmppclientsettings.h>
 #include <txmpp/xmppengine.h>
+#include "basic.h"
 #include "constants.h"
 #include "envelope.h"
 #include "logging.h"
@@ -34,6 +35,7 @@ class MessageDataType : public txmpp::MessageData {
   T* data() { return data_; }
  private:
   T* data_;
+  DISALLOW_EVIL_CONSTRUCTORS(MessageDataType);
 };
 
 class Loop : public txmpp::Thread,
@@ -88,6 +90,7 @@ class Loop : public txmpp::Thread,
     Settings* settings_;
     pthread_t pthread_;
     int retry_;
+    DISALLOW_EVIL_CONSTRUCTORS(Loop);
 };
 
 

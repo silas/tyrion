@@ -18,11 +18,13 @@
 
 namespace tyrion {
 
-NodeServiceHandler::NodeServiceHandler() {
+NodeServiceHandler::NodeServiceHandler() :
+    rfds_(),
+    highest_fd_(0),
+    list_(),
+    polling_(0),
+    loop_(NULL) {
   FD_ZERO(&rfds_);
-  highest_fd_ = 0;
-  polling_ = 0;
-  loop_ = NULL;
 }
 
 void NodeServiceHandler::Request(NodeEnvelope* envelope) {

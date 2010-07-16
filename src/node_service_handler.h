@@ -14,6 +14,7 @@
 #include <txmpp/taskrunner.h>
 #include <txmpp/thread.h>
 #include <txmpp/time.h>
+#include "basic.h"
 #include "constants.h"
 #include "node_envelope.h"
 #include "node_process.h"
@@ -30,6 +31,7 @@ class NodeServiceHandlerData : public txmpp::MessageData {
  private:
   NodeEnvelope* envelope_;
   NodeProcess* process_;
+  DISALLOW_EVIL_CONSTRUCTORS(NodeServiceHandlerData);
 };
 
 class NodeServiceHandler : public txmpp::MessageHandler,
@@ -65,6 +67,7 @@ class NodeServiceHandler : public txmpp::MessageHandler,
     ServiceList list_;
     int polling_;
     NodeLoop* loop_;
+    DISALLOW_EVIL_CONSTRUCTORS(NodeServiceHandler);
 };
 
 }  // namespace tyrion

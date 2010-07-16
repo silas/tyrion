@@ -13,10 +13,21 @@ namespace tyrion {
 
 Logging* Logging::instance_ = NULL;
 
-Logging::Logging() {
-  file_ = NULL;
-  debug_level_ = NONE;
-  file_level_ = NONE;
+Logging* Logging::New() {
+  return new Logging();
+}
+
+Logging* Logging::Instance(Logging* instance) {
+  if (instance != NULL) {
+    instance_ = instance;
+  } else if (instance_ == NULL) {
+    instance_ = New();
+  }
+  return instance_;
+}
+
+Logging::Logging() : file_(NULL), debug_level_(NONE), file_level_(NONE),
+                     lowest_level_(NONE), file_path_("")  {
 }
 
 Logging::~Logging() {
@@ -65,9 +76,14 @@ bool Logging::File(const std::string& path, Level level) {
 }
 
 bool Logging::Debug(Level level) {
-  if (level < DEBUG || level > NONE) return false;
-  if (level < lowest_level_) lowest_level_ = level;
+  if (level < DEBUG || level > NONE)
+    return false;
+
+  if (level < lowest_level_)
+    lowest_level_ = level;
+
   debug_level_ = level;
+
   return true;
 }
 
@@ -104,6 +120,13 @@ Logging::Level Logging::StringToLevel(std::string level, Level default_level) {
   } else {
     return default_level;
   }
+}
+
+LogItem::LogItem(Logging::Level level) : buffer_(""), level_(level) {
+}
+
+LogItem::~LogItem() {
+  Logging::Instance()->Log(level_, buffer_.str());
 }
 
 }  // namespace tyrion
