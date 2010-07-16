@@ -1,7 +1,4 @@
 TODO
 ====
 
-* Reduce code duplication in node_utils.cc
-* Safely handle reloads where xmpp is invalid (ex: incorrect jid, password or
-  server)
 * Fix all valgrind issues
