@@ -85,21 +85,21 @@ void ClientSetup(int argc, char* argv[], ClientLoop* loop, ClientRequest* reques
       debug = true;
     } else if (OPTION("--help")) {
       std::cout << "Usage: tyrion [OPTION]..." << std::endl;
-      std::cout << "Example: tyrion -c client.conf" << std::endl;
+      std::cout << "Example: echo \"echo test\" | tyrion -c client.conf -p test" << std::endl;
       std::cout << std::endl;
       std::cout << "Configuration options:" << std::endl;
-      std::cout << "  -c, --config-file         the node configuration file" << std::endl;
-      std::cout << "  -p, --profile             default service options" << std::endl;
+      std::cout << "  -c, --config-file         configuration file" << std::endl;
+      std::cout << "  -p, --profile             profile name" << std::endl;
       std::cout << std::endl;
       std::cout << "Service options:" << std::endl;
-      std::cout << "  -j, --jid                 destination JID(s)" << std::endl;
-      std::cout << "  -s, --service             service type" << std::endl;
-      std::cout << "  -t, --timeout             max service run time" << std::endl;
-      std::cout << "  -u, --user                run service as user" << std::endl;
-      std::cout << "  -g, --group               run service as group" << std::endl;
+      std::cout << "  -j, --jid                 destination JID" << std::endl;
+      std::cout << "  -s, --service             service name" << std::endl;
+      std::cout << "  -t, --timeout             timeout in seconds" << std::endl;
+      std::cout << "  -u, --user                remote username" << std::endl;
+      std::cout << "  -g, --group               remote group" << std::endl;
       std::cout << std::endl;
       std::cout << "Misc options:" << std::endl;
-      std::cout << "  --debug                   show debug information" << std::endl;
+      std::cout << "  --debug                   debug information" << std::endl;
       ClientExit(0);
     } else {
       TLOG(ERROR) << "Unknown option '" << option << "'.";

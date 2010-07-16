@@ -131,9 +131,9 @@ int NodeSetup(int argc, char* argv[], NodeLoop* loop, bool reload) {
       std::cout << "Example: tyrion-node -c node.conf" << std::endl;
       std::cout << std::endl;
       std::cout << "Configuration options:" << std::endl;
-      std::cout << "  -c, --config-file         the node configuration file"
+      std::cout << "  -c, --config-file         configuration file"
                 << std::endl;
-      std::cout << "  --deubg                   enable debugging" << std::endl;
+      std::cout << "  --debug                   debug information" << std::endl;
       return -1;
     } else {
       TLOG(ERROR) << "Unknown option '" << option << "'.";
