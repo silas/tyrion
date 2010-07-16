@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include "test_config.h"
-#include "test_process.h"
+#include "test_node_process.h"
 #include "test_settings.h"
 
 int main(int argc, char **argv) {

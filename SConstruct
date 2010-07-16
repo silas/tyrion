@@ -70,6 +70,12 @@ AddOption(
 )
 
 AddOption(
+    '--build-tests',
+    dest='build_tests',
+    action='store_true',
+)
+
+AddOption(
     '--with-debug',
     dest='debug',
     action='store_true',
@@ -101,6 +107,9 @@ def CreateDirectory(path):
 def Link(src, dst):
     print 'Linking %s to %s' % (src, dst)
     os.symlink(src, dst)
+
+def ChangeExt(src_list, ext):
+    return map(lambda x: x[:-2] + ext, src_list)
 
 def Remove(path):
     for p in glob.glob(path):
@@ -175,6 +184,10 @@ node_src = [
     'src/node_utils.cc',
     'src/node_xmpp_pump.cc',
     'src/node_xmpp_service_task.cc',
+]
+
+test_src = [
+    'tests/test.cc',
 ]
 
 #
@@ -263,6 +276,24 @@ tyrion_node = env.Program(
     CPPDEFINES=defines,
     LIBS=libraries,
 )
+
+#
+# Build tests
+#
+
+if GetOption('build_tests'):
+
+    test_src += ChangeExt(client_src, 'o')
+    test_src += ChangeExt(node_src, 'o')
+    test_src.remove('src/client.o')
+    test_src.remove('src/node.o')
+
+    test_all = env.Program(
+        target='test-all',
+        source=test_src,
+        CPPDEFINES=defines,
+        LIBS=libraries + ['gtest'],
+    )
 
 if GetOption('install'):
 

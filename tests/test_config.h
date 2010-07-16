@@ -6,7 +6,7 @@ namespace {
 using namespace tyrion;
 
 TEST(ConfigTest, Basic) {
-  Config c = Config("assets/test.ini");
+  Config c("tests/assets/test.ini");
   EXPECT_FALSE(c.ParseError());
 
   // string
@@ -23,7 +23,7 @@ TEST(ConfigTest, Basic) {
 }
 
 TEST(ConfigTest, NoFile) {
-  Config c = Config("assets/file-which-does-not-exist");
+  Config c("tests/assets/file-which-does-not-exist");
   EXPECT_TRUE(c.ParseError());
 }
 

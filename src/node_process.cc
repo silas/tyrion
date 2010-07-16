@@ -22,7 +22,9 @@ NodeProcess::NodeProcess(std::string command, bool system, int timeout) :
     start_time_(NULL),
     timed_out_(false),
     timeout_(PROCESS_TIMEOUT),
-    ran_(false) {
+    code_(0),
+    ran_(false),
+    closed_(false) {
   pipe(infd);
   pipe(outfd[0]);
   pipe(outfd[1]);
@@ -119,8 +121,8 @@ bool NodeProcess::Done() {
 }
 
 bool NodeProcess::TimedOut() {
-  if (timed_out_)
-    return true;
+  if (closed_ || timed_out_)
+    return timed_out_;
 
   time_t current_time;
   time(&current_time);
@@ -130,6 +132,9 @@ bool NodeProcess::TimedOut() {
 }
 
 int NodeProcess::Close() {
+  if (closed_)
+    return code_;
+  closed_ = true;
   int state = -1;
   int rc = 0;
 
@@ -141,7 +146,7 @@ int NodeProcess::Close() {
   }
 
   if (rc > 0) {
-    return WEXITSTATUS(state);
+    return code_ = WEXITSTATUS(state);
   } else {
     kill(pid_, SIGTERM);
   }
@@ -152,12 +157,12 @@ int NodeProcess::Close() {
   }
 
   if (rc > 0) {
-    return 15;
+    return code_ = 15;
   } else {
     kill(pid_, SIGKILL);
   }
 
-  return 137;
+  return code_ = 137;
 }
 
 bool NodeProcess::set_user(std::string name, bool set_group) {
