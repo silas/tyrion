@@ -70,8 +70,8 @@ AddOption(
 )
 
 AddOption(
-    '--build-tests',
-    dest='build_tests',
+    '--with-tests',
+    dest='tests',
     action='store_true',
 )
 
@@ -281,7 +281,7 @@ tyrion_node = env.Program(
 # Build tests
 #
 
-if GetOption('build_tests'):
+if GetOption('tests'):
 
     test_src += ChangeExt(client_src, 'o')
     test_src += ChangeExt(node_src, 'o')

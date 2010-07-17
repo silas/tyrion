@@ -29,7 +29,7 @@ class NodeProcess {
     };
 
     NodeProcess(std::string command, bool system = false, int timeout = 30);
-    ~NodeProcess();
+    virtual ~NodeProcess();
 
     void Run();
     void Write(std::string text, bool eof = true);
