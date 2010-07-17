@@ -76,19 +76,12 @@ void NodeLoop::DoRequest(ServiceData* service) {
 }
 
 void NodeLoop::DoResponse(ServiceData* service) {
-  if (Ready()) {
-    track_--;
-    const txmpp::XmlElement* iq = service->data()->Response();
-    pump_->SendStanza(iq);
-    delete iq;
-    delete service->data();
-    delete service;
-  } else {
-    int retry = service->data()->Retry();
-    TLOG(WARNING) << "Retrying service response in " << retry << " seconds ("
-                  << service->data()->id() << ")";
-    PostDelayed(retry * 1000, this, MSG_RESPONSE, service);
-  }
+  track_--;
+  const txmpp::XmlElement* iq = service->data()->Response();
+  pump_->SendStanza(iq);
+  delete iq;
+  delete service->data();
+  delete service;
 }
 
 void NodeLoop::OnMessage(txmpp::Message* message) {

@@ -41,9 +41,11 @@ class NodeServiceHandler : public txmpp::MessageHandler,
     enum Message {
       MSG_REQUEST = 1,
       MSG_POLL,
-      MSG_RESPONSE
+      MSG_RESPONSE,
+      MSG_HANDLE_RESPONSE
     };
     typedef NodeServiceHandlerData ServiceData;
+    typedef MessageDataType<NodeEnvelope> EnvelopeData;
     typedef std::list<ServiceData*> ServiceList;
 
     NodeServiceHandler();
@@ -59,7 +61,8 @@ class NodeServiceHandler : public txmpp::MessageHandler,
 
   private:
     void DoRequest(ServiceData* data);
-    void DoResponse(ServiceData* data);
+    void DoHandleResponse(ServiceData* data);
+    void DoResponse(EnvelopeData* data);
     void DoPoll();
     bool Poll(int timeout = 0);
     fd_set rfds_;

@@ -112,11 +112,11 @@ void NodeServiceHandler::DoRequest(ServiceData* service) {
 
     Poll();
   } else {
-    Post(this, MSG_RESPONSE, service);
+    Post(this, MSG_HANDLE_RESPONSE, service);
   }
 }
 
-void NodeServiceHandler::DoResponse(ServiceData* service) {
+void NodeServiceHandler::DoHandleResponse(ServiceData* service) {
   NodeEnvelope* envelope = service->envelope();
   NodeProcess* process = service->process();
 
@@ -152,7 +152,21 @@ void NodeServiceHandler::DoResponse(ServiceData* service) {
   delete process;
   delete service;
 
-  loop_->Response(envelope);
+  Post(this, MSG_RESPONSE, new EnvelopeData(envelope));
+}
+
+void NodeServiceHandler::DoResponse(EnvelopeData* service) {
+  // TODO(silas): Ready call probably isn't thread safe, figure out
+  // alternative
+  if (loop_->Ready()) {
+    loop_->Response(service->data());
+    delete service;
+  } else {
+    int retry = service->data()->Retry();
+    TLOG(WARNING) << "Retrying service response in " << retry << " seconds ("
+                  << service->data()->id() << ")";
+    PostDelayed(retry * 1000, this, MSG_RESPONSE, service);
+  }
 }
 
 void NodeServiceHandler::DoPoll() {
@@ -199,7 +213,7 @@ void NodeServiceHandler::DoPoll() {
       }
     }
     if (p->Done()) {
-      Post(this, MSG_RESPONSE, *it);
+      Post(this, MSG_HANDLE_RESPONSE, *it);
     }
   }
 
@@ -221,9 +235,13 @@ void NodeServiceHandler::OnMessage(txmpp::Message *pmsg) {
       assert(pmsg->pdata);
       DoRequest(reinterpret_cast<ServiceData*>(pmsg->pdata));
       break;
+    case MSG_HANDLE_RESPONSE:
+      assert(pmsg->pdata);
+      DoHandleResponse(reinterpret_cast<ServiceData*>(pmsg->pdata));
+      break;
     case MSG_RESPONSE:
       assert(pmsg->pdata);
-      DoResponse(reinterpret_cast<ServiceData*>(pmsg->pdata));
+      DoResponse(reinterpret_cast<EnvelopeData*>(pmsg->pdata));
       break;
     case MSG_POLL:
       DoPoll();
