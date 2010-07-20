@@ -164,7 +164,7 @@ void NodeServiceHandler::DoResponse(EnvelopeData* service) {
   } else {
     int retry = service->data()->Retry();
     TLOG(WARNING) << "Retrying service response in " << retry << " seconds ("
-                  << service->data()->id() << ")";
+                  << service->data()->iq_id() << ")";
     PostDelayed(retry * 1000, this, MSG_RESPONSE, service);
   }
 }

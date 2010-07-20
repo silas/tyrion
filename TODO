@@ -1,6 +1,7 @@
 TODO
 ====
 
+* Add required "id" field to service envelope
 * Fix all valgrind issues
 * Review interaction between NodeLoop and NodeServiceHandler for logical errors
   and thread safety

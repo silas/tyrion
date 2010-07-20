@@ -61,7 +61,7 @@ bool ClientEnvelope::Update(const txmpp::XmlElement *stanza) {
 txmpp::XmlElement* ClientEnvelope::Request() {
   txmpp::XmlElement* iq = new txmpp::XmlElement(txmpp::QN_IQ);
   iq->SetAttr(txmpp::QN_TO, jid_.Str());
-  iq->SetAttr(txmpp::QN_ID, id_);
+  iq->SetAttr(txmpp::QN_ID, iq_id_);
   iq->SetAttr(txmpp::QN_TYPE, txmpp::STR_SET);
 
   txmpp::XmlElement* service = iq->FindOrAddNamedChild(QN_SERVICE);

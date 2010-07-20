@@ -21,7 +21,7 @@ ClientXmppServiceTask::ClientXmppServiceTask(ClientLoop *loop,
                                              ClientEnvelope* envelope)
     : txmpp::XmppTask(parent, txmpp::XmppEngine::HL_SINGLE),
       loop_(loop), envelope_(envelope) {
-  envelope_->set_id(GetClient()->NextId());
+  envelope_->set_iq_id(GetClient()->NextId());
 }
 
 ClientXmppServiceTask::~ClientXmppServiceTask() {
@@ -73,7 +73,7 @@ bool ClientXmppServiceTask::IsValid(const txmpp::XmlElement *stanza) {
       !service->HasAttr(txmpp::QN_CODE) ||
       !service->HasAttr(txmpp::QN_TYPE)) return false;
 
-  return MatchResponseIq(stanza, envelope_->jid(), envelope_->id());
+  return MatchResponseIq(stanza, envelope_->jid(), envelope_->iq_id());
 }
 
 }  // namespace tyrion

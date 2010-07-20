@@ -44,7 +44,7 @@ void ClientLoop::DoRequest(ServiceData* service) {
     int retry = service->data()->Retry();
     if (retry > 6)
       TLOG(WARNING) << "Retrying service request in " << retry << " seconds ("
-                    << service->data()->id() << ")";
+                    << service->data()->iq_id() << ")";
     PostDelayed(retry * 1000, this, MSG_REQUEST, service);
   }
 }

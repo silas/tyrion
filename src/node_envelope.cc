@@ -24,7 +24,7 @@ bool NodeEnvelope::Update(const txmpp::XmlElement *stanza) {
       !stanza->HasAttr(txmpp::QN_ID)) return false;
 
   jid_ = txmpp::Jid(stanza->Attr(txmpp::QN_FROM));
-  id_ = stanza->Attr(txmpp::QN_ID);
+  iq_id_ = stanza->Attr(txmpp::QN_ID);
 
   const txmpp::XmlElement *service = stanza->FirstWithNamespace(NS_SERVICE);
 
@@ -57,13 +57,14 @@ bool NodeEnvelope::Update(const txmpp::XmlElement *stanza) {
 }
 
 bool NodeEnvelope::Check() {
-  return loop_->acls()->GetBool(type_, jid_.BareJid().Str()) && RealPath(Path()) != "";
+  return loop_->acls()->GetBool(type_, jid_.BareJid().Str()) &&
+      RealPath(Path()) != "";
 }
 
 const txmpp::XmlElement* NodeEnvelope::Response() {
   txmpp::XmlElement* iq = new txmpp::XmlElement(txmpp::QN_IQ);
   iq->SetAttr(txmpp::QN_TO, jid_.Str());
-  iq->SetAttr(txmpp::QN_ID, id_);
+  iq->SetAttr(txmpp::QN_ID, iq_id_);
   iq->SetAttr(txmpp::QN_TYPE, txmpp::STR_RESULT);
 
   txmpp::XmlElement* service = iq->FindOrAddNamedChild(QN_SERVICE);
@@ -83,7 +84,8 @@ const txmpp::XmlElement* NodeEnvelope::Response() {
 }
 
 std::string NodeEnvelope::Path() {
-  return loop_->settings()->Get(SETTING_GENERAL, SETTING_SERVICE_PATH) + "/" + type_;
+  return loop_->settings()->Get(SETTING_GENERAL, SETTING_SERVICE_PATH) +
+      "/" + type_;
 }
 
 }  // namespace tyrion

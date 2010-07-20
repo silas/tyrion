@@ -27,8 +27,8 @@ class Envelope {
     inline void set_jid(const txmpp::Jid& jid) { jid_ = jid; }
     inline void set_jid(const std::string& jid) { jid_ = txmpp::Jid(jid); }
 
-    inline std::string id() { return id_; }
-    inline void set_id(const std::string& id) { id_ = id; }
+    inline std::string iq_id() { return iq_id_; }
+    inline void set_iq_id(const std::string& iq_id) { iq_id_ = iq_id; }
 
     inline std::string type() { return type_; }
     inline void set_type(const std::string& type) { type_ = type; }
@@ -61,7 +61,7 @@ class Envelope {
 
   protected:
     txmpp::Jid jid_;
-    std::string id_;
+    std::string iq_id_;
     std::string input_;
     std::string output_;
     std::string error_;
