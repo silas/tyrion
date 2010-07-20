@@ -10,7 +10,6 @@
 #include <sstream>
 #include "client_envelope.h"
 #include "client_settings.h"
-#include "logging.h"
 
 #define PROFILE(var, str) if (var.empty()) \
   var = settings->Get("profile:" + profile_, str)

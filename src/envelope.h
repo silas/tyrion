@@ -12,7 +12,6 @@
 #include <txmpp/jid.h>
 #include <txmpp/xmlelement.h>
 #include "basic.h"
-#include "constants.h"
 
 namespace tyrion {
 
@@ -26,6 +25,9 @@ class Envelope {
     inline txmpp::Jid& jid() { return jid_; }
     inline void set_jid(const txmpp::Jid& jid) { jid_ = jid; }
     inline void set_jid(const std::string& jid) { jid_ = txmpp::Jid(jid); }
+
+    inline std::string id() { return id_; }
+    inline void set_id(const std::string& id) { id_ = id; }
 
     inline std::string iq_id() { return iq_id_; }
     inline void set_iq_id(const std::string& iq_id) { iq_id_ = iq_id; }
@@ -61,6 +63,7 @@ class Envelope {
 
   protected:
     txmpp::Jid jid_;
+    std::string id_;
     std::string iq_id_;
     std::string input_;
     std::string output_;

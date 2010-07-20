@@ -10,9 +10,11 @@ class TestBasic(BaseXMPP, shared.ServiceTests, unittest.TestCase):
         self.password = self.config.get('general', 'password')
         self.jid = jid.JID(self.username)
 
-    def check(self, input, type, output=None, error=None, code=None, callback=None, timeout=30):
+    def check(self, input, type, output=None, error=None, code=None, callback=None, timeout=30, id=None):
         def handle(xml):
             response = self.parse_service(xml)
+            if id is not None:
+                self.assertEqual(response.id, id)
             if type is not None:
                 self.assertEqual(response.type, type)
             if code is not None:

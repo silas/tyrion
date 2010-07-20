@@ -15,7 +15,6 @@
 #include <txmpp/thread.h>
 #include <txmpp/time.h>
 #include "basic.h"
-#include "constants.h"
 #include "node_envelope.h"
 #include "node_process.h"
 

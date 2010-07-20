@@ -18,9 +18,7 @@
 #include <txmpp/xmppclientsettings.h>
 #include <txmpp/xmppengine.h>
 #include "basic.h"
-#include "constants.h"
 #include "envelope.h"
-#include "logging.h"
 #include "settings.h"
 #include "utils.h"
 #include "xmpp_pump.h"

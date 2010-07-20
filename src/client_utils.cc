@@ -11,10 +11,10 @@
 #include <cstring>
 #include <iostream>
 #include <string>
+#include "basic.h"
 #include "client_loop.h"
 #include "client_request.h"
 #include "client_settings.h"
-#include "logging.h"
 #include "utils.h"
 
 namespace tyrion {

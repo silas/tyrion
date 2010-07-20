@@ -7,11 +7,7 @@
 
 #include "client_xmpp_service_task.h"
 
-#include <txmpp/constants.h>
-#include <txmpp/logging.h>
 #include <txmpp/xmppclient.h>
-#include "constants.h"
-#include "logging.h"
 #include "client_loop.h"
 
 namespace tyrion {

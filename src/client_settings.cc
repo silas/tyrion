@@ -8,8 +8,7 @@
 #include "client_settings.h"
 
 #include <txmpp/jid.h>
-#include "constants.h"
-#include "logging.h"
+#include "basic.h"
 
 namespace tyrion {
 

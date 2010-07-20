@@ -11,6 +11,7 @@
 #include <txmpp/constructormagic.h>
 #include <txmpp/messagequeue.h>
 #include "constants.h"
+#include "logging.h"
 
 namespace tyrion {
 

@@ -30,8 +30,10 @@ bool NodeEnvelope::Update(const txmpp::XmlElement *stanza) {
 
   if (service == NULL ||
       service->Name() != QN_SERVICE ||
+      !service->HasAttr(QN_SERVICE_ID) ||
       !service->HasAttr(txmpp::QN_TYPE)) return false;
 
+  id_ = service->Attr(txmpp::QN_TYPE);
   type_ = service->Attr(txmpp::QN_TYPE);
 
   if (service->HasAttr(QN_USER))
@@ -68,6 +70,7 @@ const txmpp::XmlElement* NodeEnvelope::Response() {
   iq->SetAttr(txmpp::QN_TYPE, txmpp::STR_RESULT);
 
   txmpp::XmlElement* service = iq->FindOrAddNamedChild(QN_SERVICE);
+  service->SetAttr(txmpp::QN_ID, id_);
   service->SetAttr(txmpp::QN_TYPE, type_);
 
   std::ostringstream code_stream;

@@ -9,6 +9,7 @@
 #define _TYRION_CONSTANTS_H_
 
 #include <string>
+#include <txmpp/constants.h>
 #include <txmpp/qname.h>
 
 namespace tyrion {
@@ -22,6 +23,7 @@ extern const txmpp::QName QN_USER;
 extern const txmpp::QName QN_GROUP;
 extern const txmpp::QName QN_INPUT;
 
+extern const txmpp::QName QN_SERVICE_ID;
 extern const txmpp::QName QN_CODE;
 extern const txmpp::QName QN_OUTPUT;
 extern const txmpp::QName QN_ERROR;

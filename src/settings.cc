@@ -7,9 +7,6 @@
 
 #include "settings.h"
 
-#include <string>
-#include "logging.h"
-
 namespace tyrion {
 
 Settings::Settings(const std::string& path) : config_(NULL), path_(path) {

@@ -7,9 +7,7 @@
 
 #include "xmpp_pump.h"
 
-#include <txmpp/logging.h>
 #include <txmpp/prexmppauthimpl.h>
-#include "logging.h"
 #include "loop.h"
 #include "xmpp_presence_task.h"
 

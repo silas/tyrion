@@ -10,8 +10,7 @@
 #include <txmpp/constants.h>
 #include <txmpp/logging.h>
 #include <txmpp/xmppclient.h>
-#include "constants.h"
-#include "logging.h"
+#include "basic.h"
 
 namespace tyrion {
 

@@ -14,6 +14,7 @@ namespace tyrion {
 
 Envelope::Envelope() :
   jid_(txmpp::STR_EMPTY),
+  id_(txmpp::STR_EMPTY),
   iq_id_(txmpp::STR_EMPTY),
   input_(txmpp::STR_EMPTY),
   output_(txmpp::STR_EMPTY),

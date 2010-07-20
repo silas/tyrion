@@ -8,9 +8,9 @@
 #include "client_envelope.h"
 
 #include <sstream>
-#include <txmpp/constants.h>
+#include <txmpp/stringdigest.h>
+#include "basic.h"
 #include "utils.h"
-#include "logging.h"
 
 namespace tyrion {
 
@@ -65,6 +65,8 @@ txmpp::XmlElement* ClientEnvelope::Request() {
   iq->SetAttr(txmpp::QN_TYPE, txmpp::STR_SET);
 
   txmpp::XmlElement* service = iq->FindOrAddNamedChild(QN_SERVICE);
+  // TODO(silas): make this more unique
+  service->SetAttr(QN_SERVICE_ID, txmpp::MD5(jid_.Str() + type_ + iq_id_));
   service->SetAttr(txmpp::QN_TYPE, type_);
 
   std::ostringstream timeout_stream;

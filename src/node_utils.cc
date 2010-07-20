@@ -11,8 +11,7 @@
 #include <cstring>
 #include <iostream>
 #include <string>
-#include "constants.h"
-#include "logging.h"
+#include "basic.h"
 #include "node_loop.h"
 #include "node_service_handler.h"
 #include "node_settings.h"

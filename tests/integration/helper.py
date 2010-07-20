@@ -16,6 +16,7 @@ from twisted.words.xish import domish
 class Response(object):
 
     def __init__(self):
+        self.id = None
         self.code = None
         self.type = None
         self.output = None
@@ -141,7 +142,7 @@ class BaseXMPP(Base):
         self.xmlStream = xs
         self.xmlStream.rawDataInFn = self.raw_data_in
         self.xmlStream.rawDataOutFn = self.raw_data_out
-        xml = domish.Element(('jabber:client','stream:features'))
+        xml = domish.Element(('jabber:client', 'stream:features'))
         xml.addElement('bind', self.config.get('general', 'namespace'))
         xs.send(xml)
         self.defer_authenticated.callback(None)
@@ -152,7 +153,7 @@ class BaseXMPP(Base):
     def client_init_failed(self, failure):
         log.error('Client init failed: %s' % failure)
 
-    def create_service(self, type, input='', handle_success=None, handle_error=None, destination=None, user=None, group=None, timeout=None):
+    def create_service(self, type, input='', handle_success=None, handle_error=None, destination=None, user=None, group=None, timeout=None, id=None):
         def default_success_func(xml):
             pass
         if handle_success is None:
@@ -163,6 +164,7 @@ class BaseXMPP(Base):
         iq = xmlstream.IQ(self.xmlStream)
         service = iq.addElement((self.config.get('general', 'namespace'), 'service'))
         service.attributes['type'] = type
+        service.attributes['id'] = id or uuid.uuid4().get_hex()
         if user is not None:
             service.attributes['user'] = user
         if group is not None:
@@ -184,6 +186,7 @@ class BaseXMPP(Base):
         for e1 in xml.elements():
             if e1.name == 'service':
                 response.code = e1.attributes.get('code')
+                response.id = e1.attributes.get('id')
                 response.type = e1.attributes.get('type')
                 for e2 in e1.elements():
                     if e2.name == 'output':
