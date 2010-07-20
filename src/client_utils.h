@@ -15,8 +15,16 @@ namespace tyrion {
 class ClientLoop;
 class ClientRequest;
 
+/**
+ * Exit with status code and cleanup globals.
+ */
 void ClientExit(int code);
-void ClientSetup(int argc, char* argv[], ClientLoop* loop, ClientRequest* request);
+
+/*
+ * Parse CLI options and setup ClientLoop and ClientRequest.
+ */
+void ClientSetup(int argc, char* argv[], ClientLoop* loop,
+                 ClientRequest* request);
 
 }  // namespace tyrion
 
