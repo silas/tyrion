@@ -95,6 +95,9 @@ def Abort(message):
     print message
     Exit(1)
 
+def ChangeExt(src_list, ext):
+    return map(lambda x: x[:-2] + ext, src_list)
+
 def Copy(src, dst):
     print 'Copying %s to %s' % (src, dst)
     shutil.copy2(src, dst)
@@ -107,9 +110,6 @@ def CreateDirectory(path):
 def Link(src, dst):
     print 'Linking %s to %s' % (src, dst)
     os.symlink(src, dst)
-
-def ChangeExt(src_list, ext):
-    return map(lambda x: x[:-2] + ext, src_list)
 
 def Remove(path):
     for p in glob.glob(path):
@@ -217,10 +217,6 @@ if 'POSIX' in defines:
 
 if not GetOption('devel'):
     flags += ' -O2'
-
-if GetOption('flags'):
-    env.Append(CFLAGS=GetOption('flags'))
-    env.Append(CXXFLAGS=GetOption('flags'))
 
 env.Append(CFLAGS=flags)
 env.Append(CXXFLAGS=flags)
