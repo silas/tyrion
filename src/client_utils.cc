@@ -25,7 +25,8 @@ void ClientExit(int code) {
   exit(code);
 }
 
-void ClientSetup(int argc, char* argv[], ClientLoop* loop, ClientRequest* request) {
+void ClientSetup(int argc, char* argv[], ClientLoop* loop,
+                 ClientRequest* request) {
   const char *config = NULL;
   bool debug = false;
 
@@ -85,21 +86,25 @@ void ClientSetup(int argc, char* argv[], ClientLoop* loop, ClientRequest* reques
       debug = true;
     } else if (OPTION("--help")) {
       std::cout << "Usage: tyrion [OPTION]..." << std::endl;
-      std::cout << "Example: echo \"echo test\" | tyrion -c client.conf -p test" << std::endl;
+      std::cout << "Example: echo \"echo test\" | tyrion -c client.conf -p ";
+      std::cout << "test" << std::endl;
       std::cout << std::endl;
       std::cout << "Configuration options:" << std::endl;
-      std::cout << "  -c, --config-file         configuration file" << std::endl;
+      std::cout << "  -c, --config-file         configuration file"
+                << std::endl;
       std::cout << "  -p, --profile             profile name" << std::endl;
       std::cout << std::endl;
       std::cout << "Service options:" << std::endl;
       std::cout << "  -j, --jid                 destination JID" << std::endl;
       std::cout << "  -s, --service             service name" << std::endl;
-      std::cout << "  -t, --timeout             timeout in seconds" << std::endl;
+      std::cout << "  -t, --timeout             timeout in seconds"
+                << std::endl;
       std::cout << "  -u, --user                remote username" << std::endl;
       std::cout << "  -g, --group               remote group" << std::endl;
       std::cout << std::endl;
       std::cout << "Misc options:" << std::endl;
-      std::cout << "  --debug                   debug information" << std::endl;
+      std::cout << "  --debug                   debug information"
+                << std::endl;
       ClientExit(0);
     } else {
       TLOG(ERROR) << "Unknown option '" << option << "'.";

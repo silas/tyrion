@@ -25,7 +25,8 @@ void NodeExit(int code) {
   exit(code >= 0 ? code : 0);
 }
 
-NodeLoop* NodeReload(int argc, char* argv[], NodeLoop* old_loop, NodeServiceHandler* service_handler) {
+NodeLoop* NodeReload(int argc, char* argv[], NodeLoop* old_loop,
+                     NodeServiceHandler* service_handler) {
   old_loop->SetReconnect(false);
 
   NodeLoop* new_loop = new NodeLoop(pthread_self());
@@ -134,7 +135,8 @@ int NodeSetup(int argc, char* argv[], NodeLoop* loop, bool reload) {
                 << std::endl;
       std::cout << std::endl;
       std::cout << "Misc options:" << std::endl;
-      std::cout << "  --debug                   debug information" << std::endl;
+      std::cout << "  --debug                   debug information"
+                << std::endl;
       return -1;
     } else {
       TLOG(ERROR) << "Unknown option '" << option << "'.";
