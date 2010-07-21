@@ -153,27 +153,47 @@ class BaseXMPP(Base):
     def client_init_failed(self, failure):
         log.error('Client init failed: %s' % failure)
 
-    def create_service(self, type, input='', handle_success=None, handle_error=None, destination=None, user=None, group=None, timeout=None, id=None):
+    def create_service_iq(self, type=None, id=None, user=None, group=None,
+                          timeout=None, input=None, service=None):
+        iq = xmlstream.IQ(self.xmlStream)
+        if service is not None:
+            service = iq.addElement((self.config.get('general', 'namespace'),
+                                    'service'))
+            if type is not None:
+                service.attributes['type'] = type
+            if id is not None:
+                service.attributes['id'] = id or uuid.uuid4().get_hex()
+            if user is not None:
+                service.attributes['user'] = user
+            if group is not None:
+                service.attributes['group'] = group
+            if timeout is not None:
+                service.attributes['timeout'] = unicode(timeout)
+            if input and not input.endswith('\n'):
+                input = input + '\n'
+            if input is not None:
+                service.addElement('input', content=input)
+        return iq
+
+    def create_service(self, type='', input='', handle_success=None,
+                       handle_error=None, destination=None, user=None,
+                       group=None, timeout=None, id='', service=True, iq=None):
         def default_success_func(xml):
             pass
         if handle_success is None:
             handle_success = default_success_func
         if destination is None:
             destination = self.config.get('general', 'destination')
-        # create iq
-        iq = xmlstream.IQ(self.xmlStream)
-        service = iq.addElement((self.config.get('general', 'namespace'), 'service'))
-        service.attributes['type'] = type
-        service.attributes['id'] = id or uuid.uuid4().get_hex()
-        if user is not None:
-            service.attributes['user'] = user
-        if group is not None:
-            service.attributes['group'] = group
-        if timeout is not None:
-            service.attributes['timeout'] = unicode(timeout)
-        if input and not input.endswith('\n'):
-            input = input + '\n'
-        service.addElement('input', content=input)
+        if iq is None:
+            iq = self.create_service_iq(
+                service=service,
+                type=type,
+                id=id,
+                user=user,
+                group=group,
+                timeout=timeout,
+                input=input,
+            )
         # send iq
         d = iq.send(destination)
         d.addCallback(handle_success)

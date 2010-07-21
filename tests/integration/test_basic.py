@@ -29,7 +29,7 @@ class TestBasic(BaseXMPP, shared.ServiceTests, unittest.TestCase):
 
     def test_service_unavailable_module_not_found(self):
         return self.create_service(
-            'some-service-which-should-always-fail',
+            type='some-service-which-should-always-fail',
             handle_success=self.handle_service_unavailable_success,
             handle_error=self.handle_service_unavailable_error,
         )
@@ -45,7 +45,7 @@ class TestUnknownUser(BaseXMPP, unittest.TestCase):
 
     def test_service_unavailable_acl(self):
         return self.create_service(
-            'org.tyrion.service.bash',
+            type='org.tyrion.service.bash',
             handle_success=self.handle_service_unavailable_success,
             handle_error=self.handle_service_unavailable_error,
         )

@@ -1,4 +1,3 @@
-
 class ServiceTests(object):
 
     def test_bash(self):
