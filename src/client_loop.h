@@ -9,12 +9,14 @@
 #define _TYRION_CLIENT_LOOP_H_
 
 #include "basic.h"
-#include "client_envelope.h"
 #include "client_settings.h"
-#include "client_xmpp_pump.h"
 #include "loop.h"
 
 namespace tyrion {
+
+class ClientEnvelope;
+class ClientXmppPump;
+class Loop;
 
 class ClientLoop : public Loop {
   public:

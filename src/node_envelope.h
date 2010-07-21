@@ -11,6 +11,12 @@
 #include "basic.h"
 #include "envelope.h"
 
+namespace txmpp {
+
+class XmlElement;
+
+}  // namespace txmpp
+
 namespace tyrion {
 
 class NodeLoop;
@@ -31,6 +37,6 @@ class NodeEnvelope : public Envelope {
     DISALLOW_EVIL_CONSTRUCTORS(NodeEnvelope);
 };
 
-}  // tyrion
+}  // namespace tyrion
 
 #endif  // _TYRION_NODE_ENVELOPE_H_

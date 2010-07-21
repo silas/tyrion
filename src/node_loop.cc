@@ -6,7 +6,9 @@
  */
 
 #include "node_loop.h"
+
 #include "node_utils.h"
+#include "node_xmpp_pump.h"
 
 namespace tyrion {
 

@@ -8,7 +8,14 @@
 #include "node_process.h"
 
 #include <cstdlib>
+#include <grp.h>
+#include <pwd.h>
+#include <signal.h>
+#include <stdio.h>
 #include <sys/wait.h>
+#include <time.h>
+#include <unistd.h>
+#include <iostream>
 #include "utils.h"
 
 namespace tyrion {

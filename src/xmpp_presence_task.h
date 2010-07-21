@@ -8,7 +8,6 @@
 #ifndef _TYRION_XMPP_PRESENCE_TASK_H_
 #define _TYRION_XMPP_PRESENCE_TASK_H_
 
-#include <txmpp/taskparent.h>
 #include <txmpp/xmpptask.h>
 
 namespace tyrion {

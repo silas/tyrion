@@ -8,7 +8,6 @@
 #ifndef _TYRION_SETTINGS_H_
 #define _TYRION_SETTINGS_H_
 
-#include <string>
 #include "basic.h"
 #include "config.h"
 

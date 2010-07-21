@@ -8,22 +8,13 @@
 #ifndef _TYRION_LOOP_H_
 #define _TYRION_LOOP_H_
 
-#include <csignal>
-#include <errno.h>
-#include <sstream>
-#include <iostream>
-#include <txmpp/prexmppauthimpl.h>
-#include <txmpp/thread.h>
-#include <txmpp/xmppasyncsocketimpl.h>
-#include <txmpp/xmppclientsettings.h>
 #include <txmpp/xmppengine.h>
 #include "basic.h"
-#include "envelope.h"
-#include "settings.h"
-#include "utils.h"
 #include "xmpp_pump.h"
 
 namespace tyrion {
+
+class Settings;
 
 class Loop : public txmpp::Thread,
              public txmpp::MessageHandler,

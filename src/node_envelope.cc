@@ -9,6 +9,7 @@
 
 #include <sstream>
 #include <txmpp/constants.h>
+#include <txmpp/xmlelement.h>
 #include "node_loop.h"
 #include "node_settings.h"
 #include "utils.h"

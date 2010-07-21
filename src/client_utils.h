@@ -8,8 +8,6 @@
 #ifndef _TYRION_CLIENT_UTILS_H_
 #define _TYRION_CLIENT_UTILS_H_
 
-#include <string>
-
 namespace tyrion {
 
 class ClientLoop;

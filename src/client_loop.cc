@@ -7,7 +7,8 @@
 
 #include "client_loop.h"
 
-#include <iostream>
+#include "client_envelope.h"
+#include "client_xmpp_pump.h"
 #include "client_xmpp_service_task.h"
 
 namespace tyrion {

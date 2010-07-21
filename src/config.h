@@ -9,7 +9,6 @@
 #define _TYRION_CONFIG_H_
 
 #include <map>
-#include <string>
 #include "basic.h"
 
 namespace tyrion {

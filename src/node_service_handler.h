@@ -8,17 +8,15 @@
 #ifndef _NODE_SERVICE_HANDLER_H_
 #define _NODE_SERVICE_HANDLER_H_
 
-#include <sys/select.h>
 #include <list>
-#include <txmpp/messagequeue.h>
 #include <txmpp/taskrunner.h>
 #include <txmpp/thread.h>
-#include <txmpp/time.h>
 #include "basic.h"
 #include "node_envelope.h"
-#include "node_process.h"
 
 namespace tyrion {
+
+class NodeProcess;
 
 class NodeServiceHandlerData : public txmpp::MessageData {
  public:

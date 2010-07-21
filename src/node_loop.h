@@ -10,12 +10,12 @@
 
 #include "basic.h"
 #include "loop.h"
-#include "node_envelope.h"
 #include "node_service_handler.h"
 #include "node_settings.h"
-#include "node_xmpp_pump.h"
 
 namespace tyrion {
+
+class NodeXmppPump;
 
 class NodeLoop : public Loop {
   public:

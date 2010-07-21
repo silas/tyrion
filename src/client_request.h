@@ -8,7 +8,6 @@
 #ifndef _TYRION_CLIENT_REQUEST_H_
 #define _TYRION_CLIENT_REQUEST_H_
 
-#include <string>
 #include <vector>
 #include "basic.h"
 

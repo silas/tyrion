@@ -7,6 +7,13 @@
 
 #include "loop.h"
 
+#include <csignal>
+#include <errno.h>
+#include <txmpp/prexmppauthimpl.h>
+#include <txmpp/xmppasyncsocketimpl.h>
+#include "settings.h"
+#include "utils.h"
+
 namespace tyrion {
 
 Loop::Loop(pthread_t pthread) : 

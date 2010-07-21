@@ -7,8 +7,9 @@
 
 #include "node_service_handler.h"
 
-#include <txmpp/logging.h>
+#include <sys/select.h>
 #include "node_loop.h"
+#include "node_process.h"
 #include "node_settings.h"
 #include "utils.h"
 

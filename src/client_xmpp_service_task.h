@@ -8,13 +8,19 @@
 #ifndef _TYRION_CLIENT_XMPP_SERVICE_TASK_H_
 #define _TYRION_CLIENT_XMPP_SERVICE_TASK_H_
 
-#include <txmpp/taskparent.h>
 #include <txmpp/xmpptask.h>
 #include "basic.h"
-#include "client_envelope.h"
-#include "client_loop.h"
+
+namespace txmpp {
+
+class XmppParent;
+
+}  // namespace txmpp
 
 namespace tyrion {
+
+class ClientEnvelope;
+class ClientLoop;
 
 class ClientXmppServiceTask : public txmpp::XmppTask {
   public:

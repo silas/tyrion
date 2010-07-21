@@ -8,6 +8,7 @@
 #ifndef _TYRION_CLIENT_ENVELOPE_H_
 #define _TYRION_CLIENT_ENVELOPE_H_
 
+#include <txmpp/xmlelement.h>
 #include "basic.h"
 #include "envelope.h"
 

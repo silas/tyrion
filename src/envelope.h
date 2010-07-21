@@ -8,9 +8,7 @@
 #ifndef _TYRION_ENVELOPE_H_
 #define _TYRION_ENVELOPE_H_
 
-#include <string>
 #include <txmpp/jid.h>
-#include <txmpp/xmlelement.h>
 #include "basic.h"
 
 namespace tyrion {

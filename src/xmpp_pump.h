@@ -8,12 +8,9 @@
 #ifndef _TYRION_XMPP_PUMP_H_
 #define _TYRION_XMPP_PUMP_H_
 
-#include <txmpp/messagequeue.h>
 #include <txmpp/taskrunner.h>
 #include <txmpp/thread.h>
-#include <txmpp/time.h>
 #include <txmpp/xmppclient.h>
-#include <txmpp/xmppengine.h>
 #include <txmpp/xmpptask.h>
 #include "basic.h"
 

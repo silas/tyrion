@@ -7,7 +7,6 @@
 
 #include "envelope.h"
 
-#include <txmpp/constants.h>
 #include "utils.h"
 
 namespace tyrion {

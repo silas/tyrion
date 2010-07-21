@@ -8,15 +8,6 @@
 #ifndef _TYRION_PROCESS_H_
 #define _TYRION_PROCESS_H_
 
-#include <fcntl.h>
-#include <grp.h>
-#include <pwd.h>
-#include <signal.h>
-#include <stdio.h>
-#include <time.h>
-#include <unistd.h>
-#include <iostream>
-
 #include "basic.h"
 
 namespace tyrion {
