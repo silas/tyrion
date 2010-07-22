@@ -9,7 +9,7 @@
 #define _TYRION_CLIENT_XMPP_SERVICE_TASK_H_
 
 #include <txmpp/xmpptask.h>
-#include "basic.h"
+#include "common.h"
 
 namespace txmpp {
 

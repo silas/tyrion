@@ -10,7 +10,7 @@
 #include <txmpp/constants.h>
 #include <txmpp/logging.h>
 #include <txmpp/xmppclient.h>
-#include "basic.h"
+#include "common.h"
 #include "node_envelope.h"
 #include "node_loop.h"
 

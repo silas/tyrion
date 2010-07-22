@@ -9,7 +9,7 @@
 #define _TYRION_LOOP_H_
 
 #include <txmpp/xmppengine.h>
-#include "basic.h"
+#include "common.h"
 #include "xmpp_pump.h"
 
 namespace tyrion {

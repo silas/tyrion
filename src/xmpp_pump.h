@@ -12,7 +12,7 @@
 #include <txmpp/thread.h>
 #include <txmpp/xmppclient.h>
 #include <txmpp/xmpptask.h>
-#include "basic.h"
+#include "common.h"
 
 namespace tyrion {
 

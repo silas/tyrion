@@ -11,7 +11,7 @@
 #include <cstring>
 #include <iostream>
 #include <string>
-#include "basic.h"
+#include "common.h"
 #include "client_loop.h"
 #include "client_request.h"
 #include "client_settings.h"

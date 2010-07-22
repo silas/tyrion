@@ -9,7 +9,7 @@
 
 #include <sstream>
 #include <txmpp/stringdigest.h>
-#include "basic.h"
+#include "common.h"
 #include "utils.h"
 
 namespace tyrion {

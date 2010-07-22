@@ -8,7 +8,7 @@
 #ifndef _TYRION_SETTINGS_H_
 #define _TYRION_SETTINGS_H_
 
-#include "basic.h"
+#include "common.h"
 #include "config.h"
 
 namespace tyrion {

@@ -8,7 +8,7 @@
 #ifndef _TYRION_CLIENT_LOOP_H_
 #define _TYRION_CLIENT_LOOP_H_
 
-#include "basic.h"
+#include "common.h"
 #include "client_settings.h"
 #include "loop.h"
 

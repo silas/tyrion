@@ -8,7 +8,7 @@
 #ifndef _TYRION_PROCESS_H_
 #define _TYRION_PROCESS_H_
 
-#include "basic.h"
+#include "common.h"
 
 namespace tyrion {
 

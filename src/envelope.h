@@ -9,7 +9,7 @@
 #define _TYRION_ENVELOPE_H_
 
 #include <txmpp/jid.h>
-#include "basic.h"
+#include "common.h"
 
 namespace tyrion {
 

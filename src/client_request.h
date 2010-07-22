@@ -9,7 +9,7 @@
 #define _TYRION_CLIENT_REQUEST_H_
 
 #include <vector>
-#include "basic.h"
+#include "common.h"
 
 namespace tyrion {
 

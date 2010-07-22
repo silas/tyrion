@@ -11,7 +11,7 @@
 #include <list>
 #include <txmpp/taskrunner.h>
 #include <txmpp/thread.h>
-#include "basic.h"
+#include "common.h"
 #include "node_envelope.h"
 
 namespace tyrion {

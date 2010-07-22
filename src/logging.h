@@ -13,7 +13,7 @@
 #include <time.h>
 #include <iostream>
 #include <sstream>
-#include "basic.h"
+#include "common.h"
 
 #define TLOG(level) tyrion::LogItem(tyrion::Logging::level)
 

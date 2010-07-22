@@ -8,7 +8,7 @@
 #ifndef _TYRION_NODE_LOOP_H_
 #define _TYRION_NODE_LOOP_H_
 
-#include "basic.h"
+#include "common.h"
 #include "loop.h"
 #include "node_service_handler.h"
 #include "node_settings.h"

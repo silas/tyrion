@@ -8,7 +8,7 @@
 #ifndef _TYRION_NODE_ENVELOPE_H_
 #define _TYRION_NODE_ENVELOPE_H_
 
-#include "basic.h"
+#include "common.h"
 #include "envelope.h"
 
 namespace txmpp {

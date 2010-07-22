@@ -8,7 +8,7 @@
 #ifndef _TYRION_NODE_XMPP_PUMP_H_
 #define _TYRION_NODE_XMPP_PUMP_H_
 
-#include "basic.h"
+#include "common.h"
 #include "xmpp_pump.h"
 
 namespace tyrion {

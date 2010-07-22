@@ -8,7 +8,7 @@
 #ifndef _TYRION_CLIENT_XMPP_PUMP_H_
 #define _TYRION_CLIENT_XMPP_PUMP_H_
 
-#include "basic.h"
+#include "common.h"
 #include "xmpp_pump.h"
 
 namespace tyrion {
