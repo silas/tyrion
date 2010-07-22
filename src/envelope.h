@@ -51,7 +51,9 @@ class Envelope {
     inline void set_group(const std::string& group) { group_ = group; }
 
     inline int timeout() { return timeout_; }
-    inline void set_timeout(int timeout) { timeout_ = timeout > 0 ? timeout : PROCESS_TIMEOUT; }
+    inline void set_timeout(int timeout) {
+      timeout_ = timeout > 0 ? timeout : PROCESS_TIMEOUT;
+    }
 
     inline int code() { return code_; }
     inline void set_code(int code) { code_ = code; }

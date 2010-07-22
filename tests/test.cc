@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "test_config.h"
+#include "test_envelope.h"
 #include "test_node_process.h"
 #include "test_settings.h"
 
