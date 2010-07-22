@@ -5,8 +5,8 @@
  * This file is subject to the New BSD License (see the LICENSE file).
  */
 
-#ifndef _TYRION_BASIC_H_
-#define _TYRION_BASIC_H_
+#ifndef _TYRION_COMMON_H_
+#define _TYRION_COMMON_H_
 
 #include <txmpp/constructormagic.h>
 #include <txmpp/messagequeue.h>
@@ -28,4 +28,4 @@ class MessageDataType : public txmpp::MessageData {
 
 }  // namespace tyrion
 
-#endif  // _TYRION_BASIC_H_
+#endif  // _TYRION_COMMON_H_
