@@ -13,6 +13,7 @@ class SomethingTest : public ::testing::Test {
   virtual ~SomethingTest() {}
   virtual void SetUp() {}
   virtual void TearDown() {}
+  DISALLOW_EVIL_CONSTRUCTORS(SomethingTest);
 };
 
 TEST_F(SomethingTest, Basic) {

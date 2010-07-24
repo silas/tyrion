@@ -42,6 +42,7 @@ class Logging {
 
     inline Level debug_level() { return debug_level_; }
     inline Level file_level() { return file_level_; }
+    inline Level lowest_level() { return lowest_level_; }
 
     static std::string LevelToString(Level level);
     static Level StringToLevel(std::string level, Level default_level);
