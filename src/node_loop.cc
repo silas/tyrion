@@ -66,7 +66,7 @@ void NodeLoop::DoRestart() {
 }
 
 void NodeLoop::DoRequest(ServiceData* service) {
-  if (track_ <= 10) {
+  if (track_ <= 1000) {
     track_++;
     service->data()->set_retry(0);
     service_handler_->Request(service->data());
