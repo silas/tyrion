@@ -1,14 +1,7 @@
 from helper import *
 import shared
 
-class TestBasic(BaseXMPP, shared.ServiceTests, unittest.TestCase):
-
-    def __init__(self, *args, **kwargs):
-        super(TestBasic, self).__init__(*args, **kwargs)
-        self.setup_basic()
-        self.username = self.config.get('general', 'username')
-        self.password = self.config.get('general', 'password')
-        self.jid = jid.JID(self.username)
+class CheckBase(object):
 
     def check(self, input, type, output=None, error=None, code=None, callback=None, timeout=30, id=None):
         def handle(xml):
@@ -26,6 +19,15 @@ class TestBasic(BaseXMPP, shared.ServiceTests, unittest.TestCase):
             if callable(callback):
                 callback(code=response.code, output=response.output, error=response.error)
         return self.create_service(type, input, handle_success=handle, timeout=timeout)
+
+class TestBasic(BaseXMPP, CheckBase, shared.ServiceTests, unittest.TestCase):
+
+    def __init__(self, *args, **kwargs):
+        super(TestBasic, self).__init__(*args, **kwargs)
+        self.setup_basic()
+        self.username = self.config.get('general', 'username')
+        self.password = self.config.get('general', 'password')
+        self.jid = jid.JID(self.username)
 
     def test_service_unavailable_module_not_found(self):
         return self.create_service(
