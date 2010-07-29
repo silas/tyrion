@@ -15,7 +15,7 @@ namespace tyrion {
 
 std::string CreateError(std::string code, std::string message) {
   Escape(message);
-  return "Error: org.tyrion.error." + code + (!message.empty() ? ": " +
+  return "ERROR: org.tyrion.error." + code + (!message.empty() ? ": " +
       message : message) + "\n";
 }
 
