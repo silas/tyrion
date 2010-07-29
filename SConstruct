@@ -210,6 +210,8 @@ elif system == 'darwin':
     soname = 'lib%s.dylib.%s' % (name, version)
     link += ' -compatibility_version %s' % version
     link += ' -current_version %s' % version
+else:
+    Abort('Unknown OS.')
 
 if 'POSIX' in defines:
     flags += ' -pthread'
@@ -247,10 +249,13 @@ env = conf.Finish()
 #
 
 tyrion_library = env.SharedLibrary(
-    'tyrion',
+    soname,
     library_src,
     CPPDEFINES=defines,
     LIBS=libraries,
+    LINKFLAGS=link,
+    SHLIBPREFIX='',
+    SHLIBSUFFIX='',
 )
 
 libraries += [tyrion_library]
