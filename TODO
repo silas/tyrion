@@ -4,6 +4,7 @@ TODO
 * Fix all valgrind issues
 * Review interaction between NodeLoop and NodeServiceHandler for logical errors
   and thread safety
+* Implement some type of DoS/flooding prevention
 
 ## FUTURE TODO
 
