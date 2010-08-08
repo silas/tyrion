@@ -6,7 +6,7 @@ namespace {
 using namespace tyrion;
 
 TEST(SettingTest, Basic) {
-  Settings s("tests/assets/test.ini");
+  Settings s("assets/test.ini");
 
   EXPECT_FALSE(s.HasError());
 

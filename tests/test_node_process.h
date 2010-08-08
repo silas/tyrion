@@ -58,13 +58,13 @@ class TestNodeProcess : public NodeProcess {
 };
 
 TEST(NodeProcessTest, Close) {
-  TestNodeProcess p1 = TestNodeProcess("tests/assets/test_process_close_code_true");
+  TestNodeProcess p1 = TestNodeProcess("assets/test_process_close_code_true");
   p1.Run();
   EXPECT_EQ("", p1.ReadAll(NodeProcess::Stdout));
   EXPECT_EQ("", p1.ReadAll(NodeProcess::Stderr));
   EXPECT_EQ(0, p1.Close());
 
-  TestNodeProcess p2 = TestNodeProcess("tests/assets/test_process_close_code_false");
+  TestNodeProcess p2 = TestNodeProcess("assets/test_process_close_code_false");
   p2.Run();
   EXPECT_EQ("", p2.ReadAll(NodeProcess::Stdout));
   EXPECT_EQ("", p2.ReadAll(NodeProcess::Stderr));
@@ -92,7 +92,7 @@ TEST(NodeProcessTest, System) {
 }
 
 TEST(NodeProcessTest, Timeout) {
-  TestNodeProcess p1 = TestNodeProcess("tests/assets/test_process_timeout", false, 1);
+  TestNodeProcess p1 = TestNodeProcess("assets/test_process_timeout", false, 1);
   p1.Run();
   EXPECT_EQ("test\n", p1.ReadAll(NodeProcess::Stdout));
   EXPECT_EQ("", p1.ReadAll(NodeProcess::Stderr));
@@ -108,7 +108,7 @@ TEST(NodeProcessTest, Timeout) {
 }
 
 TEST(NodeProcessTest, Write) {
-  TestNodeProcess p1 = TestNodeProcess("tests/assets/test_process_write");
+  TestNodeProcess p1 = TestNodeProcess("assets/test_process_write");
   p1.Run();
   p1.Write("1+1\nquit()\n");
   EXPECT_EQ("2\n", p1.ReadAll(NodeProcess::Stdout));
