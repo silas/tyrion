@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+run-tests() {
+  pushd test-src
+  scons && \
+  ./test-config && \
+  ./test-envelope && \
+  ./test-logging && \
+  ./test-node-process && \
+  ./test-settings
+  retval=$?
+  popd
+  return $retval
+}
+
+run-tests

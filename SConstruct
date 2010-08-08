@@ -2,6 +2,7 @@ import glob
 import os
 import platform
 import shutil
+import subprocess
 
 #
 # Command line options
@@ -277,24 +278,6 @@ tyrion_node = env.Program(
     CPPDEFINES=defines,
     LIBS=libraries,
 )
-
-#
-# Build tests
-#
-
-if GetOption('tests'):
-
-    test_src += ChangeExt(client_src, 'o')
-    test_src += ChangeExt(node_src, 'o')
-    test_src.remove('src/client.o')
-    test_src.remove('src/node.o')
-
-    test_all = env.Program(
-        target='test-all',
-        source=test_src,
-        CPPDEFINES=defines,
-        LIBS=libraries + ['gtest'],
-    )
 
 if GetOption('install'):
 

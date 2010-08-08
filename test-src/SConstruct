@@ -1,0 +1,132 @@
+import copy
+import os
+import platform
+
+defines = []
+flags = '-Wall -pedantic -pthread'
+frameworks = []
+libraries = ['gtest', 'pthread', 'txmpp']
+link = ''
+name = 'tyrion'
+objects = {}
+path = '../src'
+system = platform.system().lower()
+
+base_src_list = [
+    os.path.join(path, 'config.cc'),
+    os.path.join(path, 'constants.cc'),
+    os.path.join(path, 'envelope.cc'),
+    os.path.join(path, 'logging.cc'),
+    os.path.join(path, 'loop.cc'),
+    os.path.join(path, 'settings.cc'),
+    os.path.join(path, 'third_party/inih/ini.c'),
+    os.path.join(path, 'utils.cc'),
+    os.path.join(path, 'xmpp_presence_task.cc'),
+    os.path.join(path, 'xmpp_pump.cc'),
+]
+
+env = Environment()
+
+def SetupEnvironment(env):
+    # Include paths
+    path_list = []
+    if 'C_INCLUDE_PATH' in os.environ:
+        path_list.extend(os.environ['C_INCLUDE_PATH'].split(':'))
+    if 'CPLUS_INCLUDE_PATH' in os.environ:
+        path_list.extend(os.environ['CPLUS_INCLUDE_PATH'].split(':'))
+    env.Append(CPPPATH=path_list)
+    # Library paths
+    path_list = []
+    if 'LIBRARY_PATH' in os.environ:
+        path_list.extend(os.environ['LIBRARY_PATH'].split(':'))
+    env.Append(LIBPATH=path_list)
+
+def SourceList(name, local=None, include=None, exclude=None, unique=None):
+    src_list = []
+    local = local or []
+    include = include or []
+    exclude = exclude or []
+    unique = unique or []
+    include = [os.path.join(path, item) for item in include]
+    exclude = [os.path.join(path, item) for item in exclude]
+    unique = [os.path.join(path, item) for item in unique]
+    for item in base_src_list:
+        if item not in exclude and item not in unique:
+            src_list += objects[item]
+    for item in local:
+        if item not in objects:
+            objects[item] = env.Object(item)
+        if item not in exclude and item not in unique:
+            src_list += objects[item]
+    for item in include:
+        if item not in objects:
+            objects[item] = env.Object(item)
+        if item not in exclude and item not in unique:
+            src_list += objects[item]
+    for item in unique:
+        src_list += env.Object(
+            '%s-%s.o' % (name, os.path.basename(item).rsplit('.', 1)[0]),
+            item,
+        )
+    return src_list
+
+env.Append(CFLAGS=flags)
+env.Append(CXXFLAGS=flags)
+env.Append(FRAMEWORKS=frameworks)
+
+SetupEnvironment(env)
+
+for item in base_src_list:
+    objects[item] = env.Object(item)
+
+env.Program(
+    target='test-config',
+    source=SourceList(
+        'test_config',
+        local=['test_config.cc'],
+        unique=['config.cc'],
+    ),
+    CPPDEFINES=defines,
+    LIBS=libraries,
+)
+
+env.Program(
+    target='test-envelope',
+    source=SourceList(
+        'test_envelope',
+        local=['test_envelope.cc'],
+    ),
+    CPPDEFINES=defines,
+    LIBS=libraries,
+)
+
+env.Program(
+    target='test-logging',
+    source=SourceList(
+        'test_logging',
+        local=['test_logging.cc'],
+    ),
+    CPPDEFINES=defines,
+    LIBS=libraries,
+)
+
+env.Program(
+    target='test-node-process',
+    source=SourceList(
+        'test_node_process',
+        local=['test_node_process.cc'],
+        include=['node_process.cc'],
+    ),
+    CPPDEFINES=defines,
+    LIBS=libraries,
+)
+
+env.Program(
+    target='test-settings',
+    source=SourceList(
+        'test_settings',
+        local=['test_settings.cc'],
+    ),
+    CPPDEFINES=defines,
+    LIBS=libraries,
+)
