@@ -36,6 +36,12 @@ std::string RealPath(const std::string& path);
 void StringReplace(std::string& text, const std::string& search,
                    const std::string& replace);
 
+void Exit(int code);
+Loop* Reload(int argc, char* argv[], Loop* old_loop,
+                     ServiceHandler* service_handler);
+bool SetupLogging(Settings* settings, bool reload);
+int Setup(int argc, char* argv[], Loop* loop, bool reload);
+
 }  // namespace tyrion
 
 #endif  // _TYRION_UTILS_H_

@@ -11,14 +11,24 @@
 #include <txmpp/jid.h>
 #include "common.h"
 
+namespace txmpp {
+
+class XmlElement;
+
+}  // namespace txmpp
+
 namespace tyrion {
 
 class Envelope {
   public:
-    Envelope();
+    Envelope(Loop* loop);
     virtual ~Envelope() {}
 
+    bool Check();
     int Retry();
+    bool Update(const txmpp::XmlElement *stanza);
+    std::string Path();
+    const txmpp::XmlElement* Response();
 
     inline txmpp::Jid& jid() { return jid_; }
     inline void set_jid(const txmpp::Jid& jid) { jid_ = jid; }
@@ -61,7 +71,8 @@ class Envelope {
     inline int retry() { return retry_; }
     inline void set_retry(int retry) { retry_ = retry; }
 
-  protected:
+  private:
+    Loop* loop_;
     txmpp::Jid jid_;
     std::string id_;
     std::string iq_id_;

@@ -13,18 +13,45 @@
 #include <txmpp/xmppasyncsocketimpl.h>
 #include "settings.h"
 #include "utils.h"
+#include "xmpp_pump.h"
 
 namespace tyrion {
 
 Loop::Loop(pthread_t pthread) : 
+    acls_(NULL),
+    track_(0),
     pump_(NULL),
     state_(NONE),
     settings_(NULL),
+    reconnect_(true) {
+    service_handler_(NULL),
     pthread_(pthread),
     retry_(1) {
 }
 
 Loop::~Loop() {
+  if (pump_ != NULL)
+    delete pump_;
+  if (settings_ != NULL)
+    delete settings_;
+  if (acls_ != NULL)
+    delete acls_;
+}
+
+void Loop::SetReconnect(bool reconnect) {
+  Post(this, MSG_SET_RECONNECT, new ReconnectData(reconnect));
+}
+
+void Loop::Request(Envelope* envelope) {
+  Post(this, MSG_REQUEST, new ServiceData(envelope));
+}
+
+void Loop::Response(Envelope* envelope) {
+  Post(this, MSG_RESPONSE, new ServiceData(envelope));
+}
+
+void Loop::Restart() {
+  Post(this, MSG_RESTART);
 }
 
 void Loop::Login() {
@@ -55,6 +82,8 @@ void Loop::DoLogin() {
       settings_->GetInt(SETTING_XMPP, SETTING_PORT, XMPP_PORT)
   ));
 
+  pump_ = new XmppPump(this);
+  Loop::pump_ = pump_;
   SetupPump();
 
   state_ = RUNNING;
@@ -80,13 +109,80 @@ void Loop::DoDisconnect() {
   pump_->DoDisconnect();
 }
 
+void Loop::OnMessage(txmpp::Message* message) {
+  Loop::OnMessage(message);
+
+  switch (message->message_id) {
+}
+
+void Loop::DoSetReconnect(ReconnectData* reconnect) {
+  reconnect_ = reconnect->data();
+  delete reconnect;
+}
+
 void Loop::DoShutdown() {
   if (state_ != ERROR) state_ = STOPPED;
   pthread_kill(pthread_, SIGINT);
 }
 
+void Loop::DoRestart() {
+  if (state_ == RESTARTING)
+    return;
+  state_ = RESTARTING;
+  if (pump_ != NULL) {
+    delete pump_;
+    pump_ = NULL;
+  }
+  TLOG(INFO) << "Reconnecting in " << retry_ << " seconds...";
+  PostDelayed(retry_ * 1000, this, MSG_LOGIN);
+  if (retry_ < MAX_RECONNECT_TIMEOUT)
+    retry_ *= 2;
+}
+
+void Loop::DoRequest(ServiceData* service) {
+  if (track_ <= 1000) {
+    track_++;
+    service->data()->set_retry(0);
+    service_handler_->Request(service->data());
+    delete service;
+  } else {
+    int retry = service->data()->Retry();
+    PostDelayed(retry * 2000, this, MSG_REQUEST, service);
+  }
+}
+
+void Loop::DoResponse(ServiceData* service) {
+  track_--;
+  const txmpp::XmlElement* iq = service->data()->Response();
+  pump_->SendStanza(iq);
+  delete iq;
+  delete service->data();
+  delete service;
+}
+
 void Loop::OnMessage(txmpp::Message* message) {
   switch (message->message_id) {
+    case MSG_REQUEST:
+      assert(message->pdata);
+      DoRequest(reinterpret_cast<ServiceData*>(message->pdata));
+      break;
+    case MSG_RESPONSE:
+      assert(message->pdata);
+      DoResponse(reinterpret_cast<ServiceData*>(message->pdata));
+      break;
+    case MSG_CLOSED:
+      if (reconnect_) {
+        DoRestart();
+      }
+      break;
+    case MSG_RESTART:
+      DoRestart();
+      break;
+    case MSG_SET_RECONNECT:
+      assert(message->pdata);
+      DoSetReconnect(reinterpret_cast<ReconnectData*>(message->pdata));
+      break;
+  }
     case MSG_LOGIN:
       DoLogin();
       break;

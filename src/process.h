@@ -12,15 +12,15 @@
 
 namespace tyrion {
 
-class NodeProcess {
+class Process {
   public:
     enum Type {
       Stdout,
       Stderr
     };
 
-    NodeProcess(std::string command, bool system = false, int timeout = 30);
-    virtual ~NodeProcess();
+    Process(std::string command, bool system = false, int timeout = 30);
+    virtual ~Process();
 
     void Run();
     void Write(std::string text, bool eof = true);

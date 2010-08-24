@@ -12,18 +12,18 @@
 
 namespace tyrion {
 
-class NodeLoop;
+class Loop;
 
-class NodeXmppServiceTask : public txmpp::XmppTask {
+class XmppServiceTask : public txmpp::XmppTask {
   public:
-    explicit NodeXmppServiceTask(NodeLoop* loop, txmpp::TaskParent *parent);
-    virtual ~NodeXmppServiceTask() {}
+    explicit XmppServiceTask(Loop* loop, txmpp::TaskParent *parent);
+    virtual ~XmppServiceTask() {}
     virtual int ProcessStart();
     virtual int ProcessResponse();
     bool HandleStanza(const txmpp::XmlElement *stanza);
   private:
-    NodeLoop* loop_;
-    DISALLOW_EVIL_CONSTRUCTORS(NodeXmppServiceTask);
+    Loop* loop_;
+    DISALLOW_EVIL_CONSTRUCTORS(XmppServiceTask);
 };
 
 }  // namespace tyrion

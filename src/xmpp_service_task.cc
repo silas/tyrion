@@ -5,43 +5,43 @@
  * This file is subject to the New BSD License (see the LICENSE file).
  */
 
-#include "node_xmpp_service_task.h"
+#include "xmpp_service_task.h"
 
 #include <txmpp/constants.h>
 #include <txmpp/logging.h>
 #include <txmpp/xmppclient.h>
 #include "common.h"
-#include "node_envelope.h"
-#include "node_loop.h"
+#include "envelope.h"
+#include "loop.h"
 
 namespace tyrion {
 
-NodeXmppServiceTask::NodeXmppServiceTask(NodeLoop* loop,
+XmppServiceTask::XmppServiceTask(Loop* loop,
                                          txmpp::TaskParent *parent)
     : txmpp::XmppTask(parent, txmpp::XmppEngine::HL_TYPE), loop_(loop) {
 }
 
-int NodeXmppServiceTask::ProcessStart() {
+int XmppServiceTask::ProcessStart() {
   return STATE_RESPONSE;
 }
 
-int NodeXmppServiceTask::ProcessResponse() {
+int XmppServiceTask::ProcessResponse() {
 
   const txmpp::XmlElement* stanza = NextStanza();
 
   if (stanza == NULL)
     return STATE_BLOCKED;
 
-  NodeEnvelope *envelope = new NodeEnvelope(loop_);
+  Envelope *envelope = new Envelope(loop_);
   envelope->Update(stanza);
   loop_->Request(envelope);
 
   return STATE_RESPONSE;
 }
 
-bool NodeXmppServiceTask::HandleStanza(const txmpp::XmlElement *stanza) {
+bool XmppServiceTask::HandleStanza(const txmpp::XmlElement *stanza) {
 
-  NodeEnvelope envelope(loop_);
+  Envelope envelope(loop_);
 
   if (envelope.Update(stanza) && envelope.Check()) {
     QueueStanza(stanza);

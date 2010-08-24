@@ -5,7 +5,7 @@
  * This file is subject to the New BSD License (see the LICENSE file).
  */
 
-#include "node_process.h"
+#include "process.h"
 
 #include <cstdlib>
 #include <grp.h>
@@ -20,7 +20,7 @@
 
 namespace tyrion {
 
-NodeProcess::NodeProcess(std::string command, bool system, int timeout) :
+Process::Process(std::string command, bool system, int timeout) :
     pid_(0),
     uid_(0),
     gid_(0),
@@ -45,7 +45,7 @@ NodeProcess::NodeProcess(std::string command, bool system, int timeout) :
   gid_ = getgid();
 }
 
-NodeProcess::~NodeProcess() {
+Process::~Process() {
   if (ran_) {
     close(infd[1]);
     close(outfd[0][0]);
@@ -53,7 +53,7 @@ NodeProcess::~NodeProcess() {
   }
 }
 
-void NodeProcess::Run() {
+void Process::Run() {
   if (ran_)
     return;
   ran_ = true;
@@ -115,7 +115,7 @@ void NodeProcess::Run() {
   }
 }
 
-void NodeProcess::Write(std::string text, bool eof) {
+void Process::Write(std::string text, bool eof) {
   if (!text.empty())
     write(infd[1], text.c_str(), text.length());
 
@@ -123,11 +123,11 @@ void NodeProcess::Write(std::string text, bool eof) {
     close(infd[1]);
 }
 
-bool NodeProcess::Done() {
+bool Process::Done() {
   return (outfdeof[Stdout] && outfdeof[Stderr]) || TimedOut();
 }
 
-bool NodeProcess::TimedOut() {
+bool Process::TimedOut() {
   if (closed_ || timed_out_)
     return timed_out_;
 
@@ -138,7 +138,7 @@ bool NodeProcess::TimedOut() {
   return timed_out_;
 }
 
-int NodeProcess::Close() {
+int Process::Close() {
   if (closed_)
     return code_;
   closed_ = true;
@@ -172,7 +172,7 @@ int NodeProcess::Close() {
   return code_ = 137;
 }
 
-bool NodeProcess::set_user(std::string name, bool set_group) {
+bool Process::set_user(std::string name, bool set_group) {
   struct passwd* pw = getpwnam(name.c_str());
 
   if (pw) {
@@ -187,7 +187,7 @@ bool NodeProcess::set_user(std::string name, bool set_group) {
   return false;
 }
 
-bool NodeProcess::set_group(std::string name) {
+bool Process::set_group(std::string name) {
   struct group* gr = getgrnam(name.c_str());
 
   if (gr) {

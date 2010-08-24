@@ -10,10 +10,10 @@
 #ifdef _DEBUG
 #include <txmpp/logging.h>
 #endif
-#include "node_loop.h"
-#include "node_service_handler.h"
-#include "node_settings.h"
-#include "node_utils.h"
+#include "loop.h"
+#include "service_handler.h"
+#include "settings.h"
+#include "utils.h"
 
 int main(int argc, char* argv[]) {
 
@@ -34,16 +34,16 @@ int main(int argc, char* argv[]) {
 
   tyrion::Logging::Instance()->Debug(tyrion::Logging::INFO);
 
-  tyrion::NodeServiceHandler* service_handler = new tyrion::NodeServiceHandler();
-  tyrion::NodeLoop* loop = new tyrion::NodeLoop(pthread_self());
+  tyrion::ServiceHandler* service_handler = new tyrion::ServiceHandler();
+  tyrion::Loop* loop = new tyrion::Loop(pthread_self());
 
-  code = tyrion::NodeSetup(argc, argv, loop, false);
+  code = tyrion::Setup(argc, argv, loop, false);
   if (code == 0) {
     loop->set_service_handler(service_handler);
   } else {
     delete loop;
     delete service_handler;
-    tyrion::NodeExit(code);
+    tyrion::Exit(code);
   }
 
   loop->Start();
@@ -54,17 +54,17 @@ int main(int argc, char* argv[]) {
     sigwait(&set, &sig);
 
     if (sig == SIGHUP) {
-      loop = NodeReload(argc, argv, loop, service_handler);
+      loop = Reload(argc, argv, loop, service_handler);
     } else if (sig == SIGUSR1) {
-      if (tyrion::NodeSetupLogging(loop->settings(), true)) {
+      if (tyrion::SetupLogging(loop->settings(), true)) {
         TLOG(INFO) << "Logging reloaded.";
       } else {
         TLOG(INFO) << "Unable to reload logging.";
       }
     } else if (sig == SIGINT || sig == SIGTERM) {
-      if (loop->state() == tyrion::NodeLoop::ERROR) {
+      if (loop->state() == tyrion::Loop::ERROR) {
         code = 1;
-      } else if (loop->state() == tyrion::NodeLoop::RUNNING) {
+      } else if (loop->state() == tyrion::Loop::RUNNING) {
         loop->Disconnect();
       }
       loop->Quit();
@@ -77,5 +77,5 @@ int main(int argc, char* argv[]) {
 
   delete service_handler;
   delete loop;
-  tyrion::NodeExit(code);
+  tyrion::Exit(code);
 }

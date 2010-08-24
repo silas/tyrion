@@ -9,6 +9,7 @@
 
 #include <txmpp/prexmppauthimpl.h>
 #include "loop.h"
+#include "xmpp_service_task.h"
 #include "xmpp_presence_task.h"
 
 namespace tyrion {
@@ -18,6 +19,18 @@ XmppPump::XmppPump(Loop* loop) :
     state_(txmpp::XmppEngine::STATE_NONE),
     loop_(loop) {
   client_ = new txmpp::XmppClient(this);  // deleted by TaskRunner
+}
+
+void XmppPump::DoOpen() {
+  // Presence handler
+  XmppPresenceTask *task_presence =
+      new XmppPresenceTask(client_);  // owned by XmppClient
+  task_presence->Start();
+
+  // Service iq handler
+  XmppServiceTask *task_service =
+      new XmppServiceTask(loop_, client_);  // owned by XmppClient
+  task_service->Start();
 }
 
 void XmppPump::DoLogin(const txmpp::XmppClientSettings & xcs,

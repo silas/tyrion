@@ -28,7 +28,7 @@ class XmppPump : public txmpp::MessageHandler, public txmpp::TaskRunner {
     void DoLogin(const txmpp::XmppClientSettings & xcs,
                  txmpp::XmppAsyncSocket* socket,
                  txmpp::PreXmppAuth* auth);
-    virtual void DoOpen() {}
+    void DoOpen() {}
     void DoDisconnect();
     void WakeTasks();
 

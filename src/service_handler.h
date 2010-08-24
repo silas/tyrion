@@ -12,26 +12,26 @@
 #include <txmpp/taskrunner.h>
 #include <txmpp/thread.h>
 #include "common.h"
-#include "node_envelope.h"
+#include "envelope.h"
 
 namespace tyrion {
 
-class NodeProcess;
+class Process;
 
-class NodeServiceHandlerData : public txmpp::MessageData {
+class ServiceHandlerData : public txmpp::MessageData {
  public:
-  NodeServiceHandlerData(NodeEnvelope* envelope, NodeProcess* process = NULL)
+  ServiceHandlerData(Envelope* envelope, Process* process = NULL)
       : envelope_(envelope), process_(process) {}
-  NodeEnvelope* envelope() { return envelope_; }
-  NodeProcess* process() { return process_; }
-  void set_process(NodeProcess* process) { process_ = process; }
+  Envelope* envelope() { return envelope_; }
+  Process* process() { return process_; }
+  void set_process(Process* process) { process_ = process; }
  private:
-  NodeEnvelope* envelope_;
-  NodeProcess* process_;
-  DISALLOW_EVIL_CONSTRUCTORS(NodeServiceHandlerData);
+  Envelope* envelope_;
+  Process* process_;
+  DISALLOW_EVIL_CONSTRUCTORS(ServiceHandlerData);
 };
 
-class NodeServiceHandler : public txmpp::MessageHandler,
+class ServiceHandler : public txmpp::MessageHandler,
                            public txmpp::TaskRunner,
                            public txmpp::Thread {
   public:
@@ -41,20 +41,20 @@ class NodeServiceHandler : public txmpp::MessageHandler,
       MSG_RESPONSE,
       MSG_HANDLE_RESPONSE
     };
-    typedef NodeServiceHandlerData ServiceData;
-    typedef MessageDataType<NodeEnvelope> EnvelopeData;
+    typedef ServiceHandlerData ServiceData;
+    typedef MessageDataType<Envelope> EnvelopeData;
     typedef std::list<ServiceData*> ServiceList;
 
-    NodeServiceHandler();
+    ServiceHandler();
 
-    void Request(NodeEnvelope* envelope);
+    void Request(Envelope* envelope);
 
     void WakeTasks();
     void OnMessage(txmpp::Message *pmsg);
     int64 CurrentTime();
 
-    inline NodeLoop* loop() { return loop_; }
-    inline void set_loop(NodeLoop* loop) { loop_ = loop; }
+    inline Loop* loop() { return loop_; }
+    inline void set_loop(Loop* loop) { loop_ = loop; }
 
   private:
     void DoRequest(ServiceData* data);
@@ -66,8 +66,8 @@ class NodeServiceHandler : public txmpp::MessageHandler,
     int highest_fd_;
     ServiceList list_;
     int polling_;
-    NodeLoop* loop_;
-    DISALLOW_EVIL_CONSTRUCTORS(NodeServiceHandler);
+    Loop* loop_;
+    DISALLOW_EVIL_CONSTRUCTORS(ServiceHandler);
 };
 
 }  // namespace tyrion

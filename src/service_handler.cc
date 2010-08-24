@@ -5,12 +5,12 @@
  * This file is subject to the New BSD License (see the LICENSE file).
  */
 
-#include "node_service_handler.h"
+#include "service_handler.h"
 
 #include <sys/select.h>
-#include "node_loop.h"
-#include "node_process.h"
-#include "node_settings.h"
+#include "loop.h"
+#include "process.h"
+#include "settings.h"
 #include "utils.h"
 
 #ifndef FD_COPY
@@ -19,7 +19,7 @@
 
 namespace tyrion {
 
-NodeServiceHandler::NodeServiceHandler() :
+ServiceHandler::ServiceHandler() :
     rfds_(),
     highest_fd_(0),
     list_(),
@@ -28,16 +28,16 @@ NodeServiceHandler::NodeServiceHandler() :
   FD_ZERO(&rfds_);
 }
 
-void NodeServiceHandler::Request(NodeEnvelope* envelope) {
-  Post(this, MSG_REQUEST, new NodeServiceHandlerData(envelope));
+void ServiceHandler::Request(Envelope* envelope) {
+  Post(this, MSG_REQUEST, new ServiceHandlerData(envelope));
 }
 
-void NodeServiceHandler::WakeTasks() {
+void ServiceHandler::WakeTasks() {
   txmpp::Thread::Current()->Post(this);
 }
 
-void NodeServiceHandler::DoRequest(ServiceData* service) {
-  NodeEnvelope* envelope = service->envelope();
+void ServiceHandler::DoRequest(ServiceData* service) {
+  Envelope* envelope = service->envelope();
 
   bool issue = false;
   std::string config = "service:" + envelope->type();
@@ -81,7 +81,7 @@ void NodeServiceHandler::DoRequest(ServiceData* service) {
     timeout = envelope->timeout();
   }
 
-  NodeProcess* process = new NodeProcess(envelope->Path(), false, timeout);
+  Process* process = new Process(envelope->Path(), false, timeout);
   service->set_process(process);
 
   if (!issue && !user.empty() && !process->set_user(user)) {
@@ -97,14 +97,14 @@ void NodeServiceHandler::DoRequest(ServiceData* service) {
   }
 
   if (!issue) {
-    FD_SET(process->outfd[NodeProcess::Stdout][0], &rfds_);
-    FD_SET(process->outfd[NodeProcess::Stderr][0], &rfds_);
+    FD_SET(process->outfd[Process::Stdout][0], &rfds_);
+    FD_SET(process->outfd[Process::Stderr][0], &rfds_);
 
-    if (process->outfd[NodeProcess::Stdout][0] > highest_fd_)
-      highest_fd_ = process->outfd[NodeProcess::Stdout][0];
+    if (process->outfd[Process::Stdout][0] > highest_fd_)
+      highest_fd_ = process->outfd[Process::Stdout][0];
 
-    if (process->outfd[NodeProcess::Stderr][0] > highest_fd_)
-      highest_fd_ = process->outfd[NodeProcess::Stderr][0];
+    if (process->outfd[Process::Stderr][0] > highest_fd_)
+      highest_fd_ = process->outfd[Process::Stderr][0];
 
     process->Run();
     process->Write(envelope->input());
@@ -117,15 +117,15 @@ void NodeServiceHandler::DoRequest(ServiceData* service) {
   }
 }
 
-void NodeServiceHandler::DoHandleResponse(ServiceData* service) {
-  NodeEnvelope* envelope = service->envelope();
-  NodeProcess* process = service->process();
+void ServiceHandler::DoHandleResponse(ServiceData* service) {
+  Envelope* envelope = service->envelope();
+  Process* process = service->process();
 
   ServiceList::iterator remove = list_.end();
   int highest_fd = 0;
 
-  NodeEnvelope* e = NULL;
-  NodeProcess* p = NULL;
+  Envelope* e = NULL;
+  Process* p = NULL;
   for (ServiceList::iterator it = list_.begin(); it != list_.end(); it++) {
     e = (*it)->envelope();
     p = (*it)->process();
@@ -133,10 +133,10 @@ void NodeServiceHandler::DoHandleResponse(ServiceData* service) {
       remove = it;
     } else {
       // Get highest fd that are not the two we're removing
-      if (p->outfd[NodeProcess::Stdout][0] >= highest_fd)
-        highest_fd = p->outfd[NodeProcess::Stdout][0];
-      if (p->outfd[NodeProcess::Stderr][0] >= highest_fd)
-        highest_fd = p->outfd[NodeProcess::Stderr][0];
+      if (p->outfd[Process::Stdout][0] >= highest_fd)
+        highest_fd = p->outfd[Process::Stdout][0];
+      if (p->outfd[Process::Stderr][0] >= highest_fd)
+        highest_fd = p->outfd[Process::Stderr][0];
     }
   }
   highest_fd_ = highest_fd;
@@ -144,8 +144,8 @@ void NodeServiceHandler::DoHandleResponse(ServiceData* service) {
   if (remove != list_.end()) {
     envelope->set_code(process->Close());
 
-    FD_CLR(process->outfd[NodeProcess::Stdout][0], &rfds_);
-    FD_CLR(process->outfd[NodeProcess::Stderr][0], &rfds_);
+    FD_CLR(process->outfd[Process::Stdout][0], &rfds_);
+    FD_CLR(process->outfd[Process::Stderr][0], &rfds_);
 
     list_.erase(remove);
   }
@@ -156,7 +156,7 @@ void NodeServiceHandler::DoHandleResponse(ServiceData* service) {
   Post(this, MSG_RESPONSE, new EnvelopeData(envelope));
 }
 
-void NodeServiceHandler::DoResponse(EnvelopeData* service) {
+void ServiceHandler::DoResponse(EnvelopeData* service) {
   // TODO(silas): Ready call probably isn't thread safe, figure out
   // alternative
   if (loop_->Ready()) {
@@ -170,7 +170,7 @@ void NodeServiceHandler::DoResponse(EnvelopeData* service) {
   }
 }
 
-void NodeServiceHandler::DoPoll() {
+void ServiceHandler::DoPoll() {
   polling_--;
   if (list_.empty())
     return;
@@ -185,14 +185,14 @@ void NodeServiceHandler::DoPoll() {
 
   int sr = select(highest_fd_ + 1, &rfds, NULL, NULL, &tv);
 
-  NodeEnvelope* e;
-  NodeProcess *p;
+  Envelope* e;
+  Process *p;
   for (ServiceList::iterator it = list_.begin(); it != list_.end(); it++) {
     e = (*it)->envelope();
     p = (*it)->process();
     if (sr > 0) {
       // check both stdout and stderr
-      for (int i = NodeProcess::Stdout; i <= NodeProcess::Stderr; i++) {
+      for (int i = Process::Stdout; i <= Process::Stderr; i++) {
         // check if ready for reading
         if (FD_ISSET(p->outfd[i][0], &rfds)) {
           char data[PROCESS_BUFFER];
@@ -204,7 +204,7 @@ void NodeServiceHandler::DoPoll() {
           } else {
             // update output/error in process
             data[rc] = 0;
-            if (NodeProcess::Stdout == i) {
+            if (Process::Stdout == i) {
               e->append_output(data);
             } else {
               e->append_error(data);
@@ -221,7 +221,7 @@ void NodeServiceHandler::DoPoll() {
   Poll(PROCESS_POLL_TIMEOUT);
 }
 
-bool NodeServiceHandler::Poll(int timeout) {
+bool ServiceHandler::Poll(int timeout) {
   if (polling_ > 0) {
     return false;
   }
@@ -230,7 +230,7 @@ bool NodeServiceHandler::Poll(int timeout) {
   return true;
 }
 
-void NodeServiceHandler::OnMessage(txmpp::Message *pmsg) {
+void ServiceHandler::OnMessage(txmpp::Message *pmsg) {
   switch (pmsg->message_id) {
     case MSG_REQUEST:
       assert(pmsg->pdata);
@@ -252,7 +252,7 @@ void NodeServiceHandler::OnMessage(txmpp::Message *pmsg) {
   }
 }
 
-int64 NodeServiceHandler::CurrentTime() {
+int64 ServiceHandler::CurrentTime() {
   return (int64)txmpp::Time();
 }
 

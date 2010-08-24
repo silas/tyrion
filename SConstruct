@@ -4,10 +4,6 @@ import platform
 import shutil
 import subprocess
 
-#
-# Command line options
-#
-
 AddOption(
     '--prefix',
     dest='prefix',
@@ -88,10 +84,6 @@ AddOption(
     action='store_true',
 )
 
-#
-# Helper functions
-#
-
 def Abort(message):
     print message
     Exit(1)
@@ -131,25 +123,15 @@ def SetupEnvironment(env):
         path_list.extend(os.environ['LIBRARY_PATH'].split(':'))
     env.Append(LIBPATH=path_list)
 
-#
-# Setup environment
-#
-
 env = Environment()
-
-#
-# Default settings
-#
 
 defines = ['POSIX']
 flags = '-Wall -pedantic'
 frameworks = []
 libraries = ['txmpp']
-link = ''
 name = 'tyrion'
 prefix = GetOption('prefix')
 system = platform.system().lower()
-version = '0.0.1'
 
 library_src = [
     'src/config.cc',
@@ -157,43 +139,16 @@ library_src = [
     'src/envelope.cc',
     'src/logging.cc',
     'src/loop.cc',
+    'src/main.cc',
+    'src/process.cc',
+    'src/service_handler.cc',
     'src/settings.cc',
     'src/third_party/inih/ini.c',
     'src/utils.cc',
     'src/xmpp_presence_task.cc',
     'src/xmpp_pump.cc',
+    'src/xmpp_service_task.cc',
 ]
-
-client_src = [
-    'src/client.cc',
-    'src/client_envelope.cc',
-    'src/client_loop.cc',
-    'src/client_request.cc',
-    'src/client_settings.cc',
-    'src/client_utils.cc',
-    'src/client_xmpp_pump.cc',
-    'src/client_xmpp_service_task.cc',
-]
-
-node_src = [
-    'src/node.cc',
-    'src/node_envelope.cc',
-    'src/node_loop.cc',
-    'src/node_process.cc',
-    'src/node_service_handler.cc',
-    'src/node_settings.cc',
-    'src/node_utils.cc',
-    'src/node_xmpp_pump.cc',
-    'src/node_xmpp_service_task.cc',
-]
-
-test_src = [
-    'tests/test.cc',
-]
-
-#
-# Apply various options
-#
 
 if GetOption('debug'):
     flags += ' -g'
@@ -204,13 +159,8 @@ if GetOption('flags'):
 
 if system == 'linux':
     defines += ['LINUX']
-    soname = 'lib%s.so.%s' % (name, version)
-    link += ' -Wl,-soname,%s' % soname
 elif system == 'darwin':
     defines += ['OSX']
-    soname = 'lib%s.dylib.%s' % (name, version)
-    link += ' -compatibility_version %s' % version
-    link += ' -current_version %s' % version
 else:
     Abort('Unknown OS.')
 
@@ -230,10 +180,6 @@ if GetOption('devel'):
 
 SetupEnvironment(env)
 
-#
-# Configure environment
-#
-
 conf = Configure(env)
 
 if system in ('darwin', 'linux'):
@@ -245,63 +191,17 @@ if system in ('darwin', 'linux'):
 
 env = conf.Finish()
 
-#
-# Build library
-#
-
-tyrion_library = env.SharedLibrary(
-    soname,
-    library_src,
-    CPPDEFINES=defines,
-    LIBS=libraries,
-    LINKFLAGS=link,
-    SHLIBPREFIX='',
-    SHLIBSUFFIX='',
-)
-
-libraries += [tyrion_library]
-
-#
-# Build application
-#
-
-tyrion_client = env.Program(
+tyrion = env.Program(
     target='tyrion',
-    source=client_src,
-    CPPDEFINES=defines,
-    LIBS=libraries,
-)
-
-tyrion_node = env.Program(
-    target='tyrion-node',
-    source=node_src,
+    source=src,
     CPPDEFINES=defines,
     LIBS=libraries,
 )
 
 if GetOption('install'):
-
-    libdir = GetOption('libdir').replace('${PREFIX}', prefix)
-    bindir = GetOption('bindir').replace('${PREFIX}', prefix)
     sbindir = GetOption('sbindir').replace('${PREFIX}', prefix)
-
-    tyrion_library = str(tyrion_library[0])
-    tyrion_client = str(tyrion_client[0])
-    tyrion_node = str(tyrion_node[0])
-
-    # Install library
-    CreateDirectory(libdir)
-    Remove(os.path.join(libdir, 'libtyrion.*'))
-    Copy(tyrion_library, os.path.join(libdir, tyrion_library))
-
-    # Install client
-    CreateDirectory(bindir)
-    tyrion_client_path = os.path.join(bindir, tyrion_client)
-    Remove(tyrion_client_path)
-    Copy(tyrion_client, tyrion_client_path)
-
-    # Install node
+    tyrion = str(tyrion[0])
     CreateDirectory(sbindir)
-    tyrion_node_path = os.path.join(sbindir, tyrion_node)
-    Remove(tyrion_node_path)
-    Copy(tyrion_node, tyrion_node_path)
+    tyrion_path = os.path.join(sbindir, tyrion)
+    Remove(tyrion_path)
+    Copy(tyrion, tyrion_path)

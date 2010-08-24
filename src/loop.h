@@ -10,11 +10,15 @@
 
 #include <txmpp/xmppengine.h>
 #include "common.h"
+#include "loop.h"
+#include "service_handler.h"
+#include "settings.h"
 #include "xmpp_pump.h"
 
 namespace tyrion {
 
 class Settings;
+class XmppPump;
 
 class Loop : public txmpp::Thread,
              public txmpp::MessageHandler,
@@ -25,6 +29,10 @@ class Loop : public txmpp::Thread,
     static const short MSG_DISCONNECT = 3;
     static const short MSG_SHUTDOWN = 4;
     static const short MSG_CLOSED = 5;
+    static const short MSG_REQUEST = 10;
+    static const short MSG_RESPONSE = 11;
+    static const short MSG_RESTART = 12;
+    static const short MSG_SET_RECONNECT = 13;
     enum State {
       NONE = 0,
       RUNNING,
@@ -32,12 +40,18 @@ class Loop : public txmpp::Thread,
       STOPPED,
       ERROR
     };
+    typedef MessageDataType<Envelope> ServiceData;
+    typedef txmpp::TypedMessageData<bool> ReconnectData;
 
     Loop(pthread_t pthread);
     virtual ~Loop();
 
     bool Ready();
 
+    void SetReconnect(bool reconnect);
+    void Restart();
+    void Request(Envelope* envelope);
+    void Response(Envelope* envelope);
     void Login();
     void Disconnect();
 
@@ -52,19 +66,34 @@ class Loop : public txmpp::Thread,
       settings_ = settings;
     }
 
+    inline Acls* acls() { return acls_; }
+    inline void set_acls(Acls* acls) { acls_ = acls; }
+
+    inline ServiceHandler* service_handler() { return service_handler_; }
+    inline void set_service_handler(ServiceHandler* service_handler) {
+      service_handler_ = service_handler;
+      service_handler_->set_loop(this);
+    }
+
   protected:
     virtual void DoLogin();
     virtual void DoOpen();
     virtual void DoDisconnect();
     virtual void DoShutdown();
     virtual void OnMessage(txmpp::Message* message);
+    void DoSetReconnect(ReconnectData* reconnect);
+    void DoRestart();
+    void DoRequest(ServiceData* service);
+    void DoResponse(ServiceData* service);
 
     void OnSocketClose(int code);
 
-    virtual void SetupPump() {}
-
+    int track_;
     XmppPump* pump_;
+    Acls* acls_;
+    ServiceHandler* service_handler_;
     State state_;
+    bool reconnect_;
     Settings* settings_;
     pthread_t pthread_;
     int retry_;
