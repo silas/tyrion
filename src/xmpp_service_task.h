@@ -5,8 +5,8 @@
  * This file is subject to the New BSD License (see the LICENSE file).
  */
 
-#ifndef _TYRION_NODE_XMPP_SERVICE_TASK_H_
-#define _TYRION_NODE_XMPP_SERVICE_TASK_H_
+#ifndef _TYRION_XMPP_SERVICE_TASK_H_
+#define _TYRION_XMPP_SERVICE_TASK_H_
 
 #include <txmpp/xmpptask.h>
 
@@ -28,4 +28,4 @@ class XmppServiceTask : public txmpp::XmppTask {
 
 }  // namespace tyrion
 
-#endif  // _TYRION_NODE_XMPP_SERVICE_TASK_H_
+#endif  // _TYRION_XMPP_SERVICE_TASK_H_

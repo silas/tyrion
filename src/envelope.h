@@ -28,9 +28,10 @@ class Envelope {
 
     bool Check();
     int Retry();
-    bool Update(const txmpp::XmlElement *stanza);
     std::string Path();
+
     const txmpp::XmlElement* Response();
+    bool Update(const txmpp::XmlElement *stanza);
 
     inline txmpp::Jid& jid() { return jid_; }
     inline void set_jid(const txmpp::Jid& jid) { jid_ = jid; }

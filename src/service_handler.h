@@ -5,8 +5,8 @@
  * This file is subject to the New BSD License (see the LICENSE file).
  */
 
-#ifndef _NODE_SERVICE_HANDLER_H_
-#define _NODE_SERVICE_HANDLER_H_
+#ifndef _TYRION_SERVICE_HANDLER_H_
+#define _TYRION_SERVICE_HANDLER_H_
 
 #include <list>
 #include <txmpp/taskrunner.h>
@@ -72,4 +72,4 @@ class ServiceHandler : public txmpp::MessageHandler,
 
 }  // namespace tyrion
 
-#endif  // _NODE_SERVICE_HANDLER_H_
+#endif  // _TYRION_SERVICE_HANDLER_H_

@@ -62,6 +62,32 @@ void Loop::Disconnect() {
   Post(this, MSG_DISCONNECT);
 }
 
+void Loop::DoRequest(ServiceData* service) {
+  if (track_ <= 1000) {
+    track_++;
+    service->data()->set_retry(0);
+    service_handler_->Request(service->data());
+    delete service;
+  } else {
+    int retry = service->data()->Retry();
+    PostDelayed(retry * 2000, this, MSG_REQUEST, service);
+  }
+}
+
+void Loop::DoResponse(ServiceData* service) {
+  track_--;
+  const txmpp::XmlElement* iq = service->data()->Response();
+  pump_->SendStanza(iq);
+  delete iq;
+  delete service->data();
+  delete service;
+}
+
+void Loop::DoSetReconnect(ReconnectData* reconnect) {
+  reconnect_ = reconnect->data();
+  delete reconnect;
+}
+
 void Loop::DoLogin() {
   txmpp::Jid jid(settings_->Get(SETTING_XMPP, SETTING_JID));
 
@@ -100,23 +126,6 @@ void Loop::DoOpen() {
   retry_ = 1;
 }
 
-void Loop::DoDisconnect() {
-  TLOG(INFO) << "Disconnecting...";
-  state_ = STOPPED;
-  if (pump_ == NULL) return;
-  pump_->DoDisconnect();
-}
-
-void Loop::DoSetReconnect(ReconnectData* reconnect) {
-  reconnect_ = reconnect->data();
-  delete reconnect;
-}
-
-void Loop::DoShutdown() {
-  if (state_ != ERROR) state_ = STOPPED;
-  pthread_kill(pthread_, SIGINT);
-}
-
 void Loop::DoRestart() {
   if (state_ == RESTARTING)
     return;
@@ -131,25 +140,17 @@ void Loop::DoRestart() {
     retry_ *= 2;
 }
 
-void Loop::DoRequest(ServiceData* service) {
-  if (track_ <= 1000) {
-    track_++;
-    service->data()->set_retry(0);
-    service_handler_->Request(service->data());
-    delete service;
-  } else {
-    int retry = service->data()->Retry();
-    PostDelayed(retry * 2000, this, MSG_REQUEST, service);
-  }
+
+void Loop::DoDisconnect() {
+  TLOG(INFO) << "Disconnecting...";
+  state_ = STOPPED;
+  if (pump_ == NULL) return;
+  pump_->DoDisconnect();
 }
 
-void Loop::DoResponse(ServiceData* service) {
-  track_--;
-  const txmpp::XmlElement* iq = service->data()->Response();
-  pump_->SendStanza(iq);
-  delete iq;
-  delete service->data();
-  delete service;
+void Loop::DoShutdown() {
+  if (state_ != ERROR) state_ = STOPPED;
+  pthread_kill(pthread_, SIGINT);
 }
 
 void Loop::OnMessage(txmpp::Message* message) {
@@ -162,14 +163,6 @@ void Loop::OnMessage(txmpp::Message* message) {
       assert(message->pdata);
       DoResponse(reinterpret_cast<ServiceData*>(message->pdata));
       break;
-    case MSG_CLOSED:
-      if (reconnect_) {
-        DoRestart();
-      }
-      break;
-    case MSG_RESTART:
-      DoRestart();
-      break;
     case MSG_SET_RECONNECT:
       assert(message->pdata);
       DoSetReconnect(reinterpret_cast<ReconnectData*>(message->pdata));
@@ -179,6 +172,14 @@ void Loop::OnMessage(txmpp::Message* message) {
       break;
     case MSG_OPEN:
       DoOpen();
+      break;
+    case MSG_RESTART:
+      DoRestart();
+      break;
+    case MSG_CLOSED:
+      if (reconnect_) {
+        DoRestart();
+      }
       break;
     case MSG_DISCONNECT:
       DoDisconnect();
