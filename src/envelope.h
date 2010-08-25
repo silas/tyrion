@@ -19,6 +19,8 @@ class XmlElement;
 
 namespace tyrion {
 
+class Loop;
+
 class Envelope {
   public:
     Envelope(Loop* loop);

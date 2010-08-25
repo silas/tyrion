@@ -14,6 +14,10 @@
 
 namespace tyrion {
 
+class Loop;
+class ServiceHandler;
+class Settings;
+
 /**
  * Create a standardized error message which can be return in a service
  * response in stderr.

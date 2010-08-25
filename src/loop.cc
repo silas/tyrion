@@ -19,14 +19,14 @@ namespace tyrion {
 
 Loop::Loop(pthread_t pthread) : 
     acls_(NULL),
-    track_(0),
-    pump_(NULL),
-    state_(NONE),
-    settings_(NULL),
-    reconnect_(true) {
     service_handler_(NULL),
-    pthread_(pthread),
-    retry_(1) {
+    settings_(NULL),
+    state_(NONE),
+    pump_(NULL),
+    reconnect_(true),
+    retry_(1),
+    track_(0),
+    pthread_(pthread) {
 }
 
 Loop::~Loop() {
@@ -83,8 +83,6 @@ void Loop::DoLogin() {
   ));
 
   pump_ = new XmppPump(this);
-  Loop::pump_ = pump_;
-  SetupPump();
 
   state_ = RUNNING;
 
@@ -107,12 +105,6 @@ void Loop::DoDisconnect() {
   state_ = STOPPED;
   if (pump_ == NULL) return;
   pump_->DoDisconnect();
-}
-
-void Loop::OnMessage(txmpp::Message* message) {
-  Loop::OnMessage(message);
-
-  switch (message->message_id) {
 }
 
 void Loop::DoSetReconnect(ReconnectData* reconnect) {
@@ -182,7 +174,6 @@ void Loop::OnMessage(txmpp::Message* message) {
       assert(message->pdata);
       DoSetReconnect(reinterpret_cast<ReconnectData*>(message->pdata));
       break;
-  }
     case MSG_LOGIN:
       DoLogin();
       break;

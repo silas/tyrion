@@ -88,15 +88,15 @@ class Loop : public txmpp::Thread,
 
     void OnSocketClose(int code);
 
-    int track_;
-    XmppPump* pump_;
     Acls* acls_;
     ServiceHandler* service_handler_;
-    State state_;
-    bool reconnect_;
     Settings* settings_;
-    pthread_t pthread_;
+    State state_;
+    XmppPump* pump_;
+    bool reconnect_;
     int retry_;
+    int track_;
+    pthread_t pthread_;
     DISALLOW_EVIL_CONSTRUCTORS(Loop);
 };
 

@@ -16,29 +16,6 @@ AddOption(
 )
 
 AddOption(
-    '--libdir',
-    dest='libdir',
-    type='string',
-    nargs=1,
-    action='store',
-    default='${PREFIX}/lib',
-    metavar='DIR',
-    help='The directory for installing object code libraries.',
-)
-
-
-AddOption(
-    '--bindir',
-    dest='bindir',
-    type='string',
-    nargs=1,
-    action='store',
-    default='${PREFIX}/bin',
-    metavar='DIR',
-    help='The directory for installing user binaries.',
-)
-
-AddOption(
     '--sbindir',
     dest='sbindir',
     type='string',
@@ -67,12 +44,6 @@ AddOption(
 )
 
 AddOption(
-    '--with-tests',
-    dest='tests',
-    action='store_true',
-)
-
-AddOption(
     '--with-debug',
     dest='debug',
     action='store_true',
@@ -88,9 +59,6 @@ def Abort(message):
     print message
     Exit(1)
 
-def ChangeExt(src_list, ext):
-    return map(lambda x: x[:-2] + ext, src_list)
-
 def Copy(src, dst):
     print 'Copying %s to %s' % (src, dst)
     shutil.copy2(src, dst)
@@ -99,10 +67,6 @@ def CreateDirectory(path):
     if not os.path.exists(path):
         print 'Creating directory %s' % path
         os.makedirs(path)
-
-def Link(src, dst):
-    print 'Linking %s to %s' % (src, dst)
-    os.symlink(src, dst)
 
 def Remove(path):
     for p in glob.glob(path):
@@ -133,7 +97,7 @@ name = 'tyrion'
 prefix = GetOption('prefix')
 system = platform.system().lower()
 
-library_src = [
+src = [
     'src/config.cc',
     'src/constants.cc',
     'src/envelope.cc',

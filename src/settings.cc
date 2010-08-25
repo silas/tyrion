@@ -9,42 +9,42 @@
 
 namespace tyrion {
 
-Settings::Settings(const std::string& path) : config_(NULL), path_(path) {
+BaseSettings::BaseSettings(const std::string& path) : config_(NULL), path_(path) {
   config_ = new Config(path_);
 }
 
-Settings::~Settings() {
+BaseSettings::~BaseSettings() {
   delete config_;
 }
 
-bool Settings::HasError() {
+bool BaseSettings::HasError() {
   return config_->ParseError() != 0;
 }
 
-bool Settings::Validate() {
+bool BaseSettings::Validate() {
   return true;
 }
 
-bool Settings::Has(const std::string& section, const std::string& name) {
+bool BaseSettings::Has(const std::string& section, const std::string& name) {
   return config_->Has(section, name);
 }
 
-std::string Settings::Get(const std::string& section, const std::string& name,
+std::string BaseSettings::Get(const std::string& section, const std::string& name,
                           const std::string& default_) {
   return config_->Get(section, name, default_);
 }
 
-bool Settings::GetBool(const std::string& section, const std::string& name,
+bool BaseSettings::GetBool(const std::string& section, const std::string& name,
                       bool default_) {
   return config_->Get(section, name, default_ ? "true" : "false") == "true";
 }
 
-long Settings::GetInt(const std::string& section, const std::string& name,
+long BaseSettings::GetInt(const std::string& section, const std::string& name,
                      long default_) {
   return config_->GetInt(section, name, default_);
 }
 
-bool Settings::HasRequired(const std::string& section, const std::string& option) {
+bool BaseSettings::HasRequired(const std::string& section, const std::string& option) {
   if (!Has(section, option) || Get(section, option).empty()) {
     TLOG(ERROR) << "The '" << option << "' option in the '" << section
                 << "' section is required.";
@@ -53,10 +53,10 @@ bool Settings::HasRequired(const std::string& section, const std::string& option
   return true;
 }
 
-Acls::Acls(const std::string& path) : Settings(path) {
+Acls::Acls(const std::string& path) : BaseSettings(path) {
 }
 
-Settings::Settings(const std::string& path) : Settings(path) {
+Settings::Settings(const std::string& path) : BaseSettings(path) {
 }
 
 bool Settings::Validate() {
