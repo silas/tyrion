@@ -157,7 +157,7 @@ void ServiceHandler::DoHandleResponse(ServiceData* service) {
 }
 
 void ServiceHandler::DoResponse(EnvelopeData* service) {
-  // TODO(silas): Ready call probably isn't thread safe, figure out
+  // TODO(silas): the Ready call probably isn't thread safe, figure out
   // alternative
   if (loop_->Ready()) {
     loop_->Response(service->data());
