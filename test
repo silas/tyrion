@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 run-tests() {
-  pushd test-src
+  pushd tests
   scons && \
   ./test-config && \
   ./test-envelope && \
