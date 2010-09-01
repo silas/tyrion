@@ -19,7 +19,7 @@ static const int static_code = 4;
 static const int static_timeout = 101;
 
 TEST(EnvelopeTest, Basic) {
-  Envelope e;
+  Envelope e(NULL);
 
   // retry
   EXPECT_EQ(0, e.retry());

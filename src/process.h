@@ -20,7 +20,7 @@ class Process {
     };
 
     Process(std::string command, bool system = false, int timeout = 30);
-    virtual ~Process();
+    ~Process();
 
     void Run();
     void Write(std::string text, bool eof = true);

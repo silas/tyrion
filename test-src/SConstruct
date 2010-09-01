@@ -18,11 +18,14 @@ base_src_list = [
     os.path.join(path, 'envelope.cc'),
     os.path.join(path, 'logging.cc'),
     os.path.join(path, 'loop.cc'),
+    os.path.join(path, 'process.cc'),
+    os.path.join(path, 'service_handler.cc'),
     os.path.join(path, 'settings.cc'),
     os.path.join(path, 'third_party/inih/ini.c'),
     os.path.join(path, 'utils.cc'),
     os.path.join(path, 'xmpp_presence_task.cc'),
     os.path.join(path, 'xmpp_pump.cc'),
+    os.path.join(path, 'xmpp_service_task.cc'),
 ]
 
 env = Environment()
@@ -111,11 +114,10 @@ env.Program(
 )
 
 env.Program(
-    target='test-node-process',
+    target='test-process',
     source=SourceList(
-        'test_node_process',
-        local=['test_node_process.cc'],
-        include=['node_process.cc'],
+        'test_process',
+        local=['test_process.cc'],
     ),
     CPPDEFINES=defines,
     LIBS=libraries,

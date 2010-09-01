@@ -6,7 +6,7 @@ run-tests() {
   ./test-config && \
   ./test-envelope && \
   ./test-logging && \
-  ./test-node-process && \
+  ./test-process && \
   ./test-settings
   retval=$?
   popd
