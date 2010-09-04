@@ -24,15 +24,17 @@ class Loop : public txmpp::Thread,
              public txmpp::MessageHandler,
              public txmpp::has_slots<> {
   public:
-    static const short MSG_LOGIN = 1;
-    static const short MSG_OPEN = 2;
-    static const short MSG_DISCONNECT = 3;
-    static const short MSG_SHUTDOWN = 4;
-    static const short MSG_CLOSED = 5;
-    static const short MSG_REQUEST = 10;
-    static const short MSG_RESPONSE = 11;
-    static const short MSG_RESTART = 12;
-    static const short MSG_SET_RECONNECT = 13;
+    enum Event {
+      MSG_LOGIN = 1,
+      MSG_OPEN,
+      MSG_DISCONNECT,
+      MSG_SHUTDOWN,
+      MSG_CLOSED,
+      MSG_REQUEST,
+      MSG_RESPONSE,
+      MSG_RESTART,
+      MSG_SET_RECONNECT
+    };
     enum State {
       NONE = 0,
       RUNNING,
