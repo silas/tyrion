@@ -1,4 +1,5 @@
 import copy
+import glob
 import os
 import platform
 
@@ -12,21 +13,9 @@ objects = {}
 path = '../src'
 system = platform.system().lower()
 
-base_src_list = [
-    os.path.join(path, 'config.cc'),
-    os.path.join(path, 'constants.cc'),
-    os.path.join(path, 'envelope.cc'),
-    os.path.join(path, 'logging.cc'),
-    os.path.join(path, 'loop.cc'),
-    os.path.join(path, 'process.cc'),
-    os.path.join(path, 'service_handler.cc'),
-    os.path.join(path, 'settings.cc'),
-    os.path.join(path, 'third_party/inih/ini.c'),
-    os.path.join(path, 'utils.cc'),
-    os.path.join(path, 'xmpp_presence_task.cc'),
-    os.path.join(path, 'xmpp_pump.cc'),
-    os.path.join(path, 'xmpp_service_task.cc'),
-]
+src = glob.glob(os.path.join(path, '*.cc'))
+src.append(os.path.join(path, 'third_party', 'inih', 'ini.c'))
+src.remove(os.path.join(path, 'main.cc'))
 
 env = Environment()
 
@@ -53,7 +42,7 @@ def SourceList(name, local=None, include=None, exclude=None, unique=None):
     include = [os.path.join(path, item) for item in include]
     exclude = [os.path.join(path, item) for item in exclude]
     unique = [os.path.join(path, item) for item in unique]
-    for item in base_src_list:
+    for item in src:
         if item not in exclude and item not in unique:
             src_list += objects[item]
     for item in local:
@@ -79,7 +68,7 @@ env.Append(FRAMEWORKS=frameworks)
 
 SetupEnvironment(env)
 
-for item in base_src_list:
+for item in src:
     objects[item] = env.Object(item)
 
 env.Program(
