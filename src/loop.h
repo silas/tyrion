@@ -24,7 +24,7 @@ class Loop : public txmpp::Thread,
              public txmpp::MessageHandler,
              public txmpp::has_slots<> {
   public:
-    enum Event {
+    enum MessageType {
       MSG_LOGIN = 1,
       MSG_OPEN,
       MSG_DISCONNECT,

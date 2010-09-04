@@ -35,7 +35,7 @@ class ServiceHandler : public txmpp::MessageHandler,
                            public txmpp::TaskRunner,
                            public txmpp::Thread {
   public:
-    enum Message {
+    enum MessageType {
       MSG_REQUEST = 1,
       MSG_POLL,
       MSG_RESPONSE,
