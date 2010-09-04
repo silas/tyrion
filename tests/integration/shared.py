@@ -9,6 +9,15 @@ class ServiceTests(object):
             code='0',
         )
 
+    def test_perl(self):
+        return self.check(
+            input='print(1+1);',
+            type='org.tyrion.service.perl',
+            output='2',
+            error='',
+            code='0',
+        )
+
     def test_python(self):
         return self.check(
             input='print 1+1',
