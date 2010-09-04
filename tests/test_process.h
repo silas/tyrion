@@ -33,7 +33,7 @@ class TestProcess : public Process {
       if (rc == 0) {
         outfdeof[type] = true;
       } else if (rc == -1) {
-        usleep(100000);
+        usleep(10000);
       } else {
         input[rc] = 0;
         return string(input);
@@ -99,7 +99,7 @@ TEST(ProcessTest, Timeout) {
   EXPECT_EQ(15, p1.Close());
   EXPECT_TRUE(p1.TimedOut());
 
-  TestProcess p2 = TestProcess("echo test; sleep 4", true, 2);
+  TestProcess p2 = TestProcess("echo test; sleep 2", true, 1);
   p2.Run();
   EXPECT_EQ("test\n", p2.ReadAll(Process::Stdout));
   EXPECT_EQ("", p2.ReadAll(Process::Stderr));
