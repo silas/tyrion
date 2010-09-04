@@ -2,11 +2,9 @@ Tyrion
 ======
 
 [Tyrion][tyrion] is a lightweight daemon that allows for the asynchronous
-running of remote processes.
-
-It provides basic access controls, process timeouts and a communication
-protocol ([XMPP][xmpp]) that integrates nicely into both corporate and cloud
-environments.
+running of remote processes. It provides basic access controls, process
+timeouts and a communication protocol ([XMPP][xmpp]) that integrates nicely
+into both corporate and cloud environments.
 
 ### Requirements
 
