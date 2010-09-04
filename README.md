@@ -1,7 +1,10 @@
 Tyrion
 ======
 
-[Tyrion](http://www.tidg.org/tyrion) is a framework for systems automation.
+[Tyrion](http://www.tidg.org/tyrion) is a daemon that allows for the
+asynchronous running of remote processes. It provides basic access controls,
+process timeouts and a communication protocol (XMPP) that integrates nicely into
+both corporate and cloud environments.
 
 ### Requirements
 
