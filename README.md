@@ -1,10 +1,10 @@
 Tyrion
 ======
 
-[Tyrion](http://www.tidg.org/tyrion) is a daemon that allows for the
-asynchronous running of remote processes. It provides basic access controls,
-process timeouts and a communication protocol (XMPP) that integrates nicely into
-both corporate and cloud environments.
+[Tyrion][tyrion] is a lightweight daemon that allows for the asynchronous
+running of remote processes. It provides basic access controls, process
+timeouts and a communication protocol (XMPP) that integrates nicely into both
+corporate and cloud environments.
 
 ### Requirements
 
@@ -19,3 +19,5 @@ both corporate and cloud environments.
 ### License
 
 This work is licensed under the New BSD License (see the LICENSE file).
+
+[tyrion]: http://www.tidg.org/tyrion "Tyrion"
