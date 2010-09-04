@@ -17,9 +17,9 @@ class Loop;
 class XmppServiceTask : public txmpp::XmppTask {
   public:
     explicit XmppServiceTask(Loop* loop, txmpp::TaskParent *parent);
-    virtual ~XmppServiceTask() {}
-    virtual int ProcessStart();
-    virtual int ProcessResponse();
+    ~XmppServiceTask() {}
+    int ProcessStart();
+    int ProcessResponse();
     bool HandleStanza(const txmpp::XmlElement *stanza);
   private:
     Loop* loop_;

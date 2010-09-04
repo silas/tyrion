@@ -46,7 +46,7 @@ class Loop : public txmpp::Thread,
     typedef txmpp::TypedMessageData<bool> ReconnectData;
 
     Loop(pthread_t pthread);
-    virtual ~Loop();
+    ~Loop();
 
     bool Ready();
 
@@ -78,11 +78,11 @@ class Loop : public txmpp::Thread,
     }
 
   protected:
-    virtual void DoLogin();
-    virtual void DoOpen();
-    virtual void DoDisconnect();
-    virtual void DoShutdown();
-    virtual void OnMessage(txmpp::Message* message);
+    void DoLogin();
+    void DoOpen();
+    void DoDisconnect();
+    void DoShutdown();
+    void OnMessage(txmpp::Message* message);
     void DoSetReconnect(ReconnectData* reconnect);
     void DoRestart();
     void DoRequest(ServiceData* service);
