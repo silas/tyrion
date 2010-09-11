@@ -17,7 +17,7 @@
 namespace tyrion {
 
 XmppServiceTask::XmppServiceTask(Loop* loop,
-                                         txmpp::TaskParent *parent)
+                                 txmpp::TaskParent *parent)
     : txmpp::XmppTask(parent, txmpp::XmppEngine::HL_TYPE), loop_(loop) {
 }
 
