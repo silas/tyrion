@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, The Infrastructure Developers Group
+ * Copyright (c) 2010, Silas Sewell
  * All rights reserved.
  *
  * This file is subject to the New BSD License (see the LICENSE file).
