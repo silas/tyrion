@@ -42,7 +42,7 @@ void StringReplace(std::string& text, const std::string& search,
 
 void Exit(int code);
 Loop* Reload(int argc, char* argv[], Loop* old_loop,
-                     ServiceHandler* service_handler);
+             ServiceHandler* service_handler);
 bool SetupLogging(Settings* settings, bool reload);
 int Setup(int argc, char* argv[], Loop* loop, bool reload);
 

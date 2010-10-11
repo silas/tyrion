@@ -57,7 +57,7 @@ void StringReplace(std::string& text, const std::string& search,
 }
 
 Loop* Reload(int argc, char* argv[], Loop* old_loop,
-                     ServiceHandler* service_handler) {
+             ServiceHandler* service_handler) {
   old_loop->SetReconnect(false);
 
   Loop* new_loop = new Loop(pthread_self());

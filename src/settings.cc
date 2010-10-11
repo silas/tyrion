@@ -30,17 +30,17 @@ bool BaseSettings::Has(const std::string& section, const std::string& name) {
 }
 
 std::string BaseSettings::Get(const std::string& section, const std::string& name,
-                          const std::string& default_) {
+                              const std::string& default_) {
   return config_->Get(section, name, default_);
 }
 
 bool BaseSettings::GetBool(const std::string& section, const std::string& name,
-                      bool default_) {
+                           bool default_) {
   return config_->Get(section, name, default_ ? "true" : "false") == "true";
 }
 
 long BaseSettings::GetInt(const std::string& section, const std::string& name,
-                     long default_) {
+                          long default_) {
   return config_->GetInt(section, name, default_);
 }
 
