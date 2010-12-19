@@ -2,7 +2,7 @@
  * Copyright (c) 2010, Silas Sewell
  * All rights reserved.
  *
- * This file is subject to the New BSD License (see the LICENSE file).
+ * This file is subject to the MIT License (see the LICENSE file).
  */
 
 #include "logging.h"
