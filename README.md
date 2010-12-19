@@ -20,5 +20,4 @@ corporate and cloud environments.
 
 This work is licensed under the MIT License (see the LICENSE file).
 
-[tyrion]: http://www.tidg.org/tyrion "Tyrion"
 [xmpp]: http://en.wikipedia.org/wiki/Extensible_Messaging_and_Presence_Protocol "XMPP"
