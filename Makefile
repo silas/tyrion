@@ -30,3 +30,5 @@ test-all: test test-integration
 clean:
 	$(SCONS) -c
 	rm -f config.*
+	find . -name \*.o -type f -delete
+	find . -name \*.pyc -type f -delete
