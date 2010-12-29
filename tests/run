@@ -1,16 +1,8 @@
 #!/usr/bin/env bash
 
-run-tests() {
-  pushd tests
-  scons && \
+scons && \
   ./test-config && \
   ./test-envelope && \
   ./test-logging && \
   ./test-process && \
   ./test-settings
-  retval=$?
-  popd
-  return $retval
-}
-
-run-tests
