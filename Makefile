@@ -20,7 +20,12 @@ devel:
 	$(SCONS) --flags="$(OPTFLAGS)" --with-devel
 
 test:
-	cd $(TESTS) && ./run
+	$(TESTS)/run-unit
+
+test-integration: tyrion
+	$(TESTS)/run-integration
+
+test-all: test test-integration
 
 clean:
 	$(SCONS) -c

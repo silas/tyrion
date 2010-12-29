@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+cd "$( dirname $0 )" &> /dev/null
+cd ..
+
+integration_tests() {
+  ./tyrion -c tests/integration/config/tyrion.conf &
+  export PID=$!
+
+  cd tests/integration
+  trial test_all.py
+  export RESULT=$?
+
+  kill $PID
+
+  return $RESULT
+}
+
+integration_tests
