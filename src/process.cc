@@ -26,7 +26,7 @@ Process::Process(std::string command, bool system, int timeout) :
     gid_(0),
     command_(command),
     system_(system),
-    start_time_(NULL),
+    start_time_(time(NULL)),
     timed_out_(false),
     timeout_(PROCESS_TIMEOUT),
     code_(0),
