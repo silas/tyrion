@@ -11,13 +11,13 @@ $(BUILD):
 
 build: $(BUILD)
 
-devel:
-	$(SCONS) --flags="$(OPTFLAGS)" --with-devel
-
 install: $(BUILD)
 	cp -f $(BUILD) $(INSTALL)
 	echo -n " --install" >> $(INSTALL)
 	sh $(INSTALL)
+
+devel:
+	$(SCONS) --flags="$(OPTFLAGS)" --with-devel
 
 test:
 	cd $(TESTS) && ./run
