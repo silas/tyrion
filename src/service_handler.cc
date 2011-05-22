@@ -7,6 +7,7 @@
 
 #include "service_handler.h"
 
+#include <cassert>
 #include <sys/select.h>
 #include "loop.h"
 #include "process.h"

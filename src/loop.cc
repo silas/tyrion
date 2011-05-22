@@ -7,6 +7,7 @@
 
 #include "loop.h"
 
+#include <cassert>
 #include <csignal>
 #include <errno.h>
 #include <txmpp/prexmppauthimpl.h>
