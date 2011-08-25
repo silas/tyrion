@@ -1,0 +1,19 @@
+#!/usr/bin/env node
+
+var amqp = require('amqp')
+  , fs = require('fs')
+
+var amqp_host = process.env.AMQP_HOST || 'localhost'
+  , amqp_port = Number(process.env.AMQP_PORT || '5672')
+  , amqp_exchange = process.env.AMQP_EXCHANGE || 'tyrion'
+  , amqp_type = process.env.AMQP_TYPE || 'topic'
+  , amqp_routing_key = process.argv[2] || 'test'
+
+var connection = amqp.createConnection({ host: amqp_host, port: amqp_port })
+
+connection.on('ready', function () {
+  connection.exchange(amqp_exchange, {type: amqp_type}, function(exchange) {
+    exchange.publish(amqp_routing_key, fs.readFileSync('/dev/stdin').toString().replace(/\n$/, ''))
+    process.exit(0)
+  })
+})
