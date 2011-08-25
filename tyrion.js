@@ -36,7 +36,7 @@ if (options.config_file) {
     var k1 = v[0]
       , k2 = v[1]
     if (!options[key]) {
-      if (config[k1] && config[k1][k2]) {
+      if (typeof config[k1] != 'undefined' && typeof config[k1][k2] != 'undefined') {
         if ((defaults[key].type || 'string') != 'string') {
           try {
             options[key] = JSON.parse(config[k1][k2])
@@ -52,7 +52,9 @@ if (options.config_file) {
   }
 } else {
   for (var key in defaults) {
-    options[key] = options[key] || defaults[key]._default
+    if (typeof options[key] == 'undefined') {
+      options[key] = defaults[key]._default
+    }
   }
 }
 
@@ -61,7 +63,7 @@ var connection = amqp.createConnection({ host: options.amqp_host, port: options.
 connection.on('ready', function () {
   connection.exchange(options.amqp_exchange, {type: 'topic'}, function(exchange) {
     connection.queue('', function(q) {
-      q.bind(exchange, "*")
+      q.bind(exchange, '*')
       
       q.on('queueBindOk', function() {
         q.subscribe(function (message) {
