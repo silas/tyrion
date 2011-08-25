@@ -1,0 +1,15 @@
+{
+  "name": "tyrion",
+  "description": "A server orchestration tool",
+  "version": "0.0.1",
+  "engines": { "node": ">= 0.4" },
+  "dependencies": {
+    "amqp": ">= 0.1.0",
+    "initparser": ">= 1.0.3",
+    "nomnom": ">= 1.0.0"
+  },
+  "devDependencies": {
+    "nodeunit": ">= 0.5.3"
+  },
+  "main": "tyrion"
+}
